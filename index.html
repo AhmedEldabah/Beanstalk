@@ -470,6 +470,27 @@
             footer { padding: 4rem 4% 5rem; }
             .socials { gap: 1.5rem; }
         }
+
+        /* ── CUSTOM WATERMARK ── */
+        .watermark-overlay {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(16, 14, 12, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--accent);
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 10000;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
     </style>
 </head>
 <body>
@@ -482,7 +503,6 @@
         <div class="splash-text">BeanStalk</div>
     </div>
 
-    <!-- Mobile menu overlay -->
     <div class="mobile-menu" id="mobile-menu">
         <a onclick="mobileNavTo('menus')">Menus</a>
         <a onclick="mobileNavTo('gallery')">Gallery</a>
@@ -518,7 +538,6 @@
 
     <main>
 
-        <!-- ── MENUS DOWNLOAD SECTION ── -->
         <section id="menus">
             <div class="inner">
                 <div class="section-header reveal">
@@ -526,7 +545,6 @@
                     <h2 class="section-title">Our Menus</h2>
                 </div>
 
-                <!-- Tab Buttons -->
                 <div class="menu-tabs reveal">
                     <button class="menu-tab-btn active" onclick="switchMenu(0)">BeanStalk Menu</button>
                     <button class="menu-tab-btn" onclick="switchMenu(1)">BeanStalk Catering</button>
@@ -534,7 +552,6 @@
                     <button class="menu-tab-btn" onclick="switchMenu(3)">Sushi Catering</button>
                 </div>
 
-                <!-- Embedded Flipbooks -->
                 <div class="menu-embed-panels">
 
                     <div class="menu-embed-panel active">
@@ -639,7 +656,6 @@
             </div>
         </section>
 
-        <!-- INSTAGRAM SECTION -->
         <section id="instagram-section" style="padding: 8rem 5%; background: var(--bg-base);">
             <div style="max-width:1100px;margin:0 auto;">
                 <div class="section-header reveal">
@@ -663,7 +679,7 @@
                         </div>
                         <p style="font-size:0.9rem;color:var(--text-muted);line-height:1.7;font-weight:300;">Premium sushi, elevated catering and culinary experiences in Sheikh Zayed City. Follow us for new dishes, events, and behind-the-scenes moments.</p>
                         <a href="https://www.instagram.com/beanstalkzayed" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid var(--border);padding:0.7rem 1.5rem;border-radius:50px;align-self:flex-start;transition:all 0.3s;" data-hover onmouseover="this.style.background='var(--accent)'; this.style.color='#000';" onmouseout="this.style.background='transparent'; this.style.color='var(--accent)';">
-                            View Profile &nbsp;<i class="fab fa-instagram"></i>
+                            View Profile  <i class="fab fa-instagram"></i>
                         </a>
                     </div>
                 </div>
@@ -673,7 +689,6 @@
             </div>
         </section>
 
-        <!-- FAQ SECTION -->
         <section id="faq-section">
             <div class="inner">
                 <div class="section-header reveal">
@@ -688,10 +703,6 @@
                     <div class="faq-item">
                         <button class="faq-question" onclick="toggleFaq(this)">What is the minimum order for catering? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
                         <div class="faq-answer"><p>Our catering packages start from 20 guests. For larger events — corporate functions, weddings, and private parties — we offer bespoke packages tailored to your guest count and menu preferences.</p></div>
-                    </div>
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">Is BeanStalk halal? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
-                        <div class="faq-answer"><p>Yes, all our meat and poultry is 100% halal certified. Our kitchen strictly follows halal standards across all dishes.</p></div>
                     </div>
                     <div class="faq-item">
                         <button class="faq-question" onclick="toggleFaq(this)">What are your opening hours? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
@@ -713,7 +724,6 @@
             </div>
         </section>
 
-        <!-- MAP SECTION -->
         <section id="location-map">
             <div class="inner">
                 <div class="section-header reveal">
@@ -761,6 +771,8 @@
         </div>
         <p>© 2026 BeanStalk Culinary & Sushi. Sheikh Zayed City.</p>
     </footer>
+
+    <div class="watermark-overlay">Mockup By TheWebMechanic</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script>
@@ -869,7 +881,6 @@
         });
     </script>
 
-    <!-- Navigation & Embed scripts -->
     <script>
         function navTo(id) {
             var el = document.getElementById(id);
