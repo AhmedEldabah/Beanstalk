@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanStalk | Mockup</title>
+    <style>
+      :root {
+        --bg: #11100f;
+        --card: #1b1917;
+        --accent: #c89b6d;
+        --text: #f7efe6;
+        --muted: #c8b8a7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+        background: radial-gradient(circle at top, #2a221b, var(--bg) 55%);
+        color: var(--text);
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .container {
+        width: min(1100px, 92vw);
+        margin: 0 auto;
+      }
+      .hero {
+        min-height: 70vh;
+        display: grid;
+        align-items: center;
+        padding: 4rem 0 3rem;
+      }
+      .badge {
+        display: inline-block;
+        color: var(--accent);
+        border: 1px solid #5b4632;
+        border-radius: 999px;
+        padding: 0.4rem 0.9rem;
+        font-size: 0.8rem;
+      }
+      h1 {
+        margin: 1rem 0 0.8rem;
+        font-size: clamp(2rem, 5vw, 4rem);
+      }
+      p {
+        color: var(--muted);
+        max-width: 650px;
+        line-height: 1.6;
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 1.4rem;
+      }
+      .btn {
+        background: var(--accent);
+        color: #1b130c;
+        padding: 0.7rem 1rem;
+        border-radius: 0.6rem;
+        font-weight: 700;
+      }
+      .btn.secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid #5b4632;
+      }
+      section {
+        padding: 2rem 0 3rem;
+      }
+      .section-title {
+        margin-bottom: 1rem;
+      }
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+      .cards {
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      }
+      .card {
+        background: linear-gradient(180deg, #26211c, var(--card));
+        border: 1px solid #3a322b;
+        border-radius: 1rem;
+        padding: 1rem;
+      }
+      .card h3 {
+        margin-top: 0;
+      }
+      .media {
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      }
+      iframe {
+        width: 100%;
+        aspect-ratio: 4/3;
+        border: 0;
+        border-radius: 0.7rem;
+        background: #000;
+      }
+      footer {
+        border-top: 1px solid #3a322b;
+        padding: 1.2rem 0 2rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero container">
+      <div>
+        <span class="badge reveal">BeanStalk • Sheikh Zayed</span>
+        <h1 class="reveal">A warm coffee experience, modern and social.</h1>
+        <p class="reveal">
+          This is a first visual mockup for BeanStalk’s website. It highlights
+          coffee vibes, menu previews, map access, and social channels using the
+          links you shared.
+        </p>
+        <div class="cta reveal">
+          <a class="btn" href="https://maps.app.goo.gl/2VmT2j9aFfd7pTnq6" target="_blank" rel="noreferrer">Visit Location</a>
+          <a class="btn secondary" href="https://www.tripadvisor.com/Restaurant_Review-g19065385-d33123990-Reviews-Beanstalk-Sheikh_Zayed_City_Giza_Governorate.html" target="_blank" rel="noreferrer">TripAdvisor Reviews</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section>
+        <h2 class="section-title reveal">Menu Snapshot</h2>
+        <div class="grid cards">
+          <article class="card reveal">
+            <h3>Signature Coffee</h3>
+            <p>Feature rotating espresso-based drinks and seasonal specials.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Cold Refreshers</h3>
+            <p>Highlight iced blends, cold brew, and fruit-forward coolers.</p>
+          </article>
+          <article class="card reveal">
+            <h3>Desserts & Bites</h3>
+            <p>Showcase pairings that fit brunch, coffee breaks, and evenings.</p>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title reveal">Flipbook Media Previews</h2>
+        <div class="grid media">
+          <iframe class="reveal" src="https://heyzine.com/flip-book/52e6956595.html#page/8" title="BeanStalk flipbook 1" loading="lazy"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/4599dd9732.html#page/4" title="BeanStalk flipbook 2" loading="lazy"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/890a376642.html#page/8" title="BeanStalk flipbook 3" loading="lazy"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/3bde8f9baf.html#page/11" title="BeanStalk flipbook 4" loading="lazy"></iframe>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="section-title reveal">Social</h2>
+        <div class="grid cards">
+          <a class="card reveal" href="https://www.instagram.com/beanstalkzayed?igsh=MWl6dmlhbzJma25zZQ%3D%3D" target="_blank" rel="noreferrer">
+            <h3>Instagram</h3>
+            <p>@beanstalkzayed</p>
+          </a>
+          <a class="card reveal" href="https://www.facebook.com/people/Beanstalk/100070042847843/?mibextid=LQQJ4d&amp;rdid=fuemC9nqTdBeUJFW&amp;share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2FnyzRTfGhhCShGpnX%2F%3Fmibextid%3DLQQJ4d" target="_blank" rel="noreferrer">
+            <h3>Facebook</h3>
+            <p>Beanstalk community updates and announcements.</p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="container">
+      BeanStalk mockup concept • Next step: replace placeholders with exact menu
+      items and branded photo selections.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+    <script>
+      anime({
+        targets: ".reveal",
+        translateY: [24, 0],
+        opacity: [0, 1],
+        easing: "easeOutExpo",
+        duration: 850,
+        delay: anime.stagger(90),
+      });
+
+      const cards = document.querySelectorAll(".card");
+      cards.forEach((card) => {
+        card.addEventListener("mouseenter", () => {
+          anime({
+            targets: card,
+            scale: 1.02,
+            duration: 220,
+            easing: "easeOutQuad",
+          });
+        });
+        card.addEventListener("mouseleave", () => {
+          anime({
+            targets: card,
+            scale: 1,
+            duration: 220,
+            easing: "easeOutQuad",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
