@@ -12,21 +12,20 @@
 
     <style>
         :root {
-            /* Softly Palette */
-            --bg-base: #FDFCF8;
-            /* Changed surface to semi-transparent for glassmorphism */
-            --bg-surface: rgba(255, 255, 255, 0.45); 
-            --bg-sage: rgba(232, 239, 232, 0.5);
-            --bg-lavender: rgba(239, 237, 244, 0.6);
-            --accent: #FFB7B2; /* Coral */
-            --accent-glow: rgba(255, 183, 178, 0.4);
-            --text-main: #292524; /* Dark Stone */
-            --text-muted: #78716C;
-            --border: rgba(240, 239, 235, 0.6); /* Soft Stone-200 with opacity */
+            /* Forced Dark Mode "Softly" Palette */
+            --bg-base: #121010; /* Deep dark stone */
+            --bg-surface: rgba(35, 32, 32, 0.55); /* Dark frosted glass */
+            --bg-sage: rgba(163, 217, 165, 0.1); 
+            --bg-lavender: rgba(196, 181, 253, 0.1);
+            --accent: #FFB7B2; /* Coral stays as accent */
+            --accent-glow: rgba(255, 183, 178, 0.2);
+            --text-main: #FDFCF8; /* Soft Off-White */
+            --text-muted: #A8A29E; /* Warm Gray */
+            --border: rgba(255, 255, 255, 0.08); /* Subtle light border for glass edges */
             
             --trans: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.08);
+            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.5);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.8);
             --radius-lg: 2rem;
             --radius-xl: 3rem;
         }
@@ -44,10 +43,10 @@
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: rgba(214, 211, 209, 0.8); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        /* Global Floating Gradient Background */
+        /* Global Floating Gradient Background (Tuned for Dark Mode) */
         .global-blobs {
             position: fixed;
             inset: 0;
@@ -56,12 +55,12 @@
             overflow: hidden;
         }
         .blob {
-            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.65;
+            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35;
             animation: float 8s ease-in-out infinite alternate;
         }
-        .blob-1 { width: 60vw; height: 60vw; max-width: 800px; max-height: 800px; background: #FFE4E1; top: -10%; left: -10%; }
-        .blob-2 { width: 50vw; height: 50vw; max-width: 600px; max-height: 600px; background: #E6E6FA; bottom: -5%; right: -10%; animation-delay: -3s; }
-        .blob-3 { width: 45vw; height: 45vw; max-width: 550px; max-height: 550px; background: #E8EFE8; top: 30%; left: 50%; animation-delay: -5s; }
+        .blob-1 { width: 60vw; height: 60vw; max-width: 800px; max-height: 800px; background: #FF7EB3; top: -10%; left: -10%; }
+        .blob-2 { width: 50vw; height: 50vw; max-width: 600px; max-height: 600px; background: #8E84FA; bottom: -5%; right: -10%; animation-delay: -3s; }
+        .blob-3 { width: 45vw; height: 45vw; max-width: 550px; max-height: 550px; background: #4ADE80; top: 30%; left: 50%; animation-delay: -5s; }
 
         @keyframes float {
             0% { transform: translateY(0px) scale(1); }
@@ -72,8 +71,8 @@
         .grain-overlay {
             position: fixed; inset: 0; z-index: 9999; pointer-events: none;
             background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.35"/%3E%3C/svg%3E');
-            mix-blend-mode: multiply;
-            opacity: 0.8;
+            mix-blend-mode: overlay;
+            opacity: 0.4;
         }
 
         h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.025em; }
@@ -90,7 +89,7 @@
             background: var(--bg-surface);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-soft);
         }
 
@@ -100,9 +99,9 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .splash-logo {
-            width: 120px; height: 120px; border-radius: 50%; border: 4px solid #fff; 
+            width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--border); 
             object-fit: cover; opacity: 0; margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(255, 183, 178, 0.5);
+            box-shadow: 0 10px 40px var(--accent-glow);
         }
         .splash-text { 
             font-family: 'Outfit', sans-serif; 
@@ -117,8 +116,8 @@
         nav {
             position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%);
             width: calc(100% - 32px); max-width: 1100px;
-            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(20, 18, 18, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
             border-radius: 50px;
             z-index: 1000; padding: 0.8rem 1.5rem;
             display: flex; justify-content: space-between; align-items: center;
@@ -133,14 +132,14 @@
         .nav-links a:hover { color: var(--text-main); }
 
         .magnetic-btn {
-            background: var(--text-main); color: #fff;
+            background: var(--text-main); color: var(--bg-base); /* Inverted for dark mode */
             padding: 0.8rem 2rem; border-radius: 50px; border: none;
             display: inline-flex; align-items: center; justify-content: center;
-            font-weight: 500; font-size: 0.9rem; transition: var(--trans);
+            font-weight: 600; font-size: 0.9rem; transition: var(--trans);
             box-shadow: var(--shadow-soft); position: relative; overflow: hidden;
         }
-        .magnetic-btn.light { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); color: var(--text-main); border: 1px solid rgba(255,255,255,0.8); }
-        .magnetic-btn.accent { background: var(--accent); color: #fff; }
+        .magnetic-btn.light { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); color: var(--text-main); border: 1px solid rgba(255,255,255,0.15); }
+        .magnetic-btn.accent { background: var(--accent); color: var(--bg-base); }
         .magnetic-btn:hover { transform: scale(1.02); box-shadow: var(--shadow-hover); }
         .magnetic-wrapper { display: inline-block; padding: 15px; }
 
@@ -156,7 +155,7 @@
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 0; /* Behind text, above global blobs */
+            z-index: 0; 
             overflow: hidden;
         }
         .hero-float-item {
@@ -173,21 +172,21 @@
         .hf-2 { /* Sushi */
             top: 65%; left: 8%;
             font-size: 5rem;
-            color: rgba(239, 237, 244, 0.9); /* Lavender hint */
+            color: rgba(196, 181, 253, 0.6); /* Lavender hint */
             filter: blur(4px);
             animation: floatTumbleReverse 18s infinite ease-in-out;
         }
         .hf-3 { /* Seedling/Freshness */
             top: 18%; right: 15%;
             font-size: 2.8rem;
-            color: rgba(232, 239, 232, 0.9); /* Sage hint */
+            color: rgba(163, 217, 165, 0.6); /* Sage hint */
             filter: blur(1px);
             animation: floatTumbleReverse 12s infinite ease-in-out;
         }
         .hf-4 { /* Bowl */
             top: 60%; right: 10%;
             font-size: 4.5rem;
-            color: rgba(41, 37, 36, 0.1); /* Subtle dark stone */
+            color: rgba(255, 255, 255, 0.05); /* Subtle light */
             filter: blur(3px);
             animation: floatTumble 16s infinite ease-in-out;
         }
@@ -242,8 +241,8 @@
             padding: 0.8rem 1.8rem; border-radius: 50px; cursor: pointer;
             transition: var(--trans); white-space: nowrap;
         }
-        .menu-tab-btn.active { background: rgba(255,255,255,0.7); color: var(--text-main); font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .menu-tab-btn:not(.active):hover { color: var(--text-main); background: rgba(255,255,255,0.3); }
+        .menu-tab-btn.active { background: rgba(255,255,255,0.15); color: var(--text-main); font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .menu-tab-btn:not(.active):hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
 
         .menu-embed-panels { position: relative; }
         .menu-embed-panel { display: none; flex-direction: column; align-items: center; gap: 1.2rem; }
@@ -256,11 +255,11 @@
 
         .flipbook-frame-wrap {
             width: 100%; border-radius: var(--radius-xl); overflow: hidden;
-            border: 8px solid rgba(255, 255, 255, 0.4);
+            border: 8px solid rgba(255, 255, 255, 0.05);
             transition: var(--trans);
         }
-        .flipbook-frame-wrap:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(255,255,255,0.8); }
-        .flipbook-frame-wrap iframe { width: 100%; height: 660px; border: none; display: block; border-radius: calc(var(--radius-xl) - 8px); background: #fff;} 
+        .flipbook-frame-wrap:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
+        .flipbook-frame-wrap iframe { width: 100%; height: 660px; border: none; display: block; border-radius: calc(var(--radius-xl) - 8px); background: transparent;} 
         
         .flipbook-open-link {
             display: inline-flex; align-items: center; gap: 0.5rem;
@@ -270,10 +269,10 @@
 
         /* Gallery */
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .gallery-item { overflow: hidden; border-radius: var(--radius-lg); position: relative; aspect-ratio: 4/5; border: 4px solid rgba(255,255,255,0.4); }
+        .gallery-item { overflow: hidden; border-radius: var(--radius-lg); position: relative; aspect-ratio: 4/5; border: 4px solid rgba(255,255,255,0.05); }
         .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
         .gallery-item:hover .gallery-img { transform: scale(1.05); }
-        .gallery-item:hover { border-color: rgba(255,255,255,0.8); box-shadow: var(--shadow-hover); }
+        .gallery-item:hover { border-color: rgba(255,255,255,0.2); box-shadow: var(--shadow-hover); }
 
         /* Testimonials (Diary Entries) */
         .review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; padding: 2rem 0; }
@@ -288,7 +287,7 @@
         .review-card:hover { transform: rotate(0deg) translateY(-10px); box-shadow: var(--shadow-hover); }
         
         .rev-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.5rem; }
-        .rev-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+        .rev-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
         .rev-stars { color: var(--accent); font-size: 0.85rem; margin-top: 4px; }
         .review-card p { color: var(--text-main); font-size: 1.1rem; line-height: 1.7; font-weight: 400; margin-bottom: 2rem; }
         
@@ -296,7 +295,7 @@
         .diary-signature span { font-family: 'Reenie Beanie', cursive; font-size: 1.8rem; color: var(--text-muted); }
 
         /* ── INSTAGRAM SECTION ── */
-        #instagram { padding: 8rem 5%; border-radius: var(--radius-xl); margin: 0 2%; background: rgba(255,255,255,0.2); }
+        #instagram { padding: 8rem 5%; border-radius: var(--radius-xl); margin: 0 2%; background: rgba(255,255,255,0.02); }
         #instagram .inner { max-width: 1100px; margin: 0 auto; }
 
         .ig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
@@ -306,7 +305,7 @@
             transition: var(--trans); padding: 10px;
         }
         .ig-post-wrap:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-        .ig-post-wrap iframe { width: 100% !important; min-width: unset !important; border: none !important; border-radius: calc(var(--radius-lg) - 10px); background: #fff;}
+        .ig-post-wrap iframe { width: 100% !important; min-width: unset !important; border: none !important; border-radius: calc(var(--radius-lg) - 10px); background: transparent;}
         .ig-follow-row { display: flex; justify-content: center; margin-top: 3.5rem; }
 
         /* ── FAQ SECTION ── */
@@ -327,11 +326,11 @@
         .faq-question:hover { color: var(--accent); }
         .faq-icon {
             width: 32px; height: 32px; border-radius: 50%;
-            background: rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; font-size: 0.9rem; color: var(--text-main);
             transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
         }
-        .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: #fff; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--accent); color: var(--bg-base); }
         .faq-answer { max-height: 0; transition: max-height 0.5s cubic-bezier(0.22,1,0.36,1); }
         .faq-item.open .faq-answer { max-height: 400px; }
         .faq-answer p { color: var(--text-muted); font-size: 1rem; line-height: 1.7; padding: 0 1.5rem 1.5rem; }
@@ -349,15 +348,15 @@
         }
         .map-info-icon {
             width: 48px; height: 48px; border-radius: 50%;
-            background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
             color: var(--text-main); font-size: 1.2rem; flex-shrink: 0;
-            border: 1px solid rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
         }
         .map-info-label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.2rem; }
         .map-info-value { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
-        .map-frame-wrap { border-radius: var(--radius-xl); overflow: hidden; border: 8px solid rgba(255, 255, 255, 0.4); transition: var(--trans); }
-        .map-frame-wrap:hover { border-color: rgba(255,255,255,0.8); box-shadow: var(--shadow-hover); }
-        .map-frame-wrap iframe { width: 100%; height: 480px; border: none; display: block; border-radius: calc(var(--radius-xl) - 8px); }
+        .map-frame-wrap { border-radius: var(--radius-xl); overflow: hidden; border: 8px solid rgba(255, 255, 255, 0.05); transition: var(--trans); }
+        .map-frame-wrap:hover { border-color: rgba(255,255,255,0.15); box-shadow: var(--shadow-hover); }
+        .map-frame-wrap iframe { width: 100%; height: 480px; border: none; display: block; border-radius: calc(var(--radius-xl) - 8px); filter: invert(90%) hue-rotate(180deg) saturate(0.5) brightness(0.8); }
 
         /* ═══════════════════════════════════════
            MOBILE NAVIGATION — hamburger menu
@@ -376,7 +375,7 @@
 
         .mobile-menu {
             display: none; position: fixed; inset: 0;
-            background: rgba(253, 252, 248, 0.95); backdrop-filter: blur(15px);
+            background: rgba(20, 18, 18, 0.95); backdrop-filter: blur(15px);
             z-index: 1050; flex-direction: column; justify-content: center; align-items: center; gap: 1rem;
         }
         .mobile-menu.open { display: flex; animation: fadeInMenu 0.4s ease forwards; }
@@ -433,9 +432,9 @@
         /* ── CUSTOM WATERMARK ── */
         .watermark-overlay {
             position: fixed; bottom: 20px; right: 20px;
-            background: rgba(255,255,255,0.7); color: var(--text-main);
+            background: rgba(30, 28, 28, 0.7); color: var(--text-main);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            padding: 8px 16px; border: 1px solid var(--border);
+            padding: 8px 16px; border: 1px solid rgba(255,255,255,0.1);
             border-radius: 50px; font-family: 'Outfit', sans-serif;
             font-size: 0.75rem; font-weight: 500;
             z-index: 10000; pointer-events: none;
@@ -444,8 +443,8 @@
 
         footer { text-align: center; padding: 4rem 5%; color: var(--text-muted); }
         .socials { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .socials a { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); transition: var(--trans); border: 1px solid rgba(255,255,255,0.8); }
-        .socials a:hover { transform: translateY(-3px); background: var(--accent); color: #fff; border-color: var(--accent); }
+        .socials a { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; color: var(--text-main); box-shadow: var(--shadow-soft); transition: var(--trans); border: 1px solid rgba(255,255,255,0.15); }
+        .socials a:hover { transform: translateY(-3px); background: var(--accent); color: var(--bg-base); border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -621,14 +620,14 @@
                 </div>
                 <div class="ig-grid">
                     <div class="ig-post-wrap glass-panel reveal">
-                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/" data-instgrm-version="14" style="background:#fff;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
                     </div>
                     <div class="ig-post-wrap glass-panel reveal">
-                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/reels/" data-instgrm-version="14" style="background:#fff;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/reels/" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
                     </div>
                     <div class="ig-post-wrap glass-panel reveal" style="padding:2.5rem;flex-direction:column;gap:1.2rem;justify-content:center;height:100%;">
                         <div style="display:flex;align-items:center;gap:1rem;">
-                            <img src="https://scontent.fcai19-7.fna.fbcdn.net/v/t39.30808-6/409096361_695191336158955_7614411298661377925_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=V8Y-8sMTimQQ7kNvwHJNmPC&_nc_oc=AdpjCwOhJ5-SHK9AHkR5RVMOfuHOdMQ7RQ6w-zuTjziR8WmiBu7gMO6dQyiIhv-kvqM&_nc_zt=23&_nc_ht=scontent.fcai19-7.fna&_nc_gid=rdZ520MJFCtWhzOjVS_6Ug&_nc_ss=7a389&oh=00_Af33_qw5pUDmwixMi9JnSJSXClIlax6wP-gftQUo3GV4Ug&oe=69E59405" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #fff;">
+                            <img src="https://scontent.fcai19-7.fna.fbcdn.net/v/t39.30808-6/409096361_695191336158955_7614411298661377925_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=V8Y-8sMTimQQ7kNvwHJNmPC&_nc_oc=AdpjCwOhJ5-SHK9AHkR5RVMOfuHOdMQ7RQ6w-zuTjziR8WmiBu7gMO6dQyiIhv-kvqM&_nc_zt=23&_nc_ht=scontent.fcai19-7.fna&_nc_gid=rdZ520MJFCtWhzOjVS_6Ug&_nc_ss=7a389&oh=00_Af33_qw5pUDmwixMi9JnSJSXClIlax6wP-gftQUo3GV4Ug&oe=69E59405" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);">
                             <div>
                                 <div style="font-size:1.15rem; font-weight: 600;">BeanStalk</div>
                                 <div style="font-size:0.85rem;color:var(--text-muted);">@beanstalkzayed</div>
