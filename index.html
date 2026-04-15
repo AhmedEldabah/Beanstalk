@@ -175,36 +175,38 @@
       items and branded photo selections.
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+    <script src="https://animejs.com/lib/anime.iife.min.js"></script>
     <script>
-      anime({
-        targets: ".reveal",
-        translateY: [24, 0],
-        opacity: [0, 1],
-        easing: "easeOutExpo",
-        duration: 850,
-        delay: anime.stagger(90),
-      });
+      if (window.anime) {
+        anime({
+          targets: ".reveal",
+          translateY: [24, 0],
+          opacity: [0, 1],
+          easing: "easeOutExpo",
+          duration: 850,
+          delay: anime.stagger(90),
+        });
 
-      const cards = document.querySelectorAll(".card");
-      cards.forEach((card) => {
-        card.addEventListener("mouseenter", () => {
-          anime({
-            targets: card,
-            scale: 1.02,
-            duration: 220,
-            easing: "easeOutQuad",
+        const cards = document.querySelectorAll(".card");
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", () => {
+            anime({
+              targets: card,
+              scale: 1.02,
+              duration: 220,
+              easing: "easeOutQuad",
+            });
+          });
+          card.addEventListener("mouseleave", () => {
+            anime({
+              targets: card,
+              scale: 1,
+              duration: 220,
+              easing: "easeOutQuad",
+            });
           });
         });
-        card.addEventListener("mouseleave", () => {
-          anime({
-            targets: card,
-            scale: 1,
-            duration: 220,
-            easing: "easeOutQuad",
-          });
-        });
-      });
+      }
     </script>
   </body>
 </html>
