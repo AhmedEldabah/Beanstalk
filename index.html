@@ -148,10 +148,10 @@
       <section>
         <h2 class="section-title reveal">Flipbook Media Previews</h2>
         <div class="grid media">
-          <iframe class="reveal" src="https://heyzine.com/flip-book/52e6956595.html#page/8" title="BeanStalk flipbook 1" loading="lazy"></iframe>
-          <iframe class="reveal" src="https://heyzine.com/flip-book/4599dd9732.html#page/4" title="BeanStalk flipbook 2" loading="lazy"></iframe>
-          <iframe class="reveal" src="https://heyzine.com/flip-book/890a376642.html#page/8" title="BeanStalk flipbook 3" loading="lazy"></iframe>
-          <iframe class="reveal" src="https://heyzine.com/flip-book/3bde8f9baf.html#page/11" title="BeanStalk flipbook 4" loading="lazy"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/52e6956595.html#page/8" title="BeanStalk flipbook 1" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/4599dd9732.html#page/4" title="BeanStalk flipbook 2" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/890a376642.html#page/8" title="BeanStalk flipbook 3" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+          <iframe class="reveal" src="https://heyzine.com/flip-book/3bde8f9baf.html#page/11" title="BeanStalk flipbook 4" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
         </div>
       </section>
 
@@ -175,11 +175,10 @@
       items and branded photo selections.
     </footer>
 
-    <script src="https://animejs.com/lib/anime.iife.min.js"></script>
+    <script src="./assets/anime.iife.min.js"></script>
     <script>
       if (window.anime) {
-        anime({
-          targets: ".reveal",
+        anime.animate(".reveal", {
           translateY: [24, 0],
           opacity: [0, 1],
           easing: "easeOutExpo",
@@ -190,16 +189,14 @@
         const cards = document.querySelectorAll(".card");
         cards.forEach((card) => {
           card.addEventListener("mouseenter", () => {
-            anime({
-              targets: card,
+            anime.animate(card, {
               scale: 1.02,
               duration: 220,
               easing: "easeOutQuad",
             });
           });
           card.addEventListener("mouseleave", () => {
-            anime({
-              targets: card,
+            anime.animate(card, {
               scale: 1,
               duration: 220,
               easing: "easeOutQuad",
