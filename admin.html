@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="firebase-config.js"></script>
     <style>
         :root {
@@ -616,59 +618,65 @@ function watchDriverLocations() {
 
 function updateDriverMapMarker(uid, loc) {
     if (!adminMap) return;
-    const pos = { lat: loc.lat, lng: loc.lng };
     if (driverMarkers[uid]) {
-        driverMarkers[uid].setPosition(pos);
+        driverMarkers[uid].setLatLng([loc.lat, loc.lng]);
     } else {
-        driverMarkers[uid] = new google.maps.Marker({
-            position: pos, map: adminMap,
+        driverMarkers[uid] = L.marker([loc.lat, loc.lng], {
+            icon: makeLeafletIcon('#facc15'),
             title: loc.driverName || 'Driver',
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' },
-        });
+        }).addTo(adminMap);
     }
 }
 
 // ─── ADMIN MAP ────────────────────────────────────────────────────────────────
+function makeLeafletIcon(color) {
+    return L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+    });
+}
+
 function initAdminMap() {
-    if (adminMap || !window.google) { if (!adminMap && window.google) createMap(); return; }
-    loadAdminMaps();
+    if (adminMap) return;
+    createMap();
 }
 
 function createMap() {
-    adminMap = new google.maps.Map(document.getElementById('admin-map'), {
-        center: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG }, zoom: 12,
-        styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]}],
-        disableDefaultUI: false, mapTypeControl: false, streetViewControl: false,
-    });
-    new google.maps.Marker({ position: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG }, map: adminMap, title: RESTAURANT_NAME, icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' } });
-    // Re-apply existing driver location markers
+    adminMap = L.map('admin-map').setView([RESTAURANT_LAT, RESTAURANT_LNG], 12);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+    }).addTo(adminMap);
+
+    L.marker([RESTAURANT_LAT, RESTAURANT_LNG], {
+        icon: makeLeafletIcon('#ef4444'),
+        title: RESTAURANT_NAME,
+    }).addTo(adminMap);
+
     if (rtdb) watchDriverLocations();
     updateOrderMapMarkers(allOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled'));
 }
 
 function updateOrderMapMarkers(orders) {
     if (!adminMap) return;
-    orderMarkers.forEach(m => m.setMap(null));
+    orderMarkers.forEach(m => m.remove());
     orderMarkers = [];
     orders.forEach(o => {
         if (!o.lat || !o.lng) return;
-        const m = new google.maps.Marker({
-            position: { lat: o.lat, lng: o.lng }, map: adminMap,
+        const m = L.marker([o.lat, o.lng], {
+            icon: makeLeafletIcon('#3b82f6'),
             title: `${o.customerName} — EGP ${o.total}`,
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' },
-        });
-        const info = new google.maps.InfoWindow({ content: `<div style="font-family:sans-serif;font-size:13px;"><b>${o.customerName}</b><br>${o.customerPhone}<br>EGP ${o.total} · ${STATUS_LABELS[o.status]}</div>` });
-        m.addListener('click', () => info.open(adminMap, m));
+        }).addTo(adminMap);
+        m.bindPopup(`<div style="font-family:sans-serif;font-size:13px;"><b>${o.customerName}</b><br>${o.customerPhone}<br>EGP ${o.total} · ${STATUS_LABELS[o.status]}</div>`);
         orderMarkers.push(m);
     });
 }
 
 function loadAdminMaps() {
-    const key = (typeof GOOGLE_MAPS_API_KEY !== 'undefined' && GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY') ? GOOGLE_MAPS_API_KEY : '';
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=createMap`;
-    s.async = true;
-    document.head.appendChild(s);
+    createMap();
 }
 
 // ─── ANALYTICS ────────────────────────────────────────────────────────────────
