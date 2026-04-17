@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Order Delivery — BeanStalk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="firebase-config.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #121010;
+            --bg-surface: rgba(35, 32, 32, 0.55);
+            --accent: #FFB7B2;
+            --accent-glow: rgba(255, 183, 178, 0.2);
+            --text-main: #FDFCF8;
+            --text-muted: #A8A29E;
+            --border: rgba(255, 255, 255, 0.08);
+            --trans: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.5);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.8);
+            --radius-lg: 2rem;
+            --radius-xl: 3rem;
+            --green: #4ADE80;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-base); color: var(--text-main); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+        .global-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; animation: float 8s ease-in-out infinite alternate; }
+        .blob-1 { width: 60vw; height: 60vw; max-width: 700px; max-height: 700px; background: #FF7EB3; top: -10%; left: -10%; }
+        .blob-2 { width: 50vw; height: 50vw; max-width: 550px; max-height: 550px; background: #8E84FA; bottom: -5%; right: -10%; animation-delay: -3s; }
+        .blob-3 { width: 40vw; height: 40vw; max-width: 500px; max-height: 500px; background: #4ADE80; top: 40%; left: 50%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+
+        .grain-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.35"/%3E%3C/svg%3E'); mix-blend-mode: overlay; opacity: 0.4; }
+
+        /* NAV */
+        nav { position: sticky; top: 0; background: rgba(20,18,18,0.85); backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-main); }
+        .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+
+        /* LAYOUT */
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 6rem; display: grid; grid-template-columns: 1fr 420px; gap: 2.5rem; align-items: start; }
+        @media(max-width: 900px) { .page-wrap { grid-template-columns: 1fr; } .map-col { order: -1; } }
+
+        .page-title { font-size: 2.4rem; margin-bottom: 0.4rem; }
+        .page-sub { color: var(--text-muted); margin-bottom: 2.5rem; font-size: 0.95rem; }
+
+        /* GLASS CARD */
+        .glass { background: var(--bg-surface); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border); box-shadow: var(--shadow-soft); border-radius: var(--radius-lg); }
+
+        /* FORM */
+        .form-section { padding: 2rem; margin-bottom: 1.5rem; }
+        .form-section h3 { font-size: 1rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+        .form-section h3 i { color: var(--accent); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media(max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+        .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+        .field label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .field input, .field textarea, .field select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 12px; padding: 0.8rem 1rem; color: var(--text-main);
+            font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none; width: 100%;
+        }
+        .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .field textarea { resize: vertical; min-height: 80px; }
+        .field select option { background: #1e1c1c; }
+
+        /* MAP PICKER */
+        .map-col { position: sticky; top: 80px; }
+        #map-picker { width: 100%; height: 360px; border-radius: var(--radius-lg); overflow: hidden; border: 2px solid var(--border); transition: border-color 0.3s; }
+        #map-picker:hover { border-color: rgba(255,255,255,0.2); }
+        .map-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem; text-align: center; }
+        .map-hint i { color: var(--accent); }
+        .location-display { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1rem; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 12px; margin-top: 0.8rem; font-size: 0.85rem; color: var(--green); }
+        .location-display i { flex-shrink: 0; }
+        .location-display.hidden { display: none; }
+
+        /* ORDER SUMMARY */
+        .summary-card { padding: 1.5rem 2rem; }
+        .summary-title { font-size: 1rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.2rem; }
+        .summary-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; font-size: 0.9rem; }
+        .summary-line .label { color: var(--text-muted); }
+        .summary-line .val { font-weight: 500; }
+        .summary-divider { height: 1px; background: var(--border); margin: 1rem 0; }
+        .summary-total { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; }
+        .total-val { color: var(--accent); }
+
+        /* MENU ITEMS */
+        .menu-items-grid { display: grid; gap: 0.7rem; }
+        .menu-item { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; transition: var(--trans); cursor: pointer; }
+        .menu-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+        .menu-item.selected { background: rgba(255,183,178,0.1); border-color: var(--accent); }
+        .item-info { display: flex; flex-direction: column; gap: 2px; }
+        .item-name { font-size: 0.9rem; font-weight: 500; }
+        .item-desc { font-size: 0.75rem; color: var(--text-muted); }
+        .item-right { display: flex; align-items: center; gap: 0.8rem; }
+        .item-price { font-size: 0.9rem; font-weight: 600; color: var(--accent); white-space: nowrap; }
+        .item-qty { display: flex; align-items: center; gap: 0.4rem; }
+        .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--text-main); font-size: 0.9rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .qty-btn:hover { background: var(--accent); color: var(--bg-base); border-color: var(--accent); }
+        .qty-count { min-width: 18px; text-align: center; font-size: 0.9rem; font-weight: 600; }
+
+        /* SUBMIT BTN */
+        .submit-btn { width: 100%; padding: 1rem 2rem; background: var(--accent); color: var(--bg-base); border: none; border-radius: 50px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--trans); margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(30,28,28,0.95); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 50px; padding: 0.8rem 1.5rem; font-size: 0.9rem; font-weight: 500; z-index: 10000; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); white-space: nowrap; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: rgba(74,222,128,0.4); color: var(--green); }
+        .toast.error { border-color: rgba(255,100,100,0.4); color: #ff8080; }
+
+        /* LOADING OVERLAY */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(18,16,16,0.85); backdrop-filter: blur(10px); z-index: 9000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+        .loading-overlay.show { opacity: 1; pointer-events: all; }
+        .spinner { width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* PAYMENT METHOD */
+        .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+        .pay-opt { padding: 0.9rem 1rem; border: 1px solid var(--border); border-radius: 14px; cursor: pointer; transition: var(--trans); text-align: center; }
+        .pay-opt:hover { border-color: rgba(255,255,255,0.25); }
+        .pay-opt.selected { border-color: var(--accent); background: rgba(255,183,178,0.08); }
+        .pay-opt i { display: block; font-size: 1.4rem; margin-bottom: 0.4rem; color: var(--accent); }
+        .pay-opt span { font-size: 0.8rem; font-weight: 500; }
+
+        /* PROMO */
+        .promo-row { display: flex; gap: 0.6rem; }
+        .promo-row input { flex: 1; }
+        .promo-btn { padding: 0.8rem 1.2rem; background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: var(--trans); }
+        .promo-btn:hover { background: rgba(255,255,255,0.15); }
+        .promo-msg { font-size: 0.8rem; margin-top: 0.4rem; }
+        .promo-msg.ok { color: var(--green); }
+        .promo-msg.err { color: #ff8080; }
+    </style>
+</head>
+<body>
+<div class="global-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+<div class="grain-overlay"></div>
+
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <p style="color:var(--text-muted);font-size:0.95rem;">Placing your order…</p>
+</div>
+
+<nav>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <span style="color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-motorcycle" style="color:var(--accent)"></i> Delivery Order</span>
+</nav>
+
+<div class="page-wrap">
+    <!-- LEFT COLUMN: FORM -->
+    <div>
+        <h1 class="page-title">Order Delivery 🍣</h1>
+        <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
+
+        <!-- CUSTOMER DETAILS -->
+        <div class="glass form-section">
+            <h3><i class="fas fa-user"></i> Your Details</h3>
+            <div class="form-row">
+                <div class="field">
+                    <label>Full Name *</label>
+                    <input type="text" id="cust-name" placeholder="e.g. Ahmed Mohamed" autocomplete="name">
+                </div>
+                <div class="field">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="cust-phone" placeholder="+20 1XX XXX XXXX" autocomplete="tel">
+                </div>
+            </div>
+            <div class="field">
+                <label>Delivery Address *</label>
+                <input type="text" id="cust-address" placeholder="Street, building, floor, apartment…" autocomplete="street-address">
+            </div>
+            <div class="field">
+                <label>Landmark / Extra Notes</label>
+                <input type="text" id="cust-landmark" placeholder="e.g. Near Palm Hills Gate 3, blue building">
+            </div>
+            <div class="field">
+                <label>Order Notes (allergies, preferences…)</label>
+                <textarea id="order-notes" placeholder="e.g. No wasabi, extra ginger, well-done salmon…"></textarea>
+            </div>
+        </div>
+
+        <!-- MAP LOCATION (mobile: shown here; desktop: in right col) -->
+        <div class="glass form-section" id="map-section-inline" style="display:none;">
+            <h3><i class="fas fa-map-pin"></i> Pin Your Location</h3>
+            <div id="map-picker-inline"></div>
+            <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap anywhere on the map to set your delivery pin</div>
+            <div class="location-display hidden" id="loc-display-inline"><i class="fas fa-circle-check"></i><span id="loc-text-inline">Location selected</span></div>
+        </div>
+
+        <!-- MENU -->
+        <div class="glass form-section">
+            <h3><i class="fas fa-utensils"></i> Select Items</h3>
+            <div class="menu-items-grid" id="menu-grid">
+                <!-- dynamically generated below -->
+            </div>
+        </div>
+
+        <!-- PAYMENT -->
+        <div class="glass form-section">
+            <h3><i class="fas fa-wallet"></i> Payment Method</h3>
+            <div class="payment-options">
+                <div class="pay-opt selected" data-method="cash" onclick="selectPayment(this)">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash on Delivery</span>
+                </div>
+                <div class="pay-opt" data-method="card" onclick="selectPayment(this)">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Card on Delivery</span>
+                </div>
+                <div class="pay-opt" data-method="instapay" onclick="selectPayment(this)">
+                    <i class="fas fa-mobile-screen"></i>
+                    <span>InstaPay</span>
+                </div>
+                <div class="pay-opt" data-method="vodafone" onclick="selectPayment(this)">
+                    <i class="fas fa-sim-card"></i>
+                    <span>Vodafone Cash</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROMO -->
+        <div class="glass form-section" style="padding-bottom:1.5rem;">
+            <h3><i class="fas fa-tag"></i> Promo Code</h3>
+            <div class="promo-row">
+                <div class="field" style="margin:0;flex:1;"><input type="text" id="promo-input" placeholder="Enter code" style="text-transform:uppercase"></div>
+                <button class="promo-btn" onclick="applyPromo()">Apply</button>
+            </div>
+            <div class="promo-msg" id="promo-msg"></div>
+        </div>
+
+        <!-- ORDER SUMMARY (mobile) -->
+        <div class="glass summary-card" id="summary-mobile">
+            <div class="summary-title">Order Summary</div>
+            <div class="summary-line"><span class="label">Subtotal</span><span class="val" id="sub-mob">EGP 0</span></div>
+            <div class="summary-line"><span class="label">Delivery Fee</span><span class="val" id="del-mob">EGP —</span></div>
+            <div class="summary-line"><span class="label">Discount</span><span class="val" id="dis-mob" style="color:var(--green)">—</span></div>
+            <div class="summary-divider"></div>
+            <div class="summary-total"><span>Total</span><span class="total-val" id="tot-mob">EGP 0</span></div>
+            <button class="submit-btn" onclick="placeOrder()">
+                <i class="fas fa-paper-plane"></i> Place Order
+            </button>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: MAP + SUMMARY (desktop) -->
+    <div class="map-col">
+        <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
+            <div style="font-size:0.85rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem;">
+                <i class="fas fa-map-pin" style="color:var(--accent)"></i> Pin Your Location
+            </div>
+            <div id="map-picker" style="height:320px;border-radius:1.2rem;overflow:hidden;border:1px solid var(--border);"></div>
+            <div class="map-hint" style="margin-top:0.6rem;"><i class="fas fa-hand-pointer"></i> Click anywhere on the map to pin your delivery location</div>
+            <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
+        </div>
+
+        <!-- ORDER SUMMARY (desktop) -->
+        <div class="glass summary-card" id="summary-desktop">
+            <div class="summary-title">Order Summary</div>
+            <div id="cart-lines" style="margin-bottom:0.5rem;"></div>
+            <div class="summary-line" style="margin-top:0.8rem;"><span class="label">Subtotal</span><span class="val" id="sub-desk">EGP 0</span></div>
+            <div class="summary-line"><span class="label">Delivery Fee</span><span class="val" id="del-desk">EGP —</span></div>
+            <div class="summary-line"><span class="label">Discount</span><span class="val" id="dis-desk" style="color:var(--green)">—</span></div>
+            <div class="summary-divider"></div>
+            <div class="summary-total"><span>Total</span><span class="total-val" id="tot-desk">EGP 0</span></div>
+            <button class="submit-btn" onclick="placeOrder()">
+                <i class="fas fa-paper-plane"></i> Place Order
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ─── MENU DATA ──────────────────────────────────────────────────────────────
+const MENU = [
+    { id: "salmon_roll",    name: "Salmon Roll",           desc: "6 pcs · fresh salmon, cucumber, avocado",  price: 180 },
+    { id: "truffle_salmon", name: "Truffle Salmon Roll",   desc: "8 pcs · truffle oil, salmon roe",           price: 240 },
+    { id: "spicy_tuna",     name: "Spicy Tuna Crunch",     desc: "8 pcs · spicy mayo, tempura crunch",        price: 220 },
+    { id: "dragon_roll",    name: "Dragon Roll",           desc: "8 pcs · eel, avocado, cucumber",            price: 260 },
+    { id: "sashimi_platter",name: "Sashimi Platter",       desc: "12 pcs · chef's selection of fresh fish",   price: 350 },
+    { id: "edamame",        name: "Edamame",               desc: "Salted Japanese soybeans",                  price: 60  },
+    { id: "miso_soup",      name: "Miso Soup",             desc: "Traditional dashi, tofu, wakame",           price: 55  },
+    { id: "bento_box",      name: "BeanStalk Bento Box",   desc: "4 rolls + salad + miso soup",               price: 320 },
+    { id: "wagyu_burger",   name: "Wagyu Smash Burger",    desc: "Double wagyu, truffle aioli, brioche",       price: 290 },
+    { id: "truffle_fries",  name: "Truffle Fries",         desc: "Crispy fries, truffle oil, parmesan",        price: 95  },
+];
+
+const PROMO_CODES = {
+    "BEAN10": 10,
+    "WELCOME": 15,
+    "FREESHIP": "free_delivery",
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let cart = {};          // { itemId: qty }
+let selectedLat = null;
+let selectedLng = null;
+let deliveryFee = null;
+let discountPct = 0;
+let freeDelivery = false;
+let paymentMethod = "cash";
+let mapInstance = null;
+let markerInstance = null;
+let geocoderInstance = null;
+
+// ─── FIREBASE INIT ────────────────────────────────────────────────────────────
+let db = null;
+try {
+    if (typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY') {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
+    }
+} catch(e) { console.warn("Firebase not configured yet:", e.message); }
+
+// ─── BUILD MENU GRID ─────────────────────────────────────────────────────────
+function buildMenu() {
+    const grid = document.getElementById('menu-grid');
+    grid.innerHTML = MENU.map(item => `
+        <div class="menu-item" id="mi-${item.id}" onclick="toggleItem('${item.id}')">
+            <div class="item-info">
+                <div class="item-name">${item.name}</div>
+                <div class="item-desc">${item.desc}</div>
+            </div>
+            <div class="item-right">
+                <div class="item-price">EGP ${item.price}</div>
+                <div class="item-qty">
+                    <button class="qty-btn" onclick="changeQty(event,'${item.id}',-1)"><i class="fas fa-minus" style="font-size:0.6rem"></i></button>
+                    <span class="qty-count" id="qc-${item.id}">0</span>
+                    <button class="qty-btn" onclick="changeQty(event,'${item.id}',1)"><i class="fas fa-plus" style="font-size:0.6rem"></i></button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleItem(id) {
+    if ((cart[id] || 0) === 0) changeQtyRaw(id, 1);
+}
+
+function changeQty(e, id, delta) {
+    e.stopPropagation();
+    changeQtyRaw(id, delta);
+}
+
+function changeQtyRaw(id, delta) {
+    cart[id] = Math.max(0, (cart[id] || 0) + delta);
+    document.getElementById(`qc-${id}`).textContent = cart[id];
+    const el = document.getElementById(`mi-${id}`);
+    if (cart[id] > 0) el.classList.add('selected'); else el.classList.remove('selected');
+    updateSummary();
+}
+
+// ─── SUMMARY ─────────────────────────────────────────────────────────────────
+function getSubtotal() {
+    return MENU.reduce((s, item) => s + (cart[item.id] || 0) * item.price, 0);
+}
+
+function calcDeliveryFee(distKm) {
+    if (freeDelivery) return 0;
+    return DELIVERY_BASE_FEE_EGP + Math.round(distKm * DELIVERY_PER_KM_EGP);
+}
+
+function updateSummary() {
+    const sub = getSubtotal();
+    const disc = Math.round(sub * discountPct / 100);
+    const fee = deliveryFee !== null ? deliveryFee : null;
+    const total = sub - disc + (fee || 0);
+
+    // cart lines (desktop)
+    const cartLines = document.getElementById('cart-lines');
+    if (cartLines) {
+        cartLines.innerHTML = MENU.filter(i => (cart[i.id] || 0) > 0).map(i =>
+            `<div class="summary-line"><span class="label">${i.name} ×${cart[i.id]}</span><span class="val">EGP ${i.price * cart[i.id]}</span></div>`
+        ).join('');
+    }
+
+    ['sub-mob','sub-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='EGP '+sub; });
+    ['del-mob','del-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = fee !== null ? 'EGP '+fee : 'EGP —'; });
+    ['dis-mob','dis-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = disc > 0 ? '-EGP '+disc : '—'; });
+    ['tot-mob','tot-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='EGP '+(fee !== null ? total : sub-disc); });
+}
+
+// ─── PAYMENT ─────────────────────────────────────────────────────────────────
+function selectPayment(el) {
+    document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    paymentMethod = el.dataset.method;
+}
+
+// ─── PROMO ───────────────────────────────────────────────────────────────────
+function applyPromo() {
+    const code = document.getElementById('promo-input').value.trim().toUpperCase();
+    const msg = document.getElementById('promo-msg');
+    if (!code) { msg.textContent = ''; return; }
+    if (PROMO_CODES[code] === undefined) {
+        msg.className = 'promo-msg err';
+        msg.textContent = '✗ Invalid promo code.';
+        return;
+    }
+    const val = PROMO_CODES[code];
+    if (val === 'free_delivery') {
+        freeDelivery = true; discountPct = 0;
+        msg.className = 'promo-msg ok';
+        msg.textContent = '✓ Free delivery applied!';
+    } else {
+        discountPct = val; freeDelivery = false;
+        msg.className = 'promo-msg ok';
+        msg.textContent = `✓ ${val}% discount applied!`;
+    }
+    updateSummary();
+}
+
+// ─── GOOGLE MAPS ─────────────────────────────────────────────────────────────
+function initMap() {
+    const isMobile = window.innerWidth <= 900;
+    const targetId = isMobile ? 'map-picker-inline' : 'map-picker';
+    if (isMobile) document.getElementById('map-section-inline').style.display = 'block';
+
+    const restaurantPos = { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG };
+    mapInstance = new google.maps.Map(document.getElementById(targetId), {
+        center: restaurantPos,
+        zoom: 13,
+        styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},{"featureType":"administrative.country","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"administrative.land_parcel","stylers":[{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#bdbdbd"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#181818"}]},{"featureType":"poi.park","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"poi.park","elementType":"labels.text.stroke","stylers":[{"color":"#1b1b1b"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#8a8a8a"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"road.highway.controlled_access","elementType":"geometry","stylers":[{"color":"#4e4e4e"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"transit","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#3d3d3d"}]}],
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+    });
+
+    geocoderInstance = new google.maps.Geocoder();
+
+    // Restaurant marker
+    new google.maps.Marker({ position: restaurantPos, map: mapInstance, title: 'BeanStalk', icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' } });
+
+    mapInstance.addListener('click', function(e) {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        placeDeliveryPin(lat, lng);
+    });
+}
+
+function placeDeliveryPin(lat, lng) {
+    selectedLat = lat;
+    selectedLng = lng;
+
+    if (markerInstance) markerInstance.setMap(null);
+    markerInstance = new google.maps.Marker({
+        position: { lat, lng },
+        map: mapInstance,
+        title: 'Delivery Location',
+        icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' },
+        animation: google.maps.Animation.DROP,
+    });
+
+    // Calculate distance from restaurant
+    const restPos = new google.maps.LatLng(RESTAURANT_LAT, RESTAURANT_LNG);
+    const pinPos  = new google.maps.LatLng(lat, lng);
+    const distMeters = google.maps.geometry.spherical.computeDistanceBetween(restPos, pinPos);
+    const distKm = distMeters / 1000;
+
+    deliveryFee = calcDeliveryFee(distKm);
+    updateSummary();
+
+    // Reverse geocode for display
+    geocoderInstance.geocode({ location: { lat, lng } }, function(results, status) {
+        const text = status === 'OK' && results[0] ? results[0].formatted_address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        ['loc-display','loc-display-inline'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('hidden');
+                const span = el.querySelector('span');
+                if (span) span.textContent = text;
+            }
+        });
+        // Pre-fill address field if empty
+        const addrField = document.getElementById('cust-address');
+        if (addrField && !addrField.value.trim()) addrField.value = text;
+    });
+}
+
+// ─── VALIDATION ───────────────────────────────────────────────────────────────
+function validate() {
+    const name  = document.getElementById('cust-name').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const addr  = document.getElementById('cust-address').value.trim();
+
+    if (!name)  { showToast('Please enter your name', 'error'); return false; }
+    if (!phone || phone.length < 8) { showToast('Please enter a valid phone number', 'error'); return false; }
+    if (!addr)  { showToast('Please enter your delivery address', 'error'); return false; }
+    if (getSubtotal() === 0) { showToast('Please add at least one item', 'error'); return false; }
+    return true;
+}
+
+// ─── PLACE ORDER ─────────────────────────────────────────────────────────────
+async function placeOrder() {
+    if (!validate()) return;
+
+    const sub  = getSubtotal();
+    const disc = Math.round(sub * discountPct / 100);
+    const fee  = deliveryFee !== null ? deliveryFee : DELIVERY_BASE_FEE_EGP;
+    const total = sub - disc + fee;
+    const estimatedMins = ESTIMATED_PREP_MINUTES + (deliveryFee !== null ? Math.round((deliveryFee - DELIVERY_BASE_FEE_EGP) / DELIVERY_PER_KM_EGP * ESTIMATED_DRIVE_MINUTES_PER_KM) : 20);
+
+    const orderItems = MENU.filter(i => (cart[i.id] || 0) > 0).map(i => ({
+        id: i.id, name: i.name, qty: cart[i.id], price: i.price, subtotal: cart[i.id] * i.price
+    }));
+
+    const order = {
+        customerName:    document.getElementById('cust-name').value.trim(),
+        customerPhone:   document.getElementById('cust-phone').value.trim(),
+        customerAddress: document.getElementById('cust-address').value.trim(),
+        customerLandmark:document.getElementById('cust-landmark').value.trim(),
+        orderNotes:      document.getElementById('order-notes').value.trim(),
+        paymentMethod,
+        items: orderItems,
+        subtotal: sub,
+        deliveryFee: fee,
+        discount: disc,
+        total,
+        promoCode:    document.getElementById('promo-input').value.trim().toUpperCase() || null,
+        lat:          selectedLat,
+        lng:          selectedLng,
+        status:       'pending',
+        assignedDriver: null,
+        estimatedMinutes: estimatedMins,
+        createdAt:    new Date().toISOString(),
+        updatedAt:    new Date().toISOString(),
+    };
+
+    document.getElementById('loading-overlay').classList.add('show');
+
+    try {
+        let orderId;
+        if (db) {
+            const ref = await db.collection('orders').add(order);
+            orderId = ref.id;
+        } else {
+            // Demo mode: generate fake ID and store in sessionStorage
+            orderId = 'DEMO-' + Date.now().toString(36).toUpperCase();
+        }
+
+        // Store in sessionStorage for receipt page
+        sessionStorage.setItem('bs_order', JSON.stringify({ ...order, id: orderId }));
+        window.location.href = 'receipt.html?orderId=' + orderId;
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById('loading-overlay').classList.remove('show');
+        showToast('Something went wrong. Please try again.', 'error');
+    }
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+buildMenu();
+updateSummary();
+
+// Load Google Maps
+(function() {
+    const key = (typeof GOOGLE_MAPS_API_KEY !== 'undefined' && GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY') ? GOOGLE_MAPS_API_KEY : '';
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry&callback=initMap`;
+    script.async = true;
+    script.onerror = function() {
+        document.getElementById('map-picker').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
+    };
+    document.head.appendChild(script);
+})();
+</script>
+</body>
+</html>
