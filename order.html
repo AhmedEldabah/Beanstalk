@@ -136,6 +136,17 @@
         .pay-opt i { display: block; font-size: 1.4rem; margin-bottom: 0.4rem; color: var(--accent); }
         .pay-opt span { font-size: 0.8rem; font-weight: 500; }
 
+        /* LOCATION METHOD TOGGLE */
+        .loc-toggle { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+        .loc-tab { flex: 1; padding: 0.65rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: transparent; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--trans); display: flex; align-items: center; justify-content: center; gap: 0.45rem; }
+        .loc-tab:hover { border-color: rgba(255,255,255,0.2); color: var(--text-main); }
+        .loc-tab.active { border-color: var(--accent); background: rgba(255,183,178,0.1); color: var(--accent); }
+        .loc-panel { display: none; }
+        .loc-panel.active { display: block; }
+        #manual-address-input { min-height: 110px; resize: vertical; }
+        .manual-addr-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+        .manual-addr-hint i { color: var(--accent); }
+
         /* PROMO */
         .promo-row { display: flex; gap: 0.6rem; }
         .promo-row input { flex: 1; }
@@ -194,10 +205,29 @@
     <!-- MAP LOCATION -->
     <div class="glass form-section">
         <h3><i class="fas fa-map-pin"></i> Pin Your Location</h3>
-        <div id="map-picker"></div>
-        <button class="use-location-btn" onclick="useMyLocation()"><i class="fas fa-location-crosshairs"></i> Use My Current Location</button>
-        <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap or click anywhere on the map to set your delivery pin</div>
-        <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
+
+        <!-- Toggle between map pin and manual text -->
+        <div class="loc-toggle">
+            <button class="loc-tab active" id="tab-map" onclick="switchLocMode('map')"><i class="fas fa-map-pin"></i> Pin on Map</button>
+            <button class="loc-tab" id="tab-manual" onclick="switchLocMode('manual')"><i class="fas fa-keyboard"></i> Type Address</button>
+        </div>
+
+        <!-- Map panel -->
+        <div class="loc-panel active" id="panel-map">
+            <div id="map-picker"></div>
+            <button class="use-location-btn" onclick="useMyLocation()"><i class="fas fa-location-crosshairs"></i> Use My Current Location</button>
+            <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap or click anywhere on the map to set your delivery pin</div>
+            <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
+        </div>
+
+        <!-- Manual text panel -->
+        <div class="loc-panel" id="panel-manual">
+            <div class="field" style="margin-bottom:0;">
+                <label>Full Delivery Address *</label>
+                <textarea id="manual-address-input" placeholder="e.g. 12 El Gaish St, 3rd floor, Apt 5, Beverly Hills, Sheikh Zayed, Giza…"></textarea>
+            </div>
+            <p class="manual-addr-hint"><i class="fas fa-circle-info"></i> Include your street, building number, floor, and area for faster delivery.</p>
+        </div>
     </div>
 
     <!-- PAYMENT -->
@@ -707,6 +737,20 @@ function placeDeliveryPin(lat, lng) {
     });
 }
 
+// ─── LOCATION MODE TOGGLE ─────────────────────────────────────────────────────
+let locMode = 'map'; // 'map' | 'manual'
+
+function switchLocMode(mode) {
+    locMode = mode;
+    document.getElementById('tab-map').classList.toggle('active', mode === 'map');
+    document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
+    document.getElementById('panel-map').classList.toggle('active', mode === 'map');
+    document.getElementById('panel-manual').classList.toggle('active', mode === 'manual');
+    if (mode === 'map' && mapInstance) {
+        setTimeout(() => mapInstance.invalidateSize(), 50);
+    }
+}
+
 // ─── USE MY LOCATION ─────────────────────────────────────────────────────────
 function useMyLocation() {
     if (!navigator.geolocation) {
@@ -719,8 +763,16 @@ function useMyLocation() {
             placeDeliveryPin(pos.coords.latitude, pos.coords.longitude);
             if (mapInstance) mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 15);
         },
-        function() {
-            showToast('Could not get your location. Please tap the map instead.', 'error');
+        function(err) {
+            if (err.code === err.PERMISSION_DENIED) {
+                showToast('Location access denied. Please allow location in your browser settings, then try again.', 'error');
+            } else if (err.code === err.POSITION_UNAVAILABLE) {
+                showToast('Location unavailable. Please tap the map to pin your delivery spot.', 'error');
+            } else if (err.code === err.TIMEOUT) {
+                showToast('Location request timed out. Please tap the map to pin your delivery spot.', 'error');
+            } else {
+                showToast('Could not get your location. Please tap the map instead.', 'error');
+            }
         },
         { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -730,7 +782,15 @@ function useMyLocation() {
 function validate() {
     const name  = document.getElementById('cust-name').value.trim();
     const phone = document.getElementById('cust-phone').value.trim();
-    const addr  = document.getElementById('cust-address').value.trim();
+    let addr    = document.getElementById('cust-address').value.trim();
+
+    // If in manual mode, sync the typed address into the address field
+    if (locMode === 'manual') {
+        const manualAddr = document.getElementById('manual-address-input').value.trim();
+        if (!manualAddr) { showToast('Please enter your delivery address', 'error'); return false; }
+        document.getElementById('cust-address').value = manualAddr;
+        addr = manualAddr;
+    }
 
     if (!name)  { showToast('Please enter your name', 'error'); return false; }
     if (!phone || phone.length < 8) { showToast('Please enter a valid phone number', 'error'); return false; }
