@@ -81,6 +81,9 @@
         .location-display { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1rem; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 12px; margin-top: 0.8rem; font-size: 0.85rem; color: var(--green); }
         .location-display i { flex-shrink: 0; }
         .location-display.hidden { display: none; }
+        #map-picker-inline { width: 100%; height: 300px; border-radius: 1.2rem; overflow: hidden; border: 1px solid var(--border); }
+        .use-location-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; margin-top: 0.8rem; padding: 0.7rem 1rem; background: rgba(255,183,178,0.08); border: 1px solid rgba(255,183,178,0.25); border-radius: 12px; color: var(--accent); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.3s; }
+        .use-location-btn:hover { background: rgba(255,183,178,0.15); }
 
         /* ORDER SUMMARY */
         .summary-card { padding: 1.5rem 2rem; }
@@ -193,6 +196,7 @@
         <div class="glass form-section" id="map-section-inline" style="display:none;">
             <h3><i class="fas fa-map-pin"></i> Pin Your Location</h3>
             <div id="map-picker-inline"></div>
+            <button class="use-location-btn" onclick="useMyLocation()"><i class="fas fa-location-crosshairs"></i> Use My Current Location</button>
             <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap anywhere on the map to set your delivery pin</div>
             <div class="location-display hidden" id="loc-display-inline"><i class="fas fa-circle-check"></i><span id="loc-text-inline">Location selected</span></div>
         </div>
@@ -264,6 +268,7 @@
                 <i class="fas fa-map-pin" style="color:var(--accent)"></i> Pin Your Location
             </div>
             <div id="map-picker" style="height:320px;border-radius:1.2rem;overflow:hidden;border:1px solid var(--border);"></div>
+            <button class="use-location-btn" onclick="useMyLocation()"><i class="fas fa-location-crosshairs"></i> Use My Current Location</button>
             <div class="map-hint" style="margin-top:0.6rem;"><i class="fas fa-hand-pointer"></i> Click anywhere on the map to pin your delivery location</div>
             <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
         </div>
@@ -685,6 +690,7 @@ function initMap() {
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
+        gestureHandling: 'cooperative',
     });
 
     geocoderInstance = new google.maps.Geocoder();
@@ -736,6 +742,25 @@ function placeDeliveryPin(lat, lng) {
         const addrField = document.getElementById('cust-address');
         if (addrField && !addrField.value.trim()) addrField.value = text;
     });
+}
+
+// ─── USE MY LOCATION ─────────────────────────────────────────────────────────
+function useMyLocation() {
+    if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser', 'error');
+        return;
+    }
+    showToast('Getting your location…');
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            placeDeliveryPin(pos.coords.latitude, pos.coords.longitude);
+            if (mapInstance) mapInstance.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        function() {
+            showToast('Could not get your location. Please tap the map instead.', 'error');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
 }
 
 // ─── VALIDATION ───────────────────────────────────────────────────────────────
@@ -909,7 +934,9 @@ updateSummary();
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry&callback=initMap`;
     script.async = true;
     script.onerror = function() {
-        document.getElementById('map-picker').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
+        const errMsg = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
+        document.getElementById('map-picker').innerHTML = errMsg;
+        document.getElementById('map-picker-inline').innerHTML = errMsg;
     };
     document.head.appendChild(script);
 })();
