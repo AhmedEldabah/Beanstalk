@@ -44,11 +44,11 @@
         .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
 
         /* LAYOUT */
-        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 6rem; display: grid; grid-template-columns: 1fr 420px; gap: 2.5rem; align-items: start; }
-        @media(max-width: 900px) { .page-wrap { grid-template-columns: 1fr; } .map-col { order: -1; } }
+        .page-wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
 
         .page-title { font-size: 2.4rem; margin-bottom: 0.4rem; }
         .page-sub { color: var(--text-muted); margin-bottom: 2.5rem; font-size: 0.95rem; }
+        @media(max-width: 480px) { .page-title { font-size: 1.9rem; } }
 
         /* GLASS CARD */
         .glass { background: var(--bg-surface); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border); box-shadow: var(--shadow-soft); border-radius: var(--radius-lg); }
@@ -73,14 +73,16 @@
         .field select option { background: #1e1c1c; }
 
         /* MAP PICKER */
-        .map-col { position: sticky; top: 80px; }
-        #map-picker { width: 100%; height: 360px; border-radius: var(--radius-lg); overflow: hidden; border: 2px solid var(--border); transition: border-color 0.3s; }
+        #map-picker { width: 100%; height: 320px; border-radius: 1.2rem; overflow: hidden; border: 1px solid var(--border); transition: border-color 0.3s; }
         #map-picker:hover { border-color: rgba(255,255,255,0.2); }
+        @media(max-width: 480px) { #map-picker { height: 260px; } }
         .map-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.6rem; text-align: center; }
         .map-hint i { color: var(--accent); }
         .location-display { display: flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1rem; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2); border-radius: 12px; margin-top: 0.8rem; font-size: 0.85rem; color: var(--green); }
         .location-display i { flex-shrink: 0; }
         .location-display.hidden { display: none; }
+        .use-location-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; margin-top: 0.8rem; padding: 0.7rem 1rem; background: rgba(255,183,178,0.08); border: 1px solid rgba(255,183,178,0.25); border-radius: 12px; color: var(--accent); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: background 0.3s; }
+        .use-location-btn:hover { background: rgba(255,183,178,0.15); }
 
         /* ORDER SUMMARY */
         .summary-card { padding: 1.5rem 2rem; }
@@ -157,130 +159,103 @@
 </nav>
 
 <div class="page-wrap">
-    <!-- LEFT COLUMN: FORM -->
-    <div>
-        <h1 class="page-title">Order Delivery 🛵</h1>
-        <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
+    <h1 class="page-title">Order Delivery 🛵</h1>
+    <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
 
-        <!-- CUSTOMER DETAILS -->
-        <div class="glass form-section">
-            <h3><i class="fas fa-user"></i> Your Details</h3>
-            <div class="form-row">
-                <div class="field">
-                    <label>Full Name *</label>
-                    <input type="text" id="cust-name" placeholder="e.g. Ahmed Mohamed" autocomplete="name">
-                </div>
-                <div class="field">
-                    <label>Phone Number *</label>
-                    <input type="tel" id="cust-phone" placeholder="+20 1XX XXX XXXX" autocomplete="tel">
-                </div>
+    <!-- CUSTOMER DETAILS -->
+    <div class="glass form-section">
+        <h3><i class="fas fa-user"></i> Your Details</h3>
+        <div class="form-row">
+            <div class="field">
+                <label>Full Name *</label>
+                <input type="text" id="cust-name" placeholder="e.g. Ahmed Mohamed" autocomplete="name">
             </div>
             <div class="field">
-                <label>Delivery Address *</label>
-                <input type="text" id="cust-address" placeholder="Street, building, floor, apartment…" autocomplete="street-address">
-            </div>
-            <div class="field">
-                <label>Landmark / Extra Notes</label>
-                <input type="text" id="cust-landmark" placeholder="e.g. Near Palm Hills Gate 3, blue building">
-            </div>
-            <div class="field">
-                <label>Order Notes (allergies, preferences…)</label>
-                <textarea id="order-notes" placeholder="e.g. No wasabi, extra ginger, well-done salmon…"></textarea>
+                <label>Phone Number *</label>
+                <input type="tel" id="cust-phone" placeholder="+20 1XX XXX XXXX" autocomplete="tel">
             </div>
         </div>
-
-        <!-- MAP LOCATION (mobile: shown here; desktop: in right col) -->
-        <div class="glass form-section" id="map-section-inline" style="display:none;">
-            <h3><i class="fas fa-map-pin"></i> Pin Your Location</h3>
-            <div id="map-picker-inline"></div>
-            <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap anywhere on the map to set your delivery pin</div>
-            <div class="location-display hidden" id="loc-display-inline"><i class="fas fa-circle-check"></i><span id="loc-text-inline">Location selected</span></div>
+        <div class="field">
+            <label>Delivery Address *</label>
+            <input type="text" id="cust-address" placeholder="Street, building, floor, apartment…" autocomplete="street-address">
         </div>
-
-        <!-- MENU -->
-        <div class="glass form-section">
-            <h3><i class="fas fa-utensils"></i> Select Items</h3>
-            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
-                <a href="menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍽️</span> Full Menu</a>
-                <a href="pizza-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍕</span> Pizza</a>
-                <a href="sushi-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍣</span> Sushi</a>
-            </div>
-            <div class="menu-items-grid" id="menu-grid">
-                <!-- dynamically generated below -->
-            </div>
+        <div class="field">
+            <label>Landmark / Extra Notes</label>
+            <input type="text" id="cust-landmark" placeholder="e.g. Near Palm Hills Gate 3, blue building">
         </div>
-
-        <!-- PAYMENT -->
-        <div class="glass form-section">
-            <h3><i class="fas fa-wallet"></i> Payment Method</h3>
-            <div class="payment-options">
-                <div class="pay-opt selected" data-method="cash" onclick="selectPayment(this)">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>Cash on Delivery</span>
-                </div>
-                <div class="pay-opt" data-method="card" onclick="selectPayment(this)">
-                    <i class="fas fa-credit-card"></i>
-                    <span>Card on Delivery</span>
-                </div>
-                <div class="pay-opt" data-method="instapay" onclick="selectPayment(this)">
-                    <i class="fas fa-mobile-screen"></i>
-                    <span>InstaPay</span>
-                </div>
-                <div class="pay-opt" data-method="vodafone" onclick="selectPayment(this)">
-                    <i class="fas fa-sim-card"></i>
-                    <span>Vodafone Cash</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- PROMO -->
-        <div class="glass form-section" style="padding-bottom:1.5rem;">
-            <h3><i class="fas fa-tag"></i> Promo Code</h3>
-            <div class="promo-row">
-                <div class="field" style="margin:0;flex:1;"><input type="text" id="promo-input" placeholder="Enter code" style="text-transform:uppercase"></div>
-                <button class="promo-btn" onclick="applyPromo()">Apply</button>
-            </div>
-            <div class="promo-msg" id="promo-msg"></div>
-        </div>
-
-        <!-- ORDER SUMMARY (mobile) -->
-        <div class="glass summary-card" id="summary-mobile">
-            <div class="summary-title">Order Summary</div>
-            <div class="summary-line"><span class="label">Subtotal</span><span class="val" id="sub-mob">EGP 0</span></div>
-            <div class="summary-line"><span class="label">Delivery Fee</span><span class="val" id="del-mob">EGP —</span></div>
-            <div class="summary-line"><span class="label">Discount</span><span class="val" id="dis-mob" style="color:var(--green)">—</span></div>
-            <div class="summary-divider"></div>
-            <div class="summary-total"><span>Total</span><span class="total-val" id="tot-mob">EGP 0</span></div>
-            <button class="submit-btn" onclick="placeOrder()">
-                <i class="fas fa-paper-plane"></i> Place Order
-            </button>
+        <div class="field">
+            <label>Order Notes (allergies, preferences…)</label>
+            <textarea id="order-notes" placeholder="e.g. No wasabi, extra ginger, well-done salmon…"></textarea>
         </div>
     </div>
 
-    <!-- RIGHT COLUMN: MAP + SUMMARY (desktop) -->
-    <div class="map-col">
-        <div class="glass" style="padding:1.5rem;margin-bottom:1.5rem;">
-            <div style="font-size:0.85rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem;">
-                <i class="fas fa-map-pin" style="color:var(--accent)"></i> Pin Your Location
-            </div>
-            <div id="map-picker" style="height:320px;border-radius:1.2rem;overflow:hidden;border:1px solid var(--border);"></div>
-            <div class="map-hint" style="margin-top:0.6rem;"><i class="fas fa-hand-pointer"></i> Click anywhere on the map to pin your delivery location</div>
-            <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
-        </div>
+    <!-- MAP LOCATION -->
+    <div class="glass form-section">
+        <h3><i class="fas fa-map-pin"></i> Pin Your Location</h3>
+        <div id="map-picker"></div>
+        <button class="use-location-btn" onclick="useMyLocation()"><i class="fas fa-location-crosshairs"></i> Use My Current Location</button>
+        <div class="map-hint"><i class="fas fa-hand-pointer"></i> Tap or click anywhere on the map to set your delivery pin</div>
+        <div class="location-display hidden" id="loc-display"><i class="fas fa-circle-check"></i><span id="loc-text">Location selected</span></div>
+    </div>
 
-        <!-- ORDER SUMMARY (desktop) -->
-        <div class="glass summary-card" id="summary-desktop">
-            <div class="summary-title">Order Summary</div>
-            <div id="cart-lines" style="margin-bottom:0.5rem;"></div>
-            <div class="summary-line" style="margin-top:0.8rem;"><span class="label">Subtotal</span><span class="val" id="sub-desk">EGP 0</span></div>
-            <div class="summary-line"><span class="label">Delivery Fee</span><span class="val" id="del-desk">EGP —</span></div>
-            <div class="summary-line"><span class="label">Discount</span><span class="val" id="dis-desk" style="color:var(--green)">—</span></div>
-            <div class="summary-divider"></div>
-            <div class="summary-total"><span>Total</span><span class="total-val" id="tot-desk">EGP 0</span></div>
-            <button class="submit-btn" onclick="placeOrder()">
-                <i class="fas fa-paper-plane"></i> Place Order
-            </button>
+    <!-- MENU -->
+    <div class="glass form-section">
+        <h3><i class="fas fa-utensils"></i> Select Items</h3>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
+            <a href="menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍽️</span> Full Menu</a>
+            <a href="pizza-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍕</span> Pizza</a>
+            <a href="sushi-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍣</span> Sushi</a>
         </div>
+        <div class="menu-items-grid" id="menu-grid">
+            <!-- dynamically generated below -->
+        </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="glass form-section">
+        <h3><i class="fas fa-wallet"></i> Payment Method</h3>
+        <div class="payment-options">
+            <div class="pay-opt selected" data-method="cash" onclick="selectPayment(this)">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Cash on Delivery</span>
+            </div>
+            <div class="pay-opt" data-method="card" onclick="selectPayment(this)">
+                <i class="fas fa-credit-card"></i>
+                <span>Card on Delivery</span>
+            </div>
+            <div class="pay-opt" data-method="instapay" onclick="selectPayment(this)">
+                <i class="fas fa-mobile-screen"></i>
+                <span>InstaPay</span>
+            </div>
+            <div class="pay-opt" data-method="vodafone" onclick="selectPayment(this)">
+                <i class="fas fa-sim-card"></i>
+                <span>Vodafone Cash</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROMO -->
+    <div class="glass form-section" style="padding-bottom:1.5rem;">
+        <h3><i class="fas fa-tag"></i> Promo Code</h3>
+        <div class="promo-row">
+            <div class="field" style="margin:0;flex:1;"><input type="text" id="promo-input" placeholder="Enter code" style="text-transform:uppercase"></div>
+            <button class="promo-btn" onclick="applyPromo()">Apply</button>
+        </div>
+        <div class="promo-msg" id="promo-msg"></div>
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div class="glass summary-card">
+        <div class="summary-title">Order Summary</div>
+        <div id="cart-lines" style="margin-bottom:0.5rem;"></div>
+        <div class="summary-line" style="margin-top:0.8rem;"><span class="label">Subtotal</span><span class="val" id="summary-sub">EGP 0</span></div>
+        <div class="summary-line"><span class="label">Delivery Fee</span><span class="val" id="summary-del">EGP —</span></div>
+        <div class="summary-line"><span class="label">Discount</span><span class="val" id="summary-dis" style="color:var(--green)">—</span></div>
+        <div class="summary-divider"></div>
+        <div class="summary-total"><span>Total</span><span class="total-val" id="summary-tot">EGP 0</span></div>
+        <button class="submit-btn" onclick="placeOrder()">
+            <i class="fas fa-paper-plane"></i> Place Order
+        </button>
     </div>
 </div>
 
@@ -624,7 +599,7 @@ function updateSummary() {
     const fee = deliveryFee !== null ? deliveryFee : null;
     const total = sub - disc + (fee || 0);
 
-    // cart lines (desktop)
+    // cart lines
     const cartLines = document.getElementById('cart-lines');
     if (cartLines) {
         cartLines.innerHTML = MENU.filter(i => (cart[i.id] || 0) > 0).map(i => {
@@ -633,10 +608,14 @@ function updateSummary() {
         }).join('');
     }
 
-    ['sub-mob','sub-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='EGP '+sub; });
-    ['del-mob','del-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = fee !== null ? 'EGP '+fee : 'EGP —'; });
-    ['dis-mob','dis-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = disc > 0 ? '-EGP '+disc : '—'; });
-    ['tot-mob','tot-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='EGP '+(fee !== null ? total : sub-disc); });
+    const subEl  = document.getElementById('summary-sub');
+    const delEl  = document.getElementById('summary-del');
+    const disEl  = document.getElementById('summary-dis');
+    const totEl  = document.getElementById('summary-tot');
+    if (subEl) subEl.textContent = 'EGP ' + sub;
+    if (delEl) delEl.textContent = fee !== null ? 'EGP ' + fee : 'EGP —';
+    if (disEl) disEl.textContent = disc > 0 ? '-EGP ' + disc : '—';
+    if (totEl) totEl.textContent = 'EGP ' + (fee !== null ? total : sub - disc);
 }
 
 // ─── PAYMENT ─────────────────────────────────────────────────────────────────
@@ -671,12 +650,8 @@ function applyPromo() {
 
 // ─── GOOGLE MAPS ─────────────────────────────────────────────────────────────
 function initMap() {
-    const isMobile = window.innerWidth <= 900;
-    const targetId = isMobile ? 'map-picker-inline' : 'map-picker';
-    if (isMobile) document.getElementById('map-section-inline').style.display = 'block';
-
     const restaurantPos = { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG };
-    mapInstance = new google.maps.Map(document.getElementById(targetId), {
+    mapInstance = new google.maps.Map(document.getElementById('map-picker'), {
         center: restaurantPos,
         zoom: 13,
         styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},{"featureType":"administrative.country","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"administrative.land_parcel","stylers":[{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#bdbdbd"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#181818"}]},{"featureType":"poi.park","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"poi.park","elementType":"labels.text.stroke","stylers":[{"color":"#1b1b1b"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#8a8a8a"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"road.highway.controlled_access","elementType":"geometry","stylers":[{"color":"#4e4e4e"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"transit","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#3d3d3d"}]}],
@@ -685,6 +660,7 @@ function initMap() {
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
+        gestureHandling: 'cooperative',
     });
 
     geocoderInstance = new google.maps.Geocoder();
@@ -724,18 +700,35 @@ function placeDeliveryPin(lat, lng) {
     // Reverse geocode for display
     geocoderInstance.geocode({ location: { lat, lng } }, function(results, status) {
         const text = status === 'OK' && results[0] ? results[0].formatted_address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        ['loc-display','loc-display-inline'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.classList.remove('hidden');
-                const span = el.querySelector('span');
-                if (span) span.textContent = text;
-            }
-        });
+        const el = document.getElementById('loc-display');
+        if (el) {
+            el.classList.remove('hidden');
+            const span = el.querySelector('span');
+            if (span) span.textContent = text;
+        }
         // Pre-fill address field if empty
         const addrField = document.getElementById('cust-address');
         if (addrField && !addrField.value.trim()) addrField.value = text;
     });
+}
+
+// ─── USE MY LOCATION ─────────────────────────────────────────────────────────
+function useMyLocation() {
+    if (!navigator.geolocation) {
+        showToast('Geolocation is not supported by your browser', 'error');
+        return;
+    }
+    showToast('Allow location access to auto-fill your delivery pin…');
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            placeDeliveryPin(pos.coords.latitude, pos.coords.longitude);
+            if (mapInstance) mapInstance.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        function() {
+            showToast('Could not get your location. Please tap the map instead.', 'error');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
 }
 
 // ─── VALIDATION ───────────────────────────────────────────────────────────────
@@ -909,7 +902,8 @@ updateSummary();
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry&callback=initMap`;
     script.async = true;
     script.onerror = function() {
-        document.getElementById('map-picker').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
+        const errMsg = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
+        document.getElementById('map-picker').innerHTML = errMsg;
     };
     document.head.appendChild(script);
 })();

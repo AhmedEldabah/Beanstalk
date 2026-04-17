@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Track Order — BeanStalk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,6 +43,7 @@
             background: rgba(20,18,18,0.95); backdrop-filter: blur(30px);
             border-top: 1px solid var(--border);
             padding: 1.5rem 2rem 2.5rem; position: relative; z-index: 50;
+            overflow-y: auto; max-height: 45vh;
         }
         .panel-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1.5rem; }
 
@@ -185,6 +186,7 @@ function initMap() {
         styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]}],
         disableDefaultUI: true,
         zoomControl: true,
+        gestureHandling: 'cooperative',
     });
 
     // Restaurant marker
