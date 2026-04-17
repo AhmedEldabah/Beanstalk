@@ -429,6 +429,10 @@
             footer { padding: 4rem 5%; text-align: center; }
         }
 
+        @media (max-width: 900px) {
+            #delivery .delivery-features-grid { grid-template-columns: 1fr !important; }
+        }
+
         /* ── CUSTOM WATERMARK ── */
         .watermark-overlay {
             position: fixed; bottom: 20px; right: 20px;
@@ -470,6 +474,7 @@
         <a onclick="mobileNavTo('instagram-section')">Social</a>
         <a onclick="mobileNavTo('faq-section')">FAQ</a>
         <a onclick="mobileNavTo('location-map')">Find Us</a>
+        <a href="order.html" style="color:var(--accent);font-weight:600;">Order Delivery 🛵</a>
     </div>
 
     <nav>
@@ -479,6 +484,7 @@
             <a onclick="navTo('gallery')" data-hover>Atmosphere</a>
             <a onclick="navTo('instagram-section')" data-hover>Social</a>
             <a onclick="navTo('faq-section')" data-hover>FAQ</a>
+            <a href="order.html" data-hover style="color:var(--accent);font-weight:600;">Order Now 🛵</a>
         </div>
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="magnetic-wrapper nav-location-btn">
@@ -508,6 +514,9 @@
                 </div>
                 <div class="magnetic-wrapper nav-location-btn">
                     <a onclick="navTo('gallery')" class="magnetic-btn light" data-hover>View Space</a>
+                </div>
+                <div class="magnetic-wrapper">
+                    <a href="order.html" class="magnetic-btn" style="background:rgba(255,183,178,0.15);color:var(--accent);border:1px solid rgba(255,183,178,0.3);" data-hover>🛵 Order Delivery</a>
                 </div>
             </div>
         </div>
@@ -702,6 +711,43 @@
                     <div class="map-frame-wrap glass-panel reveal">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.9799!2d30.9881616!3d30.0251109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14585b12b587e61f%3A0x9edb0f4006407abe!2sBeanstalk!5e0!3m2!1sen!2seg!4v1713000000000!5m2!1sen!2seg" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─────────────────────────────────────────────────
+             DELIVERY SECTION
+        ───────────────────────────────────────────────────── -->
+        <section id="delivery" style="padding:8rem 5%;background:rgba(255,183,178,0.03);border-radius:3rem;margin:0 2%;">
+            <div style="max-width:1100px;margin:0 auto;">
+                <div class="section-header reveal">
+                    <p class="section-subtitle">Fresh to your door</p>
+                    <h2 class="section-title">Order Delivery</h2>
+                </div>
+                <div class="delivery-features-grid reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:3rem;">
+                    <div class="glass-panel" style="padding:2rem;border-radius:2rem;text-align:center;">
+                        <div style="font-size:2.2rem;margin-bottom:1rem;">📍</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Pin Your Location</h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Drop a pin anywhere on the map for precise delivery — no confusing directions needed.</p>
+                    </div>
+                    <div class="glass-panel" style="padding:2rem;border-radius:2rem;text-align:center;">
+                        <div style="font-size:2.2rem;margin-bottom:1rem;">🛵</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Live Driver Tracking</h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Watch your driver in real-time on a live map from the moment your order is picked up.</p>
+                    </div>
+                    <div class="glass-panel" style="padding:2rem;border-radius:2rem;text-align:center;">
+                        <div style="font-size:2.2rem;margin-bottom:1rem;">🧾</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Instant Receipt</h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Receive a digital receipt immediately after ordering — printable and shareable.</p>
+                    </div>
+                </div>
+                <div style="text-align:center;" class="reveal">
+                    <div class="magnetic-wrapper" style="display:inline-block;">
+                        <a href="order.html" class="magnetic-btn accent" data-hover style="font-size:1.05rem;padding:1rem 2.5rem;">
+                            🛵 &nbsp;Place a Delivery Order
+                        </a>
+                    </div>
+                    <p style="color:var(--text-muted);font-size:0.82rem;margin-top:1.2rem;">Sheikh Zayed City &amp; surrounding areas · EGP 25+ delivery fee</p>
                 </div>
             </div>
         </section>
