@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="firebase-config.js"></script>
     <style>
         :root {
@@ -378,34 +380,49 @@ async function pushLocation(lat, lng, accuracy) {
 }
 
 // ─── DRIVER MAP ───────────────────────────────────────────────────────────────
+function makeLeafletIcon(color) {
+    return L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+    });
+}
+
 function initDriverMap() {
     if (driverMap) return;
-    if (!window.google) { loadMapsScript(); return; }
-    driverMap = new google.maps.Map(document.getElementById('driver-map'), {
-        center: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG },
-        zoom: 13,
-        styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]}],
-        disableDefaultUI: true, zoomControl: true,
-    });
-    new google.maps.Marker({ position: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG }, map: driverMap, title: RESTAURANT_NAME, icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' } });
+    driverMap = L.map('driver-map').setView([RESTAURANT_LAT, RESTAURANT_LNG], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+    }).addTo(driverMap);
+
+    L.marker([RESTAURANT_LAT, RESTAURANT_LNG], {
+        icon: makeLeafletIcon('#ef4444'),
+        title: RESTAURANT_NAME,
+    }).addTo(driverMap);
 
     // Show customer order pins
     assignedOrders.forEach(o => {
         if (o.lat && o.lng) {
-            new google.maps.Marker({ position: { lat: o.lat, lng: o.lng }, map: driverMap, title: o.customerName, icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' } });
+            L.marker([o.lat, o.lng], {
+                icon: makeLeafletIcon('#3b82f6'),
+                title: o.customerName,
+            }).addTo(driverMap);
         }
     });
 }
 
 function updateSelfMarker(lat, lng) {
     if (!driverMap) return;
-    const pos = { lat, lng };
-    if (driverSelfMarker) { driverSelfMarker.setPosition(pos); }
-    else {
-        driverSelfMarker = new google.maps.Marker({
-            position: pos, map: driverMap, title: 'You',
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png' }
-        });
+    if (driverSelfMarker) {
+        driverSelfMarker.setLatLng([lat, lng]);
+    } else {
+        driverSelfMarker = L.marker([lat, lng], {
+            icon: makeLeafletIcon('#facc15'),
+            title: 'You',
+        }).addTo(driverMap);
     }
 }
 
@@ -457,15 +474,7 @@ function showToast(msg, type = 'success') {
 }
 
 // ─── MAPS LOAD ────────────────────────────────────────────────────────────────
-function loadMapsScript() {
-    const key = (typeof GOOGLE_MAPS_API_KEY !== 'undefined' && GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY') ? GOOGLE_MAPS_API_KEY : '';
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=onMapsReady`;
-    s.async = true;
-    document.head.appendChild(s);
-}
-function onMapsReady() { if (document.getElementById('tab-map').classList.contains('active')) initDriverMap(); }
-loadMapsScript();
+// Leaflet is loaded synchronously; map is initialized when the tab is opened.
 </script>
 </body>
 </html>

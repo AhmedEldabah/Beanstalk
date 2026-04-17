@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="firebase-config.js"></script>
     <style>
         :root {
@@ -179,23 +181,28 @@ try {
 } catch(e) { console.warn('Firebase not configured:', e.message); }
 
 // ─── MAP INIT ─────────────────────────────────────────────────────────────────
-function initMap() {
-    map = new google.maps.Map(document.getElementById('track-map'), {
-        center: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG },
-        zoom: 13,
-        styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]}],
-        disableDefaultUI: true,
-        zoomControl: true,
-        gestureHandling: 'cooperative',
+function makeLeafletIcon(color) {
+    return L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
     });
+}
+
+function initMap() {
+    map = L.map('track-map', { zoomControl: true }).setView([RESTAURANT_LAT, RESTAURANT_LNG], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+    }).addTo(map);
 
     // Restaurant marker
-    restaurantMarker = new google.maps.Marker({
-        position: { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG },
-        map,
+    restaurantMarker = L.marker([RESTAURANT_LAT, RESTAURANT_LNG], {
+        icon: makeLeafletIcon('#ef4444'),
         title: RESTAURANT_NAME,
-        icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' }
-    });
+    }).addTo(map);
 
     // Auto-load from URL
     const params = new URLSearchParams(window.location.search);
@@ -292,16 +299,15 @@ function renderTracking(o) {
 
     // Customer pin on map
     if (o.lat && o.lng && map) {
-        if (customerMarker) customerMarker.setMap(null);
-        customerMarker = new google.maps.Marker({
-            position: { lat: o.lat, lng: o.lng }, map,
+        if (customerMarker) customerMarker.remove();
+        customerMarker = L.marker([o.lat, o.lng], {
+            icon: makeLeafletIcon('#3b82f6'),
             title: o.customerAddress,
-            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' }
-        });
-        map.fitBounds(new google.maps.LatLngBounds(
-            { lat: Math.min(RESTAURANT_LAT, o.lat) - 0.005, lng: Math.min(RESTAURANT_LNG, o.lng) - 0.005 },
-            { lat: Math.max(RESTAURANT_LAT, o.lat) + 0.005, lng: Math.max(RESTAURANT_LNG, o.lng) + 0.005 }
-        ));
+        }).addTo(map);
+        map.fitBounds([
+            [Math.min(RESTAURANT_LAT, o.lat), Math.min(RESTAURANT_LNG, o.lng)],
+            [Math.max(RESTAURANT_LAT, o.lat), Math.max(RESTAURANT_LNG, o.lng)],
+        ]);
     }
 
     // Driver info
@@ -328,16 +334,12 @@ function watchDriverLocation(driverId) {
         if (!loc || !map) return;
         const pos = { lat: loc.lat, lng: loc.lng };
         if (driverMarker) {
-            driverMarker.setPosition(pos);
+            driverMarker.setLatLng([loc.lat, loc.lng]);
         } else {
-            driverMarker = new google.maps.Marker({
-                position: pos, map,
+            driverMarker = L.marker([loc.lat, loc.lng], {
+                icon: makeLeafletIcon('#f59e0b'),
                 title: 'Your Driver',
-                icon: {
-                    url: 'https://maps.google.com/mapfiles/ms/icons/motorcycling.png',
-                    scaledSize: new google.maps.Size(40, 40),
-                }
-            });
+            }).addTo(map);
         }
     });
 }
@@ -352,18 +354,8 @@ function showDemo() {
     });
 }
 
-// Load Google Maps
-(function() {
-    const key = (typeof GOOGLE_MAPS_API_KEY !== 'undefined' && GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY') ? GOOGLE_MAPS_API_KEY : '';
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
-    s.async = true;
-    s.onerror = () => {
-        document.getElementById('track-map').style.background = 'rgba(255,255,255,0.03)';
-        document.getElementById('track-map').innerHTML = '<div style="display:flex;height:100%;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.85rem;text-align:center;padding:2rem;"><div><i class="fas fa-map" style="font-size:3rem;margin-bottom:1rem;color:var(--border);display:block;"></i>Map unavailable — add your Google Maps API key in firebase-config.js</div></div>';
-    };
-    document.head.appendChild(s);
-})();
+// Initialize Leaflet map
+initMap();
 </script>
 </body>
 </html>

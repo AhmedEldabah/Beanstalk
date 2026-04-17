@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="firebase-config.js"></script>
 
     <style>
@@ -448,7 +450,6 @@ let freeDelivery = false;
 let paymentMethod = "cash";
 let mapInstance = null;
 let markerInstance = null;
-let geocoderInstance = null;
 let menuFilter = 'all'; // for category tabs
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
@@ -635,30 +636,30 @@ function applyPromo() {
     updateSummary();
 }
 
-// ─── GOOGLE MAPS ─────────────────────────────────────────────────────────────
-function initMap() {
-    const restaurantPos = { lat: RESTAURANT_LAT, lng: RESTAURANT_LNG };
-    mapInstance = new google.maps.Map(document.getElementById('map-picker'), {
-        center: restaurantPos,
-        zoom: 13,
-        styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"administrative","elementType":"geometry","stylers":[{"color":"#757575"}]},{"featureType":"administrative.country","elementType":"labels.text.fill","stylers":[{"color":"#9e9e9e"}]},{"featureType":"administrative.land_parcel","stylers":[{"visibility":"off"}]},{"featureType":"administrative.locality","elementType":"labels.text.fill","stylers":[{"color":"#bdbdbd"}]},{"featureType":"poi","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#181818"}]},{"featureType":"poi.park","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"poi.park","elementType":"labels.text.stroke","stylers":[{"color":"#1b1b1b"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#8a8a8a"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#3c3c3c"}]},{"featureType":"road.highway.controlled_access","elementType":"geometry","stylers":[{"color":"#4e4e4e"}]},{"featureType":"road.local","elementType":"labels.text.fill","stylers":[{"color":"#616161"}]},{"featureType":"transit","elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]},{"featureType":"water","elementType":"labels.text.fill","stylers":[{"color":"#3d3d3d"}]}],
-        disableDefaultUI: false,
-        zoomControl: true,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: false,
-        gestureHandling: 'cooperative',
+// ─── LEAFLET MAP ─────────────────────────────────────────────────────────────
+function makeIcon(color) {
+    return L.divIcon({
+        className: '',
+        html: `<div style="width:14px;height:14px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
     });
+}
 
-    geocoderInstance = new google.maps.Geocoder();
+function initMap() {
+    const restaurantPos = [RESTAURANT_LAT, RESTAURANT_LNG];
+    mapInstance = L.map('map-picker').setView(restaurantPos, 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19,
+    }).addTo(mapInstance);
 
     // Restaurant marker
-    new google.maps.Marker({ position: restaurantPos, map: mapInstance, title: 'BeanStalk', icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' } });
+    L.marker(restaurantPos, { icon: makeIcon('#ef4444'), title: 'BeanStalk' }).addTo(mapInstance);
 
-    mapInstance.addListener('click', function(e) {
-        const lat = e.latLng.lat();
-        const lng = e.latLng.lng();
-        placeDeliveryPin(lat, lng);
+    mapInstance.on('click', function(e) {
+        placeDeliveryPin(e.latlng.lat, e.latlng.lng);
     });
 }
 
@@ -666,36 +667,43 @@ function placeDeliveryPin(lat, lng) {
     selectedLat = lat;
     selectedLng = lng;
 
-    if (markerInstance) markerInstance.setMap(null);
-    markerInstance = new google.maps.Marker({
-        position: { lat, lng },
-        map: mapInstance,
+    if (markerInstance) markerInstance.remove();
+    markerInstance = L.marker([lat, lng], {
+        icon: makeIcon('#3b82f6'),
         title: 'Delivery Location',
-        icon: { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png' },
-        animation: google.maps.Animation.DROP,
-    });
+    }).addTo(mapInstance);
 
     // Calculate distance from restaurant
-    const restPos = new google.maps.LatLng(RESTAURANT_LAT, RESTAURANT_LNG);
-    const pinPos  = new google.maps.LatLng(lat, lng);
-    const distMeters = google.maps.geometry.spherical.computeDistanceBetween(restPos, pinPos);
+    const distMeters = L.latLng(RESTAURANT_LAT, RESTAURANT_LNG).distanceTo(L.latLng(lat, lng));
     const distKm = distMeters / 1000;
 
     deliveryFee = calcDeliveryFee(distKm);
     updateSummary();
 
-    // Reverse geocode for display
-    geocoderInstance.geocode({ location: { lat, lng } }, function(results, status) {
-        const text = status === 'OK' && results[0] ? results[0].formatted_address : `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    // Reverse geocode via Nominatim (free, no key needed)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+        headers: { 'Accept-Language': 'en' },
+    })
+    .then(r => r.json())
+    .then(data => {
+        const text = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
         const el = document.getElementById('loc-display');
         if (el) {
             el.classList.remove('hidden');
             const span = el.querySelector('span');
             if (span) span.textContent = text;
         }
-        // Pre-fill address field if empty
         const addrField = document.getElementById('cust-address');
         if (addrField && !addrField.value.trim()) addrField.value = text;
+    })
+    .catch(() => {
+        const text = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        const el = document.getElementById('loc-display');
+        if (el) {
+            el.classList.remove('hidden');
+            const span = el.querySelector('span');
+            if (span) span.textContent = text;
+        }
     });
 }
 
@@ -709,7 +717,7 @@ function useMyLocation() {
     navigator.geolocation.getCurrentPosition(
         function(pos) {
             placeDeliveryPin(pos.coords.latitude, pos.coords.longitude);
-            if (mapInstance) mapInstance.setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+            if (mapInstance) mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 15);
         },
         function() {
             showToast('Could not get your location. Please tap the map instead.', 'error');
@@ -881,18 +889,8 @@ function showToast(msg, type = 'success') {
 loadCartFromSession();
 updateSummary();
 
-// Load Google Maps
-(function() {
-    const key = (typeof GOOGLE_MAPS_API_KEY !== 'undefined' && GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY') ? GOOGLE_MAPS_API_KEY : '';
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry&callback=initMap`;
-    script.async = true;
-    script.onerror = function() {
-        const errMsg = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem;"><i class="fas fa-map-pin" style="font-size:2rem;color:var(--accent);margin-bottom:0.5rem;"></i><p>Map unavailable — add your Google Maps API key in firebase-config.js</p></div>';
-        document.getElementById('map-picker').innerHTML = errMsg;
-    };
-    document.head.appendChild(script);
-})();
+// Initialize Leaflet map
+initMap();
 </script>
 </body>
 </html>
