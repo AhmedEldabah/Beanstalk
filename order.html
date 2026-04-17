@@ -551,9 +551,12 @@ async function placeOrder() {
             const ref = await db.collection('orders').add(order);
             orderId = ref.id;
         } else {
-            // Demo mode: generate fake ID and store in sessionStorage
-            orderId = 'DEMO-' + Date.now().toString(36).toUpperCase();
+            // Demo mode: generate a local ID
+            orderId = 'BS-' + Date.now().toString(36).toUpperCase();
         }
+
+        // Always notify the restaurant via Formspree (fire-and-forget)
+        submitToFormspree(order, orderId).catch(e => console.warn('Formspree:', e.message));
 
         // Store in sessionStorage for receipt page
         sessionStorage.setItem('bs_order', JSON.stringify({ ...order, id: orderId }));
@@ -563,6 +566,81 @@ async function placeOrder() {
         console.error(err);
         document.getElementById('loading-overlay').classList.remove('show');
         showToast('Something went wrong. Please try again.', 'error');
+    }
+}
+
+// ─── FORMSPREE SUBMISSION ─────────────────────────────────────────────────────
+async function submitToFormspree(order, orderId) {
+    const shortId = orderId.slice(-8).toUpperCase();
+    const itemLines = order.items.map(i => `  • ${i.name} ×${i.qty}  —  EGP ${i.subtotal}`).join('\n');
+    const locationLine = (order.lat && order.lng)
+        ? `https://www.google.com/maps?q=${order.lat},${order.lng}`
+        : 'Not pinned';
+
+    const PAYMENT_LABELS = { cash:'Cash on Delivery', card:'Card on Delivery', instapay:'InstaPay', vodafone:'Vodafone Cash' };
+
+    // Formspree uses the "email" field as the reply-to address.
+    // We pass the customer phone as "_replyto" so you can reply to them easily.
+    const payload = {
+        // Formspree special fields
+        _subject: `🍣 New BeanStalk Delivery Order #${shortId} — ${order.customerName}`,
+        email: `noreply+${shortId.toLowerCase()}@beanstalk-delivery.eg`, // sender placeholder
+
+        // ── Customer details ──────────────────────────────────────────────
+        'Order ID':        `#${shortId}`,
+        'Customer Name':   order.customerName,
+        'Phone':           order.customerPhone,
+        'Address':         order.customerAddress,
+        'Landmark':        order.customerLandmark || '—',
+        'Order Notes':     order.orderNotes       || '—',
+        'Location (Maps)': locationLine,
+
+        // ── Order details ─────────────────────────────────────────────────
+        'Items': '\n' + itemLines,
+        'Subtotal':      `EGP ${order.subtotal}`,
+        'Delivery Fee':  `EGP ${order.deliveryFee}`,
+        'Discount':      order.discount > 0 ? `-EGP ${order.discount}` : '—',
+        'Promo Code':    order.promoCode || '—',
+        'Total':         `EGP ${order.total}`,
+        'Payment':       PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod,
+
+        // ── Timing ───────────────────────────────────────────────────────
+        'Estimated Delivery': `~${order.estimatedMinutes} minutes`,
+        'Ordered At':         new Date(order.createdAt).toLocaleString('en-EG', { timeZone: 'Africa/Cairo' }),
+
+        // ── Full message for readability ──────────────────────────────────
+        message: [
+            `📦 NEW ORDER  #${shortId}`,
+            `━━━━━━━━━━━━━━━━━━━━━━`,
+            `👤 ${order.customerName}`,
+            `📞 ${order.customerPhone}`,
+            `📍 ${order.customerAddress}${order.customerLandmark ? '\n   ' + order.customerLandmark : ''}`,
+            `🗺️  Map: ${locationLine}`,
+            ``,
+            `🛒 ITEMS`,
+            itemLines,
+            ``,
+            `💰 Subtotal:     EGP ${order.subtotal}`,
+            `🚴 Delivery Fee: EGP ${order.deliveryFee}`,
+            order.discount > 0 ? `🏷️  Discount:     -EGP ${order.discount}` : null,
+            `✅ TOTAL:        EGP ${order.total}`,
+            `💳 Payment:      ${PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod}`,
+            ``,
+            order.orderNotes ? `📝 Notes: ${order.orderNotes}` : null,
+            `⏱️  ETA: ~${order.estimatedMinutes} min`,
+            `🕐 ${new Date(order.createdAt).toLocaleString('en-EG', { timeZone: 'Africa/Cairo' })}`,
+        ].filter(l => l !== null).join('\n'),
+    };
+
+    const resp = await fetch('https://formspree.io/f/mojyddvq', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+
+    if (!resp.ok) {
+        const data = await resp.json().catch(() => ({}));
+        throw new Error(data.error || `HTTP ${resp.status}`);
     }
 }
 
