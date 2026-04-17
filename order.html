@@ -159,7 +159,7 @@
 <div class="page-wrap">
     <!-- LEFT COLUMN: FORM -->
     <div>
-        <h1 class="page-title">Order Delivery 🍣</h1>
+        <h1 class="page-title">Order Delivery 🛵</h1>
         <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
 
         <!-- CUSTOMER DETAILS -->
@@ -200,6 +200,11 @@
         <!-- MENU -->
         <div class="glass form-section">
             <h3><i class="fas fa-utensils"></i> Select Items</h3>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.2rem;">
+                <a href="menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍽️</span> Full Menu</a>
+                <a href="pizza-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍕</span> Pizza</a>
+                <a href="sushi-menu.html" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:50px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text-muted);font-size:0.8rem;text-decoration:none;transition:var(--trans);" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'"><span>🍣</span> Sushi</a>
+            </div>
             <div class="menu-items-grid" id="menu-grid">
                 <!-- dynamically generated below -->
             </div>
@@ -288,16 +293,180 @@
 <script>
 // ─── MENU DATA ──────────────────────────────────────────────────────────────
 const MENU = [
-    { id: "salmon_roll",    name: "Salmon Roll",           desc: "6 pcs · fresh salmon, cucumber, avocado",  price: 180 },
-    { id: "truffle_salmon", name: "Truffle Salmon Roll",   desc: "8 pcs · truffle oil, salmon roe",           price: 240 },
-    { id: "spicy_tuna",     name: "Spicy Tuna Crunch",     desc: "8 pcs · spicy mayo, tempura crunch",        price: 220 },
-    { id: "dragon_roll",    name: "Dragon Roll",           desc: "8 pcs · eel, avocado, cucumber",            price: 260 },
-    { id: "sashimi_platter",name: "Sashimi Platter",       desc: "12 pcs · chef's selection of fresh fish",   price: 350 },
-    { id: "edamame",        name: "Edamame",               desc: "Salted Japanese soybeans",                  price: 60  },
-    { id: "miso_soup",      name: "Miso Soup",             desc: "Traditional dashi, tofu, wakame",           price: 55  },
-    { id: "bento_box",      name: "BeanStalk Bento Box",   desc: "4 rolls + salad + miso soup",               price: 320 },
-    { id: "wagyu_burger",   name: "Wagyu Smash Burger",    desc: "Double wagyu, truffle aioli, brioche",       price: 290 },
-    { id: "truffle_fries",  name: "Truffle Fries",         desc: "Crispy fries, truffle oil, parmesan",        price: 95  },
+    // BREAKFAST
+    { id:'salmon_benedict',         name:'Salmon Benedict',                                   desc:'Breakfast',      price:360 },
+    { id:'sausage_mush_benedict',   name:'Sausage & Mushroom Benedict',                       desc:'Breakfast',      price:325 },
+    { id:'turkey_spinach_omelette', name:'Turkey, Spinach, Mushroom & Cream Cheese Omelette', desc:'Breakfast',      price:295 },
+    { id:'cheese_scrambled_eggs',   name:'Cheese Scrambled Eggs',                             desc:'Breakfast',      price:255 },
+    { id:'shakshuka',               name:'Shakshuka',                                         desc:'Breakfast',      price:340 },
+    { id:'club_sandwich_b',         name:'Club Sandwich',                                     desc:'Breakfast',      price:325 },
+    { id:'american_breakfast',      name:'American Breakfast',                                desc:'Breakfast',      price:410 },
+    { id:'oriental_breakfast',      name:'Oriental Breakfast',                                desc:'Breakfast',      price:295 },
+    { id:'pain_perdu',              name:'Pain Perdu',                                        desc:'Breakfast',      price:235 },
+    { id:'pancakes',                name:'Pancakes',                                          desc:'Breakfast',      price:215 },
+    { id:'additional_fruits',       name:'Additional Fruits',                                 desc:'Breakfast',      price:80  },
+    // APPETIZERS
+    { id:'homemade_fries',          name:'Homemade Fries',                                    desc:'Starters',       price:105 },
+    { id:'party_nachos',            name:'Party Nachos',                                      desc:'Starters',       price:310 },
+    { id:'classic_nachos',          name:'Classic Nachos',                                    desc:'Starters',       price:280 },
+    { id:'crispy_chkn_tenders',     name:'Crispy Chicken Tenders',                            desc:'Starters',       price:280 },
+    { id:'chicken_pops',            name:'Chicken Pops',                                      desc:'Starters',       price:260 },
+    { id:'cheese_basterma_sticks',  name:'Cheese & Basterma Sticks',                          desc:'Starters',       price:215 },
+    { id:'potato_crunchy_balls',    name:'Potato Crunchy Balls',                              desc:'Starters · Truffle Mayo', price:185 },
+    { id:'bbq_buzz_wings',          name:'BBQ Buzz Wings',                                    desc:'Starters',       price:265 },
+    { id:'cheesy_chkn_bites',       name:'Cheesy Chicken Bites',                              desc:'Starters',       price:295 },
+    { id:'loaded_potato_skins',     name:'Loaded Potato Skins',                               desc:'Starters',       price:280 },
+    { id:'glazed_crispy_beef',      name:'Glazed Crispy Beef',                                desc:'Starters',       price:310 },
+    { id:'tempura_moriawase',       name:'Tempura Moriawase',                                 desc:'Sushi Starters', price:190 },
+    { id:'dynamite_shrimp_app',     name:'Dynamite Shrimp',                                   desc:'Sushi Starters', price:240 },
+    { id:'edamame',                 name:'Edamame',                                           desc:'Sushi Starters', price:120 },
+    // SOUPS
+    { id:'mushroom_soup',           name:'Mushroom Soup',                                     desc:'Soups',          price:185 },
+    { id:'roasted_tomato_soup',     name:'Roasted Tomato Soup',                               desc:'Soups',          price:165 },
+    { id:'seafood_soup',            name:'Seafood Soup',                                      desc:'Soups',          price:285 },
+    // SALADS
+    { id:'mexican_salad',           name:'Mexican Salad',                                     desc:'Salads',         price:330 },
+    { id:'garden_delight',          name:'Garden Delight',                                    desc:'Salads',         price:310 },
+    { id:'burrata_salad',           name:'Burrata Salad',                                     desc:'Salads',         price:350 },
+    { id:'greek_salad',             name:'Greek Salad',                                       desc:'Salads',         price:205 },
+    { id:'caesar_salad',            name:'Caesar Salad',                                      desc:'Salads',         price:235 },
+    { id:'shrimp_crispy_rice_sal',  name:'Shrimp Crispy Rice Salad',                          desc:'Salads',         price:375 },
+    { id:'crab_crispy_rice_sal',    name:'Crab Crispy Rice Salad',                            desc:'Salads',         price:360 },
+    { id:'rucola_bresaola_sal',     name:'Rucola Bresaola Salad',                             desc:'Salads',         price:310 },
+    { id:'shrimp_crab_sal',         name:'Shrimp Crab Salad',                                 desc:'Sushi Salads',   price:145 },
+    { id:'salmon_salad_s',          name:'Salmon Salad',                                      desc:'Sushi Salads',   price:210 },
+    { id:'wakame_salad',            name:'Wakame Salad',                                      desc:'Sushi Salads',   price:150 },
+    { id:'seaweed_salad',           name:'Seaweed Salad',                                     desc:'Sushi Salads',   price:160 },
+    { id:'octopus_salad',           name:'Octopus Salad',                                     desc:'Sushi Salads',   price:190 },
+    // SANDWICHES & BURGERS
+    { id:'smoked_salmon_sw',        name:'Smoked Salmon Sandwich',                            desc:'Cold Sandwiches',price:380 },
+    { id:'roast_beef_cold',         name:'Roast Beef (Cold)',                                  desc:'Cold Sandwiches',price:335 },
+    { id:'tuna_salad_sw',           name:'Tuna Salad Sandwich',                               desc:'Cold Sandwiches',price:275 },
+    { id:'grilled_cheese',          name:'Grilled Cheese',                                    desc:'Hot Sandwiches', price:225 },
+    { id:'truffle_beef_sw',         name:'Truffle Beef Sandwich',                             desc:'Hot Sandwiches', price:380 },
+    { id:'roast_beef_hot',          name:'Roast Beef Sandwich',                               desc:'Hot Sandwiches', price:340 },
+    { id:'balsamic_chicken_sw',     name:'Balsamic Chicken Sandwich',                         desc:'Hot Sandwiches', price:310 },
+    { id:'crispy_chicken_sw',       name:'Crispy Chicken Sandwich',                           desc:'Hot Sandwiches', price:295 },
+    { id:'garlic_teriyaki_sw',      name:'Garlic Teriyaki Chicken',                           desc:'Hot Sandwiches', price:310 },
+    { id:'bonanza_wrap',            name:'Bonanza Wrap',                                      desc:'Wraps & Tacos',  price:345 },
+    { id:'beef_shawerma',           name:'Beef Shawerma',                                     desc:'Wraps & Tacos',  price:320 },
+    { id:'chicken_shawerma_wrap',   name:'Chicken Shawerma',                                  desc:'Wraps & Tacos',  price:280 },
+    { id:'chicken_taco',            name:'Chicken Taco',                                      desc:'Wraps & Tacos',  price:310 },
+    { id:'shrimp_taco',             name:'Shrimp Taco',                                       desc:'Wraps & Tacos',  price:385 },
+    { id:'smashed_burger',          name:'Smashed Burger',                                    desc:'Burgers',        price:325 },
+    { id:'buzz_burger',             name:'Buzz Burger',                                       desc:'Burgers',        price:350 },
+    { id:'messy_burger',            name:'Messy Burger',                                      desc:'Burgers',        price:335 },
+    { id:'scarlet_smash_burger',    name:'Scarlet Smash Burger',                              desc:'Burgers',        price:360 },
+    // PASTA
+    { id:'chicken_alfredo',         name:'Chicken Alfredo Fettuccini',                        desc:'Pasta',          price:305 },
+    { id:'pesto_pomodoro_pasta',    name:'Pesto Pomodoro',                                    desc:'Pasta',          price:325 },
+    { id:'bolognese',               name:'Bolognese',                                         desc:'Pasta',          price:325 },
+    { id:'fishermans_pasta',        name:"Fisherman's Pasta",                                 desc:'Pasta',          price:410 },
+    { id:'twilight_pink_sauce',     name:'Twilight Pink Sauce',                               desc:'Pasta',          price:285 },
+    { id:'bianca_bliss',            name:'Bianca Bliss',                                      desc:'Pasta',          price:345 },
+    // MAIN COURSES
+    { id:'beef_tenderloin',         name:'Beef Tenderloin',                                   desc:'Main · Beef',    price:630 },
+    { id:'rustic_steak_fries',      name:'Rustic Steak & Fries',                              desc:'Main · Beef',    price:620 },
+    { id:'truffle_beef_fillet',     name:'Truffle Beef Fillet',                               desc:'Main · Beef',    price:695 },
+    { id:'escalope',                name:'Escalope',                                          desc:'Main · Beef',    price:595 },
+    { id:'mongolian_beef',          name:'Mongolian Beef',                                    desc:'Main · Beef',    price:595 },
+    { id:'crispy_herbed_beef',      name:'Crispy Herbed Beef Fillet',                         desc:'Main · Beef',    price:640 },
+    { id:'pesto_pom_chicken',       name:'Pesto Pomodoro Chicken',                            desc:'Main · Chicken', price:410 },
+    { id:'mushroom_chicken',        name:'Mushroom Chicken',                                  desc:'Main · Chicken', price:410 },
+    { id:'sicilian_chicken',        name:'Sicilian Chicken',                                  desc:'Main · Chicken', price:410 },
+    { id:'sweet_chili_chicken',     name:'Sweet Chili Chicken',                               desc:'Main · Chicken', price:410 },
+    { id:'healthy_grilled_chkn',    name:'Healthy Grilled Chicken',                           desc:'Main · Chicken', price:385 },
+    { id:'citrus_lemon_chicken',    name:'Citrus Lemon Chicken',                              desc:'Main · Chicken', price:395 },
+    { id:'loaded_crunch_chicken',   name:'Loaded Crunch Chicken',                             desc:'Main · Chicken', price:425 },
+    { id:'chicken_ala_rosa',        name:'Chicken Ala Rosa',                                  desc:'Main · Chicken', price:420 },
+    { id:'grilled_salmon',          name:'Grilled Salmon',                                    desc:'Main · Seafood', price:680 },
+    { id:'sweet_chili_shrimp',      name:'Sweet Chili Shrimp',                                desc:'Main · Seafood', price:695 },
+    // DESSERTS
+    { id:'sweet_potato_gratin',     name:'Sweet Potato Gratin',                               desc:'Desserts',       price:175 },
+    { id:'classic_tres_leches',     name:'Classic Tres Leches',                               desc:'Desserts',       price:220 },
+    { id:'crepe',                   name:'Crêpe',                                             desc:'Desserts',       price:215 },
+    { id:'nutella_fudge',           name:'Nutella Fudge',                                     desc:'Desserts',       price:285 },
+    { id:'coffee_jello',            name:'Coffee Jello',                                      desc:'Desserts',       price:185 },
+    { id:'fruit_salad_dessert',     name:'Fruit Salad',                                       desc:'Desserts',       price:180 },
+    { id:'dessert_display',         name:'From Dessert Display',                              desc:'Desserts',       price:275 },
+    // BEVERAGES
+    { id:'espresso',                name:'Espresso',                                          desc:'Hot Beverages',  price:70  },
+    { id:'latte',                   name:'Latte',                                             desc:'Hot Beverages',  price:110 },
+    { id:'cappuccino',              name:'Cappuccino',                                        desc:'Hot Beverages',  price:110 },
+    { id:'turkish_coffee',          name:'Turkish Coffee',                                    desc:'Hot Beverages',  price:65  },
+    { id:'tea',                     name:'Tea',                                               desc:'Hot Beverages',  price:55  },
+    { id:'hot_chocolate',           name:'Hot Chocolate',                                     desc:'Hot Beverages',  price:105 },
+    { id:'soft_drink',              name:'Soft Drink',                                        desc:'Cold Beverages', price:40  },
+    { id:'fresh_juice',             name:'Fresh Juice',                                       desc:'Cold Beverages', price:100 },
+    { id:'avocado_juice',           name:'Avocado Juice',                                     desc:'Cold Beverages', price:125 },
+    { id:'shake',                   name:'Shake',                                             desc:'Cold Beverages', price:105 },
+    { id:'mojito',                  name:'Mojito',                                            desc:'Cold Beverages', price:100 },
+    { id:'frappe',                  name:'Frappé',                                            desc:'Cold Beverages', price:100 },
+    { id:'red_bull',                name:'Red Bull',                                          desc:'Cold Beverages', price:130 },
+    // PIZZA
+    { id:'margherita_napolitan',    name:'Margherita (Neapolitan)',                           desc:'Pizza',          price:280 },
+    { id:'margherita_ny',           name:'Margherita (NY Style)',                             desc:'Pizza',          price:295 },
+    { id:'bufalina_napolitan',      name:'Bufalina (Neapolitan)',                             desc:'Pizza',          price:330 },
+    { id:'bufalina_ny',             name:'Bufalina (NY Style)',                               desc:'Pizza',          price:345 },
+    { id:'italiana_napolitan',      name:'Italiana (Neapolitan)',                             desc:'Pizza',          price:355 },
+    { id:'italiana_ny',             name:'Italiana (NY Style)',                               desc:'Pizza',          price:365 },
+    { id:'five_cheese_napolitan',   name:'Five Cheese (Neapolitan)',                          desc:'Pizza',          price:365 },
+    { id:'five_cheese_ny',          name:'Five Cheese (NY Style)',                            desc:'Pizza',          price:380 },
+    { id:'burrata_pizza_napolitan', name:'Burrata Pizza (Neapolitan)',                        desc:'Pizza',          price:395 },
+    { id:'burrata_pizza_ny',        name:'Burrata Pizza (NY Style)',                          desc:'Pizza',          price:400 },
+    { id:'diavola_napolitan',       name:'Diavola (Neapolitan)',                              desc:'Pizza',          price:360 },
+    { id:'diavola_ny',              name:'Diavola (NY Style)',                                desc:'Pizza',          price:375 },
+    { id:'oriental_sausage_napolitan', name:'Oriental Sausage (Neapolitan)',                  desc:'Pizza',          price:360 },
+    { id:'oriental_sausage_ny',     name:'Oriental Sausage (NY Style)',                       desc:'Pizza',          price:375 },
+    { id:'bbq_chicken_pizza_napolitan', name:'BBQ Chicken Pizza (Neapolitan)',                desc:'Pizza',          price:345 },
+    { id:'bbq_chicken_pizza_ny',    name:'BBQ Chicken Pizza (NY Style)',                      desc:'Pizza',          price:360 },
+    { id:'buffalo_chicken_napolitan',name:'Buffalo Chicken (Neapolitan)',                     desc:'Pizza',          price:355 },
+    { id:'buffalo_chicken_ny',      name:'Buffalo Chicken (NY Style)',                        desc:'Pizza',          price:365 },
+    { id:'chicken_shwrma_pizza_napolitan', name:'Chicken Shawerma Pizza (Neapolitan)',        desc:'Pizza',          price:345 },
+    { id:'chicken_shwrma_pizza_ny', name:'Chicken Shawerma Pizza (NY Style)',                 desc:'Pizza',          price:360 },
+    { id:'smoked_salmon_pizza_napolitan', name:'Smoked Salmon Pizza (Neapolitan)',            desc:'Pizza',          price:420 },
+    { id:'smoked_salmon_pizza_ny',  name:'Smoked Salmon Pizza (NY Style)',                    desc:'Pizza',          price:450 },
+    { id:'seafood_pizza_napolitan', name:'Seafood Pizza (Neapolitan)',                        desc:'Pizza',          price:430 },
+    { id:'seafood_pizza_ny',        name:'Seafood Pizza (NY Style)',                          desc:'Pizza',          price:475 },
+    // SUSHI
+    { id:'tempura_moriawase',       name:'Tempura Moriawase',           desc:'Sushi Starters', price:190 },
+    { id:'dynamite_shrimp',         name:'Dynamite Shrimp',             desc:'Sushi Starters', price:240 },
+    { id:'shrimp_crab_sal',         name:'Shrimp Crab Salad',           desc:'Sushi Salads',   price:145 },
+    { id:'salmon_salad_s',          name:'Salmon Salad',                desc:'Sushi Salads',   price:210 },
+    { id:'wakame_salad',            name:'Wakame Salad',                desc:'Sushi Salads',   price:150 },
+    { id:'seaweed_salad',           name:'Seaweed Salad',               desc:'Sushi Salads',   price:160 },
+    { id:'octopus_salad',           name:'Octopus Salad',               desc:'Sushi Salads',   price:190 },
+    { id:'salmon_nigiri',           name:'Salmon Nigiri (1pc)',          desc:'Nigiri',         price:25  },
+    { id:'tuna_nigiri',             name:'Tuna Nigiri (1pc)',            desc:'Nigiri',         price:25  },
+    { id:'eel_nigiri',              name:'Eel Nigiri (1pc)',             desc:'Nigiri',         price:28  },
+    { id:'caviar_nigiri',           name:'Caviar Nigiri (1pc)',          desc:'Nigiri',         price:40  },
+    { id:'salmon_sash_5',           name:'Salmon Sashimi (5pcs)',        desc:'Sashimi',        price:135 },
+    { id:'tuna_sash_5',             name:'Tuna Sashimi (5pcs)',          desc:'Sashimi',        price:160 },
+    { id:'mixed_sash_10',           name:'Mixed Sashimi (10pcs)',        desc:'Sashimi',        price:290 },
+    { id:'tataki_salmon',           name:'Salmon Tataki',                desc:'Special Sashimi',price:145 },
+    { id:'tataki_tuna',             name:'Tuna Tataki',                  desc:'Special Sashimi',price:175 },
+    { id:'chirashi_bowl',           name:'Chirashi Bowl',                desc:'Special Sashimi',price:295 },
+    { id:'poke_bowl',               name:'Poke Bowl',                   desc:'Special Sashimi',price:295 },
+    { id:'california_roll',         name:'California Roll (8pcs)',       desc:'Uramaki',        price:85  },
+    { id:'philadelphia_roll',       name:'Philadelphia Roll (8pcs)',     desc:'Uramaki',        price:110 },
+    { id:'rainbow_roll',            name:'Rainbow Roll (8pcs)',          desc:'Uramaki',        price:145 },
+    { id:'golden_roll',             name:'Golden Roll (8pcs)',           desc:'Uramaki',        price:160 },
+    { id:'crispy_shrimp_roll',      name:'Crispy Shrimp Roll (8pcs)',    desc:'Uramaki',        price:140 },
+    { id:'dragon_roll',             name:'Dragon Roll (8pcs)',           desc:'Uramaki',        price:175 },
+    { id:'truffle_salmon_roll',     name:'Truffle Salmon Roll (8pcs)',   desc:'Special Rolls',  price:195 },
+    { id:'spicy_lemon',             name:'Spicy Lemon Roll (6pcs)',      desc:'Hot Rolls',      price:170 },
+    { id:'volcano_roll',            name:'Volcano Roll (8pcs)',          desc:'Hot Rolls',      price:185 },
+    { id:'hot_dynamite_roll',       name:'Hot Dynamite Roll (8pcs)',     desc:'Hot Rolls',      price:190 },
+    { id:'dynamite_salmon',         name:'Salmon Dynamite (8pcs)',       desc:'Dynamite',       price:210 },
+    { id:'dynamite_shrimp_r',       name:'Shrimp Dynamite (8pcs)',       desc:'Dynamite',       price:215 },
+    { id:'gunkan_salmon_roe',       name:'Salmon Roe Gunkan (1pc)',      desc:'Gunkan',         price:75  },
+    { id:'mono_maki_salmon',        name:'Mono Maki Salmon (5pcs)',      desc:'Mono Maki',      price:175 },
+    { id:'mono_maki_tuna',          name:'Mono Maki Tuna (5pcs)',        desc:'Mono Maki',      price:180 },
+    { id:'combo_12',                name:'Sushi Combo 12 pcs',          desc:'Combo',          price:290  },
+    { id:'combo_24',                name:'Sushi Combo 24 pcs',          desc:'Combo',          price:560  },
+    { id:'combo_48',                name:'Sushi Combo 48 pcs',          desc:'Combo',          price:1095 },
+    { id:'combo_75',                name:'Sushi Combo 75 pcs',          desc:'Combo',          price:1660 },
+    { id:'combo_100',               name:'Sushi Combo 100 pcs',         desc:'Combo',          price:2145 },
 ];
 
 const PROMO_CODES = {
@@ -308,6 +477,7 @@ const PROMO_CODES = {
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 let cart = {};          // { itemId: qty }
+let cartNotes = {};     // { itemId: note }
 let selectedLat = null;
 let selectedLng = null;
 let deliveryFee = null;
@@ -317,6 +487,7 @@ let paymentMethod = "cash";
 let mapInstance = null;
 let markerInstance = null;
 let geocoderInstance = null;
+let menuFilter = 'all'; // for category tabs
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 let db = null;
@@ -327,25 +498,74 @@ try {
     }
 } catch(e) { console.warn("Firebase not configured yet:", e.message); }
 
+// ─── LOAD SESSION CART ───────────────────────────────────────────────────────
+function loadCartFromSession() {
+    try {
+        const stored = sessionStorage.getItem('bs_cart');
+        if (!stored) return;
+        const sessionItems = JSON.parse(stored);
+        sessionItems.forEach(item => {
+            // Add to MENU reference if not already there
+            if (!MENU.find(m => m.id === item.id)) {
+                MENU.push({ id: item.id, name: item.name, desc: item.note || '', price: item.price });
+            }
+            cart[item.id] = (cart[item.id] || 0) + item.qty;
+            if (item.note) cartNotes[item.id] = item.note;
+        });
+        sessionStorage.removeItem('bs_cart');
+    } catch(e) { console.warn('Could not load cart from session:', e.message); }
+}
+
 // ─── BUILD MENU GRID ─────────────────────────────────────────────────────────
+const MENU_CATEGORIES = [
+    { id: 'all',         label: '🍽️ All' },
+    { id: 'Breakfast',   label: '🌅 Breakfast' },
+    { id: 'Starters',    label: '🥗 Starters' },
+    { id: 'Soups',       label: '🍲 Soups' },
+    { id: 'Salads',      label: '🥙 Salads' },
+    { id: 'Burgers',     label: '🥪 Burgers' },
+    { id: 'Pasta',       label: '🍝 Pasta' },
+    { id: 'Main',        label: '🥩 Mains' },
+    { id: 'Desserts',    label: '🍰 Desserts' },
+    { id: 'Beverages',   label: '☕ Drinks' },
+    { id: 'Pizza',       label: '🍕 Pizza' },
+    { id: 'Sushi',       label: '🍣 Sushi' },
+];
+
 function buildMenu() {
     const grid = document.getElementById('menu-grid');
-    grid.innerHTML = MENU.map(item => `
-        <div class="menu-item" id="mi-${item.id}" onclick="toggleItem('${item.id}')">
+
+    // Category tabs
+    const tabHtml = `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;">
+        ${MENU_CATEGORIES.map(c => `<button onclick="setMenuFilter('${c.id}')" id="mf-${c.id}" style="padding:0.35rem 0.8rem;border-radius:50px;border:1px solid var(--border);background:${menuFilter===c.id?'var(--accent)':'rgba(255,255,255,0.06)'};color:${menuFilter===c.id?'var(--bg-base)':'var(--text-muted)'};font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:${menuFilter===c.id?'600':'400'};cursor:pointer;white-space:nowrap;">${c.label}</button>`).join('')}
+    </div>`;
+
+    const filtered = menuFilter === 'all' ? MENU : MENU.filter(i => i.desc && i.desc.includes(menuFilter));
+
+    const itemsHtml = filtered.map(item => `
+        <div class="menu-item ${(cart[item.id]||0)>0?'selected':''}" id="mi-${item.id}" onclick="toggleItem('${item.id}')">
             <div class="item-info">
                 <div class="item-name">${item.name}</div>
-                <div class="item-desc">${item.desc}</div>
+                <div class="item-desc">${item.desc}${cartNotes[item.id] ? ' · ' + cartNotes[item.id] : ''}</div>
             </div>
             <div class="item-right">
                 <div class="item-price">EGP ${item.price}</div>
                 <div class="item-qty">
                     <button class="qty-btn" onclick="changeQty(event,'${item.id}',-1)"><i class="fas fa-minus" style="font-size:0.6rem"></i></button>
-                    <span class="qty-count" id="qc-${item.id}">0</span>
+                    <span class="qty-count" id="qc-${item.id}">${cart[item.id]||0}</span>
                     <button class="qty-btn" onclick="changeQty(event,'${item.id}',1)"><i class="fas fa-plus" style="font-size:0.6rem"></i></button>
                 </div>
             </div>
         </div>
     `).join('');
+
+    grid.innerHTML = tabHtml + (filtered.length ? `<div class="menu-items-grid">${itemsHtml}</div>` : '<p style="color:var(--text-muted);font-size:0.85rem;padding:1rem 0;">No items in this category.</p>');
+}
+
+function setMenuFilter(catId) {
+    menuFilter = catId;
+    buildMenu();
+    updateSummary();
 }
 
 function toggleItem(id) {
@@ -384,9 +604,10 @@ function updateSummary() {
     // cart lines (desktop)
     const cartLines = document.getElementById('cart-lines');
     if (cartLines) {
-        cartLines.innerHTML = MENU.filter(i => (cart[i.id] || 0) > 0).map(i =>
-            `<div class="summary-line"><span class="label">${i.name} ×${cart[i.id]}</span><span class="val">EGP ${i.price * cart[i.id]}</span></div>`
-        ).join('');
+        cartLines.innerHTML = MENU.filter(i => (cart[i.id] || 0) > 0).map(i => {
+            const note = cartNotes[i.id] ? ` <span style="font-size:0.72rem;color:var(--text-muted);">(${cartNotes[i.id]})</span>` : '';
+            return `<div class="summary-line"><span class="label">${i.name} ×${cart[i.id]}${note}</span><span class="val">EGP ${i.price * cart[i.id]}</span></div>`;
+        }).join('');
     }
 
     ['sub-mob','sub-desk'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent='EGP '+sub; });
@@ -518,7 +739,8 @@ async function placeOrder() {
     const estimatedMins = ESTIMATED_PREP_MINUTES + (deliveryFee !== null ? Math.round((deliveryFee - DELIVERY_BASE_FEE_EGP) / DELIVERY_PER_KM_EGP * ESTIMATED_DRIVE_MINUTES_PER_KM) : 20);
 
     const orderItems = MENU.filter(i => (cart[i.id] || 0) > 0).map(i => ({
-        id: i.id, name: i.name, qty: cart[i.id], price: i.price, subtotal: cart[i.id] * i.price
+        id: i.id, name: i.name, qty: cart[i.id], price: i.price,
+        subtotal: cart[i.id] * i.price, note: cartNotes[i.id] || ''
     }));
 
     const order = {
@@ -653,6 +875,7 @@ function showToast(msg, type = 'success') {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+loadCartFromSession();
 buildMenu();
 updateSummary();
 
