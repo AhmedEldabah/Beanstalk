@@ -96,23 +96,6 @@
         .items-table td:last-child { text-align: right; font-weight: 600; }
         .items-table .item-qty-badge { display: inline-block; background: rgba(255,183,178,0.12); color: var(--accent); border-radius: 6px; padding: 2px 7px; font-size: 0.75rem; font-weight: 600; margin-right: 6px; }
 
-        /* TRACKING STATUS */
-        .status-tracker { padding: 1.5rem 2rem; }
-        .status-steps { display: flex; flex-direction: column; gap: 0; }
-        .status-step { display: flex; align-items: flex-start; gap: 1rem; padding: 0.8rem 0; position: relative; }
-        .step-icon-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .step-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; transition: all 0.4s; }
-        .step-icon.done { background: var(--green-dim); color: var(--green); border: 2px solid var(--green); }
-        .step-icon.active { background: rgba(255,183,178,0.15); color: var(--accent); border: 2px solid var(--accent); animation: pulse 1.5s infinite; }
-        .step-icon.pending { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 2px solid var(--border); }
-        @keyframes pulse { 0%,100%{ box-shadow: 0 0 0 0 var(--accent-glow); } 50%{ box-shadow: 0 0 0 8px transparent; } }
-        .step-line { width: 2px; height: 28px; background: var(--border); margin-top: 2px; }
-        .step-line.done { background: var(--green); }
-        .step-text { padding-top: 6px; }
-        .step-name { font-size: 0.9rem; font-weight: 600; }
-        .step-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-        .step-time { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-style: italic; }
-
         /* ACTIONS */
         .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
         @media(max-width: 480px) { .actions { grid-template-columns: 1fr; } }
@@ -128,12 +111,9 @@
             body { background: white !important; color: black !important; }
             .receipt-card { border: 1px solid #ddd !important; box-shadow: none !important; background: white !important; color: black !important; }
             .receipt-card * { color: black !important; }
-            .receipt-header h3, .receipt-row .lbl, .step-sub, .step-time { color: #555 !important; }
+            .receipt-header h3, .receipt-row .lbl { color: #555 !important; }
             .page-wrap { padding: 0 !important; max-width: 100% !important; }
-        }
-
-        #track-link { display: block; text-align: center; margin-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem; text-decoration: underline; cursor: pointer; }
-    </style>
+        }</style>
 </head>
 <body>
 <div class="global-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
@@ -154,29 +134,17 @@
         <div class="order-id-pill" id="order-id-display">Order #—</div>
     </div>
 
-    <!-- ETA -->
+    <!-- ETA BAR -->
     <div class="eta-bar">
         <div class="eta-icon"><i class="fas fa-clock"></i></div>
         <div>
             <div class="eta-label">Estimated Delivery</div>
             <div class="eta-val" id="eta-display">~45 min</div>
+            <div class="eta-label" style="margin-top:2px;" id="eta-note">Based on your delivery distance</div>
         </div>
         <div style="margin-left:auto;text-align:right;">
             <div class="eta-label">Payment</div>
             <div style="font-weight:600;font-size:0.95rem;" id="payment-display">—</div>
-        </div>
-    </div>
-
-    <!-- ORDER STATUS TRACKER -->
-    <div class="receipt-card no-print">
-        <div class="receipt-header">
-            <h3><i class="fas fa-route" style="margin-right:0.4rem;color:var(--accent)"></i> Live Tracking</h3>
-            <span style="font-size:0.8rem;color:var(--text-muted);" id="status-badge">Pending</span>
-        </div>
-        <div class="status-tracker">
-            <div class="status-steps" id="status-steps">
-                <!-- filled by JS -->
-            </div>
         </div>
     </div>
 
@@ -218,15 +186,12 @@
         </div>
     </div>
 
-    <!-- ACTION BUTTONS -->
     <div class="actions no-print">
         <button class="action-btn" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
         <button class="action-btn" id="share-btn" onclick="shareReceipt()"><i class="fas fa-share-nodes"></i> Share</button>
         <a class="action-btn whatsapp" id="whatsapp-btn" href="#" target="_blank"><i class="fab fa-whatsapp"></i> Contact Us</a>
         <a class="action-btn primary" href="order.html"><i class="fas fa-plus"></i> New Order</a>
     </div>
-
-    <a href="track.html" id="track-link">Track your order live →</a>
 </div>
 
 <!-- Firebase SDKs -->
@@ -241,13 +206,6 @@ function esc(str) {
 }
 
 const PAYMENT_LABELS = { cash: 'Cash on Delivery', card: 'Card on Delivery', instapay: 'InstaPay', vodafone: 'Vodafone Cash' };
-const STATUS_STEPS = [
-    { key: 'pending',    label: 'Order Received',    sub: 'We\'ve got your order!',              icon: 'fas fa-inbox' },
-    { key: 'confirmed',  label: 'Order Confirmed',   sub: 'Kitchen is preparing your order',     icon: 'fas fa-kitchen-set' },
-    { key: 'picked_up',  label: 'Out for Delivery',  sub: 'Driver is on the way',                icon: 'fas fa-motorcycle' },
-    { key: 'delivered',  label: 'Delivered',         sub: 'Enjoy your meal!',                    icon: 'fas fa-circle-check' },
-];
-const STATUS_ORDER = STATUS_STEPS.map(s => s.key);
 
 let orderData = null;
 
@@ -271,7 +229,6 @@ async function loadOrder() {
         orderData = JSON.parse(stored);
         if (orderId && orderData.id === orderId) {
             renderOrder(orderData);
-            if (db && !orderId.startsWith('DEMO-')) subscribeToStatus(orderId);
             return;
         }
     }
@@ -283,7 +240,6 @@ async function loadOrder() {
             if (snap.exists) {
                 orderData = { id: orderId, ...snap.data() };
                 renderOrder(orderData);
-                subscribeToStatus(orderId);
                 return;
             }
         } catch(e) { console.error(e); }
@@ -293,21 +249,7 @@ async function loadOrder() {
     document.querySelector('.confirm-banner').innerHTML = '<p style="color:var(--text-muted)">Order not found. Please check your link or contact us.</p>';
 }
 
-function subscribeToStatus(orderId) {
-    db.collection('orders').doc(orderId).onSnapshot(snap => {
-        if (snap.exists) {
-            const data = snap.data();
-            updateStatusTracker(data.status || 'pending', data);
-            document.getElementById('status-badge').textContent = formatStatus(data.status);
-        }
-    });
-}
-
 // ─── RENDER ───────────────────────────────────────────────────────────────────
-function formatStatus(s) {
-    return { pending: 'Pending', confirmed: 'Confirmed', picked_up: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled' }[s] || s;
-}
-
 function renderOrder(o) {
     // Nav order ID
     const shortId = o.id ? o.id.slice(-8).toUpperCase() : '—';
@@ -315,7 +257,11 @@ function renderOrder(o) {
     document.getElementById('order-id-display').textContent = 'Order #' + shortId;
 
     // ETA
-    document.getElementById('eta-display').textContent = `~${o.estimatedMinutes || 45} min`;
+    const eta = o.estimatedMinutes || 45;
+    document.getElementById('eta-display').textContent = `~${eta} min`;
+    if (o.lat && o.lng) {
+        document.getElementById('eta-note').textContent = 'Based on your delivery distance from Sheikh Zayed';
+    }
     document.getElementById('payment-display').textContent = PAYMENT_LABELS[o.paymentMethod] || o.paymentMethod || '—';
 
     // Receipt date
@@ -335,7 +281,7 @@ function renderOrder(o) {
     (o.items || []).forEach(item => {
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
-        tdName.textContent = item.name;
+        tdName.textContent = item.name + (item.note ? ' (' + item.note + ')' : '');
         const tdQty = document.createElement('td');
         const badge = document.createElement('span');
         badge.className = 'item-qty-badge';
@@ -364,74 +310,6 @@ function renderOrder(o) {
         const msg = encodeURIComponent(`Hi BeanStalk! My order #${shortId} — ${o.customerName} — ${o.customerPhone}`);
         document.getElementById('whatsapp-btn').href = `https://wa.me/${RESTAURANT_PHONE.replace(/\D/g,'')}?text=${msg}`;
     }
-
-    // Track link
-    document.getElementById('track-link').href = `track.html?orderId=${o.id}`;
-
-    // Status tracker
-    updateStatusTracker(o.status || 'pending', o);
-}
-
-function updateStatusTracker(currentStatus, o) {
-    const currentIdx = STATUS_ORDER.indexOf(currentStatus);
-    const container = document.getElementById('status-steps');
-    container.innerHTML = '';
-
-    STATUS_STEPS.forEach((step, i) => {
-        let iconClass = 'pending';
-        if (i < currentIdx) iconClass = 'done';
-        else if (i === currentIdx) iconClass = 'active';
-
-        const isLast = i === STATUS_STEPS.length - 1;
-        const timeStr = (i === 0 && o.createdAt)
-            ? new Date(o.createdAt).toLocaleTimeString('en-EG', { hour: '2-digit', minute: '2-digit' })
-            : '';
-
-        // Build DOM safely
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'status-step';
-
-        const iconWrap = document.createElement('div');
-        iconWrap.className = 'step-icon-wrap';
-
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'step-icon ' + iconClass;
-        const iTag = document.createElement('i');
-        iTag.className = step.icon;  // e.g. "fas fa-inbox" — static constant, not user data
-        iconDiv.appendChild(iTag);
-        iconWrap.appendChild(iconDiv);
-
-        if (!isLast) {
-            const line = document.createElement('div');
-            line.className = 'step-line' + (i < currentIdx ? ' done' : '');
-            iconWrap.appendChild(line);
-        }
-
-        const textDiv = document.createElement('div');
-        textDiv.className = 'step-text';
-
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'step-name';
-        nameDiv.textContent = step.label;
-
-        const subDiv = document.createElement('div');
-        subDiv.className = 'step-sub';
-        subDiv.textContent = step.sub;
-
-        textDiv.appendChild(nameDiv);
-        textDiv.appendChild(subDiv);
-
-        if (timeStr) {
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'step-time';
-            timeDiv.textContent = timeStr;
-            textDiv.appendChild(timeDiv);
-        }
-
-        stepDiv.appendChild(iconWrap);
-        stepDiv.appendChild(textDiv);
-        container.appendChild(stepDiv);
-    });
 }
 
 // ─── SHARE ────────────────────────────────────────────────────────────────────
@@ -439,7 +317,7 @@ async function shareReceipt() {
     const url = window.location.href;
     if (navigator.share) {
         try {
-            await navigator.share({ title: 'BeanStalk Order', text: 'Track my BeanStalk delivery!', url });
+            await navigator.share({ title: 'BeanStalk Order', text: 'My BeanStalk delivery order!', url });
         } catch(e) {}
     } else {
         await navigator.clipboard.writeText(url);

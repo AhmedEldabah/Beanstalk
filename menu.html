@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>BeanStalk Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #121010;
+            --bg-surface: rgba(35, 32, 32, 0.55);
+            --accent: #FFB7B2;
+            --accent-glow: rgba(255, 183, 178, 0.2);
+            --text-main: #FDFCF8;
+            --text-muted: #A8A29E;
+            --border: rgba(255, 255, 255, 0.08);
+            --trans: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.5);
+            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.8);
+            --radius-lg: 2rem;
+            --green: #4ADE80;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-base); color: var(--text-main); min-height: 100vh; -webkit-font-smoothing: antialiased; padding-bottom: 120px; }
+
+        .global-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.22; animation: float 8s ease-in-out infinite alternate; }
+        .blob-1 { width: 60vw; height: 60vw; max-width: 700px; max-height: 700px; background: #FF7EB3; top: -10%; left: -10%; }
+        .blob-2 { width: 50vw; height: 50vw; max-width: 550px; max-height: 550px; background: #8E84FA; bottom: -5%; right: -10%; animation-delay: -3s; }
+        .blob-3 { width: 40vw; height: 40vw; max-width: 500px; max-height: 500px; background: #4ADE80; top: 40%; left: 50%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+        .grain-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.35"/%3E%3C/svg%3E'); mix-blend-mode: overlay; opacity: 0.4; }
+
+        /* NAV */
+        nav { position: sticky; top: 0; background: rgba(20,18,18,0.88); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); z-index: 100; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 1rem; }
+        .nav-back { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; text-decoration: none; transition: color 0.3s; flex-shrink: 0; }
+        .nav-back:hover { color: var(--text-main); }
+        .logo-text { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-main); }
+        .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+        .nav-title { font-size: 1rem; font-weight: 600; color: var(--text-main); margin-left: auto; margin-right: auto; padding-right: 80px; }
+
+        /* HERO */
+        .menu-hero { padding: 2.5rem 1.5rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+        .menu-hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 700; margin-bottom: 0.4rem; }
+        .menu-hero p { color: var(--text-muted); font-size: 0.9rem; }
+
+        /* CATEGORY PILLS */
+        .cat-bar { position: sticky; top: 57px; z-index: 90; background: rgba(18,16,16,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0.7rem 1.5rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .cat-bar::-webkit-scrollbar { display: none; }
+        .cat-pill { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.45rem 1rem; border-radius: 50px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: var(--trans); white-space: nowrap; margin-right: 0.4rem; }
+        .cat-pill.active { background: var(--accent); color: var(--bg-base); border-color: var(--accent); font-weight: 600; }
+        .cat-pill:not(.active):hover { color: var(--text-main); border-color: rgba(255,255,255,0.2); }
+
+        /* MAIN CONTENT */
+        .content { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* CATEGORY SECTION */
+        .cat-section { margin-bottom: 2.5rem; }
+        .cat-section-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+        .cat-section-icon { font-size: 1.4rem; }
+        .cat-section-title { font-size: 1.1rem; font-weight: 700; }
+        .cat-section-note { font-size: 0.78rem; color: var(--accent); font-weight: 500; margin-left: auto; }
+        .cat-subsection { margin-bottom: 1rem; }
+        .cat-subsection-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.6rem; padding-left: 0.2rem; }
+
+        /* MENU ITEM CARD */
+        .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.7rem; }
+        .mi-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 1rem; border-radius: 14px;
+            background: var(--bg-surface); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border); transition: var(--trans); gap: 0.8rem;
+        }
+        .mi-card:hover { border-color: rgba(255,255,255,0.15); background: rgba(45,42,42,0.6); }
+        .mi-card.in-cart { border-color: rgba(255,183,178,0.35); background: rgba(255,183,178,0.07); }
+        .mi-info { flex: 1; min-width: 0; }
+        .mi-name { font-size: 0.9rem; font-weight: 500; line-height: 1.3; }
+        .mi-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+        .mi-price { font-size: 0.88rem; font-weight: 700; color: var(--accent); margin-top: 4px; }
+        .mi-controls { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+        .qty-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: rgba(255,255,255,0.08); color: var(--text-main); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+        .qty-btn:hover { background: var(--accent); color: var(--bg-base); border-color: var(--accent); }
+        .qty-num { min-width: 20px; text-align: center; font-size: 0.9rem; font-weight: 600; }
+        .add-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255,183,178,0.4); background: rgba(255,183,178,0.1); color: var(--accent); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--trans); }
+        .add-btn:hover { background: var(--accent); color: var(--bg-base); border-color: var(--accent); }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 5000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-sheet { background: #1c1a1a; border: 1px solid var(--border); border-radius: 2rem 2rem 0 0; padding: 2rem 1.5rem; width: 100%; max-width: 560px; transform: translateY(60px); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.open .modal-sheet { transform: translateY(0); }
+        .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1.5rem; }
+        .modal-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .modal-price { font-size: 1rem; font-weight: 600; color: var(--accent); margin-bottom: 1.5rem; }
+        .modal-section-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.8rem; }
+        .option-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .option-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: var(--trans); }
+        .option-item:hover { border-color: rgba(255,255,255,0.2); }
+        .option-item.selected { border-color: var(--accent); background: rgba(255,183,178,0.08); }
+        .option-item input[type="checkbox"], .option-item input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+        .option-label { font-size: 0.9rem; font-weight: 500; flex: 1; }
+        .modal-add-btn { width: 100%; padding: 0.95rem; background: var(--accent); color: var(--bg-base); border: none; border-radius: 50px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: var(--trans); }
+        .modal-add-btn:hover { box-shadow: 0 6px 20px var(--accent-glow); }
+        .modal-add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .modal-note-field { width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.9rem; margin-bottom: 1.5rem; resize: none; outline: none; }
+        .modal-note-field:focus { border-color: var(--accent); }
+        .sides-counter { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+
+        /* CART BAR */
+        .cart-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 4000;
+            background: rgba(20,18,18,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 1rem 1.5rem; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+        .cart-bar.visible { transform: translateY(0); }
+        .cart-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; }
+        .cart-info { flex: 1; }
+        .cart-count { font-size: 0.8rem; color: var(--text-muted); }
+        .cart-total { font-size: 1.1rem; font-weight: 700; }
+        .cart-checkout-btn { padding: 0.85rem 2rem; background: var(--accent); color: var(--bg-base); border: none; border-radius: 50px; font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: var(--trans); white-space: nowrap; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+        .cart-checkout-btn:hover { box-shadow: 0 6px 20px var(--accent-glow); }
+        .cart-view-btn { padding: 0.85rem 1.2rem; background: rgba(255,255,255,0.08); border: 1px solid var(--border); border-radius: 50px; color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--trans); white-space: nowrap; }
+        .cart-view-btn:hover { background: rgba(255,255,255,0.14); }
+
+        /* EMPTY STATE */
+        .empty-cart-hint { text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+<div class="global-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+<div class="grain-overlay"></div>
+
+<nav>
+    <a href="index.html" class="nav-back"><i class="fas fa-arrow-left"></i></a>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <span class="nav-title">Menu</span>
+</nav>
+
+<!-- CATEGORY PILLS -->
+<div class="cat-bar" id="cat-bar">
+    <button class="cat-pill active" onclick="filterCat('all')">🍽️ All</button>
+    <button class="cat-pill" onclick="filterCat('breakfast')">🌅 Breakfast</button>
+    <button class="cat-pill" onclick="filterCat('appetizers')">🥗 Starters</button>
+    <button class="cat-pill" onclick="filterCat('soups')">🍲 Soups</button>
+    <button class="cat-pill" onclick="filterCat('salads')">🥙 Salads</button>
+    <button class="cat-pill" onclick="filterCat('sandwiches')">🥪 Sandwiches & Burgers</button>
+    <button class="cat-pill" onclick="filterCat('pasta')">🍝 Pasta</button>
+    <button class="cat-pill" onclick="filterCat('mains')">🥩 Main Courses</button>
+    <button class="cat-pill" onclick="filterCat('desserts')">🍰 Desserts</button>
+    <button class="cat-pill" onclick="filterCat('beverages')">☕ Beverages</button>
+</div>
+
+<div class="menu-hero">
+    <h1>BeanStalk Menu</h1>
+    <p>All prices in EGP · Subject to 14% sales tax + 12% service charge</p>
+</div>
+
+<div class="content" id="menu-content">
+    <!-- Rendered by JS -->
+</div>
+
+<!-- SIDES MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-sheet" id="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="modal-item-name">Item Name</div>
+        <div class="modal-price" id="modal-item-price">EGP 0</div>
+        <div id="modal-body"></div>
+        <button class="modal-add-btn" id="modal-add-btn" onclick="confirmModal()">
+            <i class="fas fa-plus"></i> Add to Cart
+        </button>
+    </div>
+</div>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cart-bar">
+    <div class="cart-bar-inner">
+        <div class="cart-info">
+            <div class="cart-count" id="cart-count-label">0 items</div>
+            <div class="cart-total" id="cart-total-label">EGP 0</div>
+        </div>
+        <button class="cart-view-btn" onclick="viewCart()"><i class="fas fa-shopping-bag"></i> View Cart</button>
+        <a class="cart-checkout-btn" href="order.html">Checkout <i class="fas fa-arrow-right"></i></a>
+    </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cart-modal-overlay" onclick="closeCartOnBackdrop(event)" style="align-items:flex-end;">
+    <div class="modal-sheet" id="cart-sheet" style="max-height:80vh;">
+        <div class="modal-handle"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">
+            <h2 style="font-size:1.2rem;font-weight:700;">Your Cart</h2>
+            <button onclick="document.getElementById('cart-modal-overlay').classList.remove('open')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cart-items-list" style="flex:1;overflow-y:auto;"></div>
+        <div id="cart-summary-footer"></div>
+    </div>
+</div>
+
+<script>
+// ── MENU DATA ─────────────────────────────────────────────────────────────────
+const SIDES_OPTIONS = ['Rice', 'Fries', 'Sautéed Vegetables', 'Mashed Potatoes'];
+const PASTA_SIDES   = ['Pasta (replaces 2 sides)'];
+
+const CATEGORIES = [
+    { id: 'breakfast',  icon: '🌅', label: 'Breakfast', note: 'Served until 2:00 PM' },
+    { id: 'appetizers', icon: '🥗', label: 'Appetizers & Starters' },
+    { id: 'soups',      icon: '🍲', label: 'Soups' },
+    { id: 'salads',     icon: '🥙', label: 'Salads' },
+    { id: 'sandwiches', icon: '🥪', label: 'Sandwiches & Burgers' },
+    { id: 'pasta',      icon: '🍝', label: 'Pasta' },
+    { id: 'mains',      icon: '🥩', label: 'Main Courses', note: 'Served with 2 sides or 1 pasta' },
+    { id: 'desserts',   icon: '🍰', label: 'Desserts' },
+    { id: 'beverages',  icon: '☕', label: 'Beverages' },
+];
+
+const MENU_ITEMS = [
+    // BREAKFAST
+    { id: 'salmon_benedict',         cat: 'breakfast',   name: 'Salmon Benedict',                                   price: 360 },
+    { id: 'sausage_mush_benedict',   cat: 'breakfast',   name: 'Sausage & Mushroom Benedict',                       price: 325 },
+    { id: 'turkey_spinach_omelette', cat: 'breakfast',   name: 'Turkey, Spinach, Mushroom & Cream Cheese Omelette', price: 295 },
+    { id: 'cheese_scrambled_eggs',   cat: 'breakfast',   name: 'Cheese Scrambled Eggs',    desc: 'Loaf bread + avocado', price: 255 },
+    { id: 'shakshuka',               cat: 'breakfast',   name: 'Shakshuka',                                         price: 340 },
+    { id: 'club_sandwich_b',         cat: 'breakfast',   name: 'Club Sandwich',                                     price: 325 },
+    { id: 'american_breakfast',      cat: 'breakfast',   name: 'American Breakfast',                                price: 410 },
+    { id: 'oriental_breakfast',      cat: 'breakfast',   name: 'Oriental Breakfast',                                price: 295 },
+    { id: 'pain_perdu',              cat: 'breakfast',   name: 'Pain Perdu',                                        price: 235 },
+    { id: 'pancakes',                cat: 'breakfast',   name: 'Pancakes',                 desc: 'Caramel / Nutella / Honey', price: 215 },
+    { id: 'additional_fruits',       cat: 'breakfast',   name: 'Additional Fruits',                                 price: 80  },
+    // APPETIZERS
+    { id: 'homemade_fries',          cat: 'appetizers',  name: 'Homemade Fries',                                    price: 105, sub: 'Regular' },
+    { id: 'party_nachos',            cat: 'appetizers',  name: 'Party Nachos',                                      price: 310, sub: 'Regular' },
+    { id: 'classic_nachos',          cat: 'appetizers',  name: 'Classic Nachos',                                    price: 280, sub: 'Regular' },
+    { id: 'crispy_chkn_tenders',     cat: 'appetizers',  name: 'Crispy Chicken Tenders',                            price: 280, sub: 'Regular' },
+    { id: 'chicken_pops',            cat: 'appetizers',  name: 'Chicken Pops',                                      price: 260, sub: 'Regular' },
+    { id: 'cheese_basterma_sticks',  cat: 'appetizers',  name: 'Cheese & Basterma Sticks',                          price: 215, sub: 'Regular' },
+    { id: 'potato_crunchy_balls',    cat: 'appetizers',  name: 'Potato Crunchy Balls',     desc: 'Truffle Mayo',    price: 185, sub: 'Regular' },
+    { id: 'bbq_buzz_wings',          cat: 'appetizers',  name: 'BBQ Buzz Wings',                                    price: 265, sub: 'Regular' },
+    { id: 'cheesy_chkn_bites',       cat: 'appetizers',  name: 'Cheesy Chicken Bites',                              price: 295, sub: 'Regular' },
+    { id: 'loaded_potato_skins',     cat: 'appetizers',  name: 'Loaded Potato Skins',                               price: 280, sub: 'Regular' },
+    { id: 'glazed_crispy_beef',      cat: 'appetizers',  name: 'Glazed Crispy Beef',                                price: 310, sub: 'Regular' },
+    { id: 'tempura_moriawase',       cat: 'appetizers',  name: 'Tempura Moriawase',                                 price: 190, sub: 'Sushi' },
+    { id: 'dynamite_shrimp_app',     cat: 'appetizers',  name: 'Dynamite Shrimp',                                   price: 240, sub: 'Sushi' },
+    { id: 'edamame',                 cat: 'appetizers',  name: 'Edamame',                                           price: 120, sub: 'Sushi' },
+    // SOUPS
+    { id: 'mushroom_soup',           cat: 'soups',       name: 'Mushroom Soup',            desc: '+ Chicken EGP 65', price: 185 },
+    { id: 'roasted_tomato_soup',     cat: 'soups',       name: 'Roasted Tomato Soup',                               price: 165 },
+    { id: 'seafood_soup',            cat: 'soups',       name: 'Seafood Soup',                                      price: 285 },
+    // SALADS
+    { id: 'mexican_salad',           cat: 'salads',      name: 'Mexican Salad',                                     price: 330, sub: 'Regular' },
+    { id: 'garden_delight',          cat: 'salads',      name: 'Garden Delight',                                    price: 310, sub: 'Regular' },
+    { id: 'burrata_salad',           cat: 'salads',      name: 'Burrata Salad',                                     price: 350, sub: 'Regular' },
+    { id: 'greek_salad',             cat: 'salads',      name: 'Greek Salad',                                       price: 205, sub: 'Regular' },
+    { id: 'caesar_salad',            cat: 'salads',      name: 'Caesar Salad',             desc: 'Extra Chicken +EGP 85 / Shrimps +EGP 185', price: 235, sub: 'Regular' },
+    { id: 'shrimp_crispy_rice_sal',  cat: 'salads',      name: 'Shrimp Crispy Rice Salad',                          price: 375, sub: 'Regular' },
+    { id: 'crab_crispy_rice_sal',    cat: 'salads',      name: 'Crab Crispy Rice Salad',                            price: 360, sub: 'Regular' },
+    { id: 'rucola_bresaola_sal',     cat: 'salads',      name: 'Rucola Bresaola Salad',                             price: 310, sub: 'Regular' },
+    { id: 'shrimp_crab_salad',       cat: 'salads',      name: 'Shrimp Crab Salad',                                 price: 145, sub: 'Sushi' },
+    { id: 'salmon_salad',            cat: 'salads',      name: 'Salmon Salad',                                      price: 210, sub: 'Sushi' },
+    { id: 'wakame_salad',            cat: 'salads',      name: 'Wakame Salad',                                      price: 150, sub: 'Sushi' },
+    { id: 'seaweed_salad',           cat: 'salads',      name: 'Seaweed Salad',                                     price: 160, sub: 'Sushi' },
+    { id: 'octopus_salad',           cat: 'salads',      name: 'Octopus Salad',                                     price: 190, sub: 'Sushi' },
+    // SANDWICHES & BURGERS
+    { id: 'smoked_salmon_sw',        cat: 'sandwiches',  name: 'Smoked Salmon',            desc: 'Cold sandwich',   price: 380, sub: 'Cold Sandwiches' },
+    { id: 'roast_beef_cold',         cat: 'sandwiches',  name: 'Roast Beef',               desc: 'Cold sandwich',   price: 335, sub: 'Cold Sandwiches' },
+    { id: 'tuna_salad_sw',           cat: 'sandwiches',  name: 'Tuna Salad Sandwich',      desc: 'Cold sandwich',   price: 275, sub: 'Cold Sandwiches' },
+    { id: 'grilled_cheese',          cat: 'sandwiches',  name: 'Grilled Cheese',           desc: 'Hot sandwich',    price: 225, sub: 'Hot Sandwiches' },
+    { id: 'truffle_beef_sw',         cat: 'sandwiches',  name: 'Truffle Beef',             desc: 'Hot sandwich',    price: 380, sub: 'Hot Sandwiches' },
+    { id: 'roast_beef_hot',          cat: 'sandwiches',  name: 'Roast Beef',               desc: 'Hot sandwich',    price: 340, sub: 'Hot Sandwiches' },
+    { id: 'balsamic_chicken_sw',     cat: 'sandwiches',  name: 'Balsamic Chicken',         desc: 'Hot sandwich',    price: 310, sub: 'Hot Sandwiches' },
+    { id: 'crispy_chicken_sw',       cat: 'sandwiches',  name: 'Crispy Chicken',           desc: 'Hot sandwich',    price: 295, sub: 'Hot Sandwiches' },
+    { id: 'garlic_teriyaki_sw',      cat: 'sandwiches',  name: 'Garlic Teriyaki Chicken',  desc: 'Hot sandwich',    price: 310, sub: 'Hot Sandwiches' },
+    { id: 'bonanza_wrap',            cat: 'sandwiches',  name: 'Bonanza Wrap',                                      price: 345, sub: 'Wraps & Tacos' },
+    { id: 'beef_shawerma',           cat: 'sandwiches',  name: 'Beef Shawerma',                                     price: 320, sub: 'Wraps & Tacos' },
+    { id: 'chicken_shawerma_wrap',   cat: 'sandwiches',  name: 'Chicken Shawerma',                                  price: 280, sub: 'Wraps & Tacos' },
+    { id: 'chicken_taco',            cat: 'sandwiches',  name: 'Chicken Taco',                                      price: 310, sub: 'Wraps & Tacos' },
+    { id: 'shrimp_taco',             cat: 'sandwiches',  name: 'Shrimp Taco',                                       price: 385, sub: 'Wraps & Tacos' },
+    { id: 'smashed_burger',          cat: 'sandwiches',  name: 'Smashed Burger',                                    price: 325, sub: 'Burgers' },
+    { id: 'buzz_burger',             cat: 'sandwiches',  name: 'Buzz Burger',                                       price: 350, sub: 'Burgers' },
+    { id: 'messy_burger',            cat: 'sandwiches',  name: 'Messy Burger',                                      price: 335, sub: 'Burgers' },
+    { id: 'scarlet_smash_burger',    cat: 'sandwiches',  name: 'Scarlet Smash Burger',                              price: 360, sub: 'Burgers' },
+    // PASTA
+    { id: 'chicken_alfredo',         cat: 'pasta',       name: 'Chicken Alfredo Fettuccini',                        price: 305 },
+    { id: 'pesto_pomodoro_pasta',    cat: 'pasta',       name: 'Pesto Pomodoro',                                    price: 325 },
+    { id: 'bolognese',               cat: 'pasta',       name: 'Bolognese',                                         price: 325 },
+    { id: 'fishermans_pasta',        cat: 'pasta',       name: "Fisherman's Pasta",                                 price: 410 },
+    { id: 'twilight_pink_sauce',     cat: 'pasta',       name: 'Twilight Pink Sauce',                               price: 285 },
+    { id: 'bianca_bliss',            cat: 'pasta',       name: 'Bianca Bliss',                                      price: 345 },
+    // MAIN COURSES
+    { id: 'beef_tenderloin',         cat: 'mains',       name: 'Beef Tenderloin',                                   price: 630, hasSides: true, sub: 'Beef' },
+    { id: 'rustic_steak_fries',      cat: 'mains',       name: 'Rustic Steak & Fries',                              price: 620, hasSides: true, sub: 'Beef' },
+    { id: 'truffle_beef_fillet',     cat: 'mains',       name: 'Truffle Beef Fillet',                               price: 695, hasSides: true, sub: 'Beef' },
+    { id: 'escalope',                cat: 'mains',       name: 'Escalope',                                          price: 595, hasSides: true, sub: 'Beef' },
+    { id: 'mongolian_beef',          cat: 'mains',       name: 'Mongolian Beef',                                    price: 595, hasSides: true, sub: 'Beef' },
+    { id: 'crispy_herbed_beef',      cat: 'mains',       name: 'Crispy Herbed Beef Fillet',                         price: 640, hasSides: true, sub: 'Beef' },
+    { id: 'pesto_pom_chicken',       cat: 'mains',       name: 'Pesto Pomodoro Chicken',                            price: 410, hasSides: true, sub: 'Chicken' },
+    { id: 'mushroom_chicken',        cat: 'mains',       name: 'Mushroom Chicken',                                  price: 410, hasSides: true, sub: 'Chicken' },
+    { id: 'sicilian_chicken',        cat: 'mains',       name: 'Sicilian Chicken',                                  price: 410, hasSides: true, sub: 'Chicken' },
+    { id: 'sweet_chili_chicken',     cat: 'mains',       name: 'Sweet Chili Chicken',                               price: 410, hasSides: true, sub: 'Chicken' },
+    { id: 'healthy_grilled_chkn',    cat: 'mains',       name: 'Healthy Grilled Chicken',                           price: 385, hasSides: true, sub: 'Chicken' },
+    { id: 'citrus_lemon_chicken',    cat: 'mains',       name: 'Citrus Lemon Chicken',                              price: 395, hasSides: true, sub: 'Chicken' },
+    { id: 'loaded_crunch_chicken',   cat: 'mains',       name: 'Loaded Crunch Chicken',                             price: 425, hasSides: true, sub: 'Chicken' },
+    { id: 'chicken_ala_rosa',        cat: 'mains',       name: 'Chicken Ala Rosa',                                  price: 420, hasSides: true, sub: 'Chicken' },
+    { id: 'grilled_salmon',          cat: 'mains',       name: 'Grilled Salmon',                                    price: 680, hasSides: true, sub: 'Seafood' },
+    { id: 'sweet_chili_shrimp',      cat: 'mains',       name: 'Sweet Chili Shrimp',                                price: 695, hasSides: true, sub: 'Seafood' },
+    // DESSERTS
+    { id: 'sweet_potato_gratin',     cat: 'desserts',    name: 'Sweet Potato Gratin',                               price: 175 },
+    { id: 'classic_tres_leches',     cat: 'desserts',    name: 'Classic Tres Leches',                               price: 220 },
+    { id: 'crepe',                   cat: 'desserts',    name: 'Crêpe',                                             price: 215 },
+    { id: 'nutella_fudge',           cat: 'desserts',    name: 'Nutella Fudge',                                     price: 285 },
+    { id: 'coffee_jello',            cat: 'desserts',    name: 'Coffee Jello',                                      price: 185 },
+    { id: 'fruit_salad_dessert',     cat: 'desserts',    name: 'Fruit Salad',                                       price: 180 },
+    { id: 'dessert_display',         cat: 'desserts',    name: 'From Dessert Display',                              price: 275 },
+    // BEVERAGES
+    { id: 'espresso',                cat: 'beverages',   name: 'Espresso',                                          price: 70,  sub: 'Hot' },
+    { id: 'latte',                   cat: 'beverages',   name: 'Latte',                                             price: 110, sub: 'Hot' },
+    { id: 'cappuccino',              cat: 'beverages',   name: 'Cappuccino',                                        price: 110, sub: 'Hot' },
+    { id: 'turkish_coffee',          cat: 'beverages',   name: 'Turkish Coffee',                                    price: 65,  sub: 'Hot' },
+    { id: 'tea',                     cat: 'beverages',   name: 'Tea',                                               price: 55,  sub: 'Hot' },
+    { id: 'hot_chocolate',           cat: 'beverages',   name: 'Hot Chocolate',                                     price: 105, sub: 'Hot' },
+    { id: 'soft_drink',              cat: 'beverages',   name: 'Soft Drink',                                        price: 40,  sub: 'Cold' },
+    { id: 'fresh_juice',             cat: 'beverages',   name: 'Fresh Juice',                                       price: 100, sub: 'Cold' },
+    { id: 'avocado_juice',           cat: 'beverages',   name: 'Avocado Juice',                                     price: 125, sub: 'Cold' },
+    { id: 'shake',                   cat: 'beverages',   name: 'Shake',                    desc: 'Starting EGP 105', price: 105, sub: 'Cold' },
+    { id: 'mojito',                  cat: 'beverages',   name: 'Mojito',                   desc: 'Starting EGP 100', price: 100, sub: 'Cold' },
+    { id: 'frappe',                  cat: 'beverages',   name: 'Frappé',                   desc: 'Starting EGP 100', price: 100, sub: 'Cold' },
+    { id: 'red_bull',                cat: 'beverages',   name: 'Red Bull',                                          price: 130, sub: 'Cold' },
+];
+
+// ── CART STATE ────────────────────────────────────────────────────────────────
+let cart = []; // [{id, name, price, qty, note}]
+let activeCat = 'all';
+let pendingItem = null; // item being configured in modal
+
+function loadCart() {
+    try {
+        const stored = sessionStorage.getItem('bs_cart');
+        if (stored) cart = JSON.parse(stored);
+    } catch(e) { cart = []; }
+}
+
+function saveCart() {
+    sessionStorage.setItem('bs_cart', JSON.stringify(cart));
+}
+
+function getCartItem(id) {
+    return cart.find(i => i.id === id);
+}
+
+function getCartQty(id) {
+    const item = getCartItem(id);
+    return item ? item.qty : 0;
+}
+
+function cartCount() {
+    return cart.reduce((s, i) => s + i.qty, 0);
+}
+
+function cartTotal() {
+    return cart.reduce((s, i) => s + i.qty * i.price, 0);
+}
+
+function addToCart(item, qty, note) {
+    const existing = getCartItem(item.id);
+    if (existing) {
+        existing.qty += qty;
+        if (note) existing.note = note;
+    } else {
+        cart.push({ id: item.id, name: item.name, price: item.price, qty, note: note || '' });
+    }
+    saveCart();
+    refreshItemCard(item.id);
+    updateCartBar();
+}
+
+function changeQtyDirect(itemId, delta) {
+    const menuItem = MENU_ITEMS.find(i => i.id === itemId);
+    if (!menuItem) return;
+    const existing = getCartItem(itemId);
+    const newQty = Math.max(0, (existing ? existing.qty : 0) + delta);
+    if (newQty === 0) {
+        cart = cart.filter(i => i.id !== itemId);
+    } else if (existing) {
+        existing.qty = newQty;
+    } else {
+        cart.push({ id: itemId, name: menuItem.name, price: menuItem.price, qty: newQty, note: '' });
+    }
+    saveCart();
+    refreshItemCard(itemId);
+    updateCartBar();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderMenu() {
+    const container = document.getElementById('menu-content');
+    let html = '';
+
+    CATEGORIES.forEach(cat => {
+        if (activeCat !== 'all' && activeCat !== cat.id) return;
+        const items = MENU_ITEMS.filter(i => i.cat === cat.id);
+        if (!items.length) return;
+
+        // group by sub-category
+        const subs = {};
+        items.forEach(item => {
+            const key = item.sub || '__main__';
+            if (!subs[key]) subs[key] = [];
+            subs[key].push(item);
+        });
+
+        html += `<div class="cat-section" id="cat-${cat.id}">
+            <div class="cat-section-header">
+                <span class="cat-section-icon">${cat.icon}</span>
+                <span class="cat-section-title">${cat.label}</span>
+                ${cat.note ? `<span class="cat-section-note">${cat.note}</span>` : ''}
+            </div>`;
+
+        Object.entries(subs).forEach(([sub, subItems]) => {
+            if (sub !== '__main__') {
+                html += `<div class="cat-subsection"><div class="cat-subsection-label">${sub}</div>`;
+            }
+            html += `<div class="items-grid">`;
+            subItems.forEach(item => {
+                html += renderItemCard(item);
+            });
+            html += `</div>`;
+            if (sub !== '__main__') html += `</div>`;
+        });
+
+        html += `</div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+function renderItemCard(item) {
+    const qty = getCartQty(item.id);
+    const inCart = qty > 0;
+    return `<div class="mi-card ${inCart ? 'in-cart' : ''}" id="mic-${item.id}">
+        <div class="mi-info">
+            <div class="mi-name">${item.name}</div>
+            ${item.desc ? `<div class="mi-desc">${item.desc}</div>` : ''}
+            <div class="mi-price">EGP ${item.price}</div>
+        </div>
+        <div class="mi-controls">
+            ${inCart ? `
+                <button class="qty-btn" onclick="handleMinus('${item.id}')"><i class="fas fa-minus" style="font-size:0.6rem"></i></button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn" onclick="handlePlus('${item.id}')"><i class="fas fa-plus" style="font-size:0.6rem"></i></button>
+            ` : `
+                <button class="add-btn" onclick="handlePlus('${item.id}')"><i class="fas fa-plus" style="font-size:0.75rem"></i></button>
+            `}
+        </div>
+    </div>`;
+}
+
+function refreshItemCard(itemId) {
+    const el = document.getElementById('mic-' + itemId);
+    if (!el) return;
+    const item = MENU_ITEMS.find(i => i.id === itemId);
+    if (!item) return;
+    el.outerHTML = renderItemCard(item);
+}
+
+function handlePlus(itemId) {
+    const item = MENU_ITEMS.find(i => i.id === itemId);
+    if (!item) return;
+    if (item.hasSides) {
+        openSidesModal(item);
+    } else {
+        addToCart(item, 1, '');
+    }
+}
+
+function handleMinus(itemId) {
+    changeQtyDirect(itemId, -1);
+}
+
+function updateCartBar() {
+    const count = cartCount();
+    const total = cartTotal();
+    const bar = document.getElementById('cart-bar');
+    if (count > 0) {
+        bar.classList.add('visible');
+        document.getElementById('cart-count-label').textContent = `${count} item${count !== 1 ? 's' : ''}`;
+        document.getElementById('cart-total-label').textContent = `EGP ${total}`;
+    } else {
+        bar.classList.remove('visible');
+    }
+}
+
+// ── CATEGORY FILTER ───────────────────────────────────────────────────────────
+function filterCat(catId) {
+    activeCat = catId;
+    document.querySelectorAll('.cat-pill').forEach((pill, i) => {
+        const cats = ['all', 'breakfast', 'appetizers', 'soups', 'salads', 'sandwiches', 'pasta', 'mains', 'desserts', 'beverages'];
+        pill.classList.toggle('active', cats[i] === catId);
+    });
+    renderMenu();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── SIDES MODAL ───────────────────────────────────────────────────────────────
+function openSidesModal(item) {
+    pendingItem = item;
+    document.getElementById('modal-item-name').textContent = item.name;
+    document.getElementById('modal-item-price').textContent = `EGP ${item.price}`;
+
+    const body = document.getElementById('modal-body');
+    const sidesHtml = SIDES_OPTIONS.map((s, i) => `
+        <div class="option-item" id="side-opt-${i}" onclick="toggleSide(${i})">
+            <input type="checkbox" id="side-cb-${i}" value="${s}">
+            <span class="option-label">${s}</span>
+        </div>`).join('');
+
+    body.innerHTML = `
+        <div class="sides-counter" id="sides-counter">Choose 2 sides (or 1 pasta)</div>
+        <div class="modal-section-label">Sides (choose 2)</div>
+        <div class="option-list">${sidesHtml}
+            <div class="option-item" id="side-opt-pasta" onclick="togglePasta()">
+                <input type="checkbox" id="side-cb-pasta" value="Pasta">
+                <span class="option-label">Pasta (replaces 2 sides)</span>
+            </div>
+        </div>
+        <div class="modal-section-label">Special Requests</div>
+        <textarea class="modal-note-field" id="modal-note" rows="2" placeholder="e.g. No sauce, extra spicy…"></textarea>
+    `;
+
+    document.getElementById('modal-overlay').classList.add('open');
+    updateSidesCount();
+}
+
+function toggleSide(idx) {
+    const cb = document.getElementById('side-cb-' + idx);
+    const opt = document.getElementById('side-opt-' + idx);
+    const pastaOpt = document.getElementById('side-opt-pasta');
+    if (pastaOpt && document.getElementById('side-cb-pasta').checked) return;
+
+    const checked = document.querySelectorAll('.option-list input[type="checkbox"]:not(#side-cb-pasta):checked');
+    if (!cb.checked && checked.length >= 2) return;
+    cb.checked = !cb.checked;
+    opt.classList.toggle('selected', cb.checked);
+    updateSidesCount();
+}
+
+function togglePasta() {
+    const cb = document.getElementById('side-cb-pasta');
+    const opt = document.getElementById('side-opt-pasta');
+    const isChecked = !cb.checked;
+    cb.checked = isChecked;
+    opt.classList.toggle('selected', isChecked);
+    // Uncheck other sides if pasta selected
+    if (isChecked) {
+        SIDES_OPTIONS.forEach((_, i) => {
+            const sideCb = document.getElementById('side-cb-' + i);
+            const sideOpt = document.getElementById('side-opt-' + i);
+            if (sideCb) { sideCb.checked = false; if(sideOpt) sideOpt.classList.remove('selected'); }
+        });
+    }
+    updateSidesCount();
+}
+
+function updateSidesCount() {
+    const pastaChecked = document.getElementById('side-cb-pasta') && document.getElementById('side-cb-pasta').checked;
+    const sidesChecked = document.querySelectorAll('.option-list input[type="checkbox"]:not(#side-cb-pasta):checked').length;
+    const counter = document.getElementById('sides-counter');
+    const addBtn = document.getElementById('modal-add-btn');
+    if (pastaChecked) {
+        if(counter) counter.textContent = '✓ Pasta selected';
+        if(addBtn) addBtn.disabled = false;
+    } else {
+        if(counter) counter.textContent = `${sidesChecked}/2 sides selected`;
+        if(addBtn) addBtn.disabled = sidesChecked < 2;
+    }
+}
+
+function confirmModal() {
+    if (!pendingItem) return;
+    const pastaChecked = document.getElementById('side-cb-pasta') && document.getElementById('side-cb-pasta').checked;
+    let sidesNote = '';
+    if (pastaChecked) {
+        sidesNote = 'Pasta';
+    } else {
+        const checked = [];
+        SIDES_OPTIONS.forEach((s, i) => {
+            if (document.getElementById('side-cb-' + i) && document.getElementById('side-cb-' + i).checked) checked.push(s);
+        });
+        sidesNote = checked.join(' + ');
+    }
+    const extraNote = document.getElementById('modal-note') ? document.getElementById('modal-note').value.trim() : '';
+    const fullNote = [sidesNote ? 'Sides: ' + sidesNote : '', extraNote].filter(Boolean).join(' · ');
+    addToCart(pendingItem, 1, fullNote);
+    closeModal();
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    pendingItem = null;
+}
+
+function closeModalOnBackdrop(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ── CART MODAL ────────────────────────────────────────────────────────────────
+function viewCart() {
+    renderCartModal();
+    document.getElementById('cart-modal-overlay').classList.add('open');
+}
+
+function renderCartModal() {
+    const list = document.getElementById('cart-items-list');
+    const footer = document.getElementById('cart-summary-footer');
+    if (!cart.length) {
+        list.innerHTML = '<div class="empty-cart-hint">Your cart is empty. Browse the menu and add items!</div>';
+        footer.innerHTML = '';
+        return;
+    }
+    list.innerHTML = cart.map(item => `
+        <div style="display:flex;align-items:center;gap:0.8rem;padding:0.8rem 0;border-bottom:1px solid var(--border);">
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:0.9rem;font-weight:500;">${item.name}</div>
+                ${item.note ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">${item.note}</div>` : ''}
+                <div style="font-size:0.85rem;color:var(--accent);margin-top:3px;">EGP ${item.price}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;flex-shrink:0;">
+                <button class="qty-btn" onclick="cartAdjust('${item.id}',-1)"><i class="fas fa-minus" style="font-size:0.6rem"></i></button>
+                <span style="min-width:20px;text-align:center;font-weight:600;">${item.qty}</span>
+                <button class="qty-btn" onclick="cartAdjust('${item.id}',1)"><i class="fas fa-plus" style="font-size:0.6rem"></i></button>
+            </div>
+            <div style="font-size:0.9rem;font-weight:600;color:var(--text-main);min-width:60px;text-align:right;">EGP ${item.qty * item.price}</div>
+        </div>`).join('');
+
+    const total = cartTotal();
+    footer.innerHTML = `
+        <div style="padding-top:1rem;border-top:1px solid var(--border);margin-top:0.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <span style="font-size:1rem;font-weight:700;">Total</span>
+                <span style="font-size:1.1rem;font-weight:700;color:var(--accent);">EGP ${total}</span>
+            </div>
+            <a href="order.html" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.95rem;background:var(--accent);color:var(--bg-base);border:none;border-radius:50px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;text-decoration:none;">
+                Proceed to Checkout <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>`;
+}
+
+function cartAdjust(itemId, delta) {
+    const item = cart.find(i => i.id === itemId);
+    if (!item) return;
+    item.qty = Math.max(0, item.qty + delta);
+    if (item.qty === 0) cart = cart.filter(i => i.id !== itemId);
+    saveCart();
+    refreshItemCard(itemId);
+    updateCartBar();
+    renderCartModal();
+}
+
+function closeCartOnBackdrop(e) {
+    if (e.target === document.getElementById('cart-modal-overlay')) {
+        document.getElementById('cart-modal-overlay').classList.remove('open');
+    }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadCart();
+renderMenu();
+updateCartBar();
+</script>
+</body>
+</html>

@@ -229,43 +229,42 @@
         #menus { padding: 8rem 5%; position: relative; }
         #menus .inner { max-width: 1100px; margin: 0 auto; }
 
-        .menu-tabs {
-            display: flex; gap: 0.5rem; 
-            border-radius: 50px; padding: 8px;
-            width: fit-content; margin: 0 auto 3.5rem;
-            flex-wrap: wrap; justify-content: center;
-        }
-        .menu-tab-btn {
-            background: transparent; border: none; color: var(--text-muted);
-            font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 500;
-            padding: 0.8rem 1.8rem; border-radius: 50px; cursor: pointer;
-            transition: var(--trans); white-space: nowrap;
-        }
-        .menu-tab-btn.active { background: rgba(255,255,255,0.15); color: var(--text-main); font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .menu-tab-btn:not(.active):hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-
-        .menu-embed-panels { position: relative; }
-        .menu-embed-panel { display: none; flex-direction: column; align-items: center; gap: 1.2rem; }
-        .menu-embed-panel.active { display: flex; animation: fadeIn 0.6s ease forwards; }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .flipbook-frame-wrap {
-            width: 100%; border-radius: var(--radius-xl); overflow: hidden;
-            border: 8px solid rgba(255, 255, 255, 0.05);
-            transition: var(--trans);
+        /* Menu page cards */
+        .menu-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
         }
-        .flipbook-frame-wrap:hover { box-shadow: var(--shadow-hover); transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
-        .flipbook-frame-wrap iframe { width: 100%; height: 660px; border: none; display: block; border-radius: calc(var(--radius-xl) - 8px); background: transparent;} 
-        
-        .flipbook-open-link {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            font-size: 0.9rem; font-weight: 500; color: var(--text-muted); transition: var(--trans); padding: 10px;
+        .menu-page-card {
+            display: flex; flex-direction: column;
+            padding: 2.2rem 2rem; border-radius: var(--radius-lg);
+            text-decoration: none; color: var(--text-main);
+            transition: var(--trans); position: relative; overflow: hidden;
         }
-        .flipbook-open-link:hover { color: var(--text-main); transform: translateY(-2px); }
+        .menu-page-card::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,183,178,0.04) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .menu-page-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-hover); border-color: rgba(255,255,255,0.18); }
+        .mpc-emoji {
+            font-size: 2.2rem; width: 58px; height: 58px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,183,178,0.1); border-radius: 50%;
+            border: 1px solid rgba(255,183,178,0.2); margin-bottom: 1.4rem;
+        }
+        .mpc-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .mpc-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; flex: 1; }
+        .mpc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; }
+        .mpc-cta { font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+        .mpc-arrow { color: var(--accent); font-size: 0.9rem; transition: transform 0.3s; }
+        .menu-page-card:hover .mpc-arrow { transform: translateX(5px); }
+        @media (max-width: 900px) { .menu-cards-grid { grid-template-columns: 1fr; } }
 
         /* Gallery */
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
@@ -469,7 +468,9 @@
     </div>
 
     <div class="mobile-menu" id="mobile-menu">
-        <a onclick="mobileNavTo('menus')">Menus</a>
+        <a href="menu.html">Menu</a>
+        <a href="pizza-menu.html">Pizza Menu</a>
+        <a href="sushi-menu.html">Sushi Menu</a>
         <a onclick="mobileNavTo('gallery')">Atmosphere</a>
         <a onclick="mobileNavTo('instagram-section')">Social</a>
         <a onclick="mobileNavTo('faq-section')">FAQ</a>
@@ -480,9 +481,10 @@
     <nav>
         <div class="logo-text"><div class="logo-dot"></div> BeanStalk</div>
         <div class="nav-links">
-            <a onclick="navTo('menus')" data-hover>Menus</a>
+            <a href="menu.html" data-hover>Menu</a>
+            <a href="pizza-menu.html" data-hover>Pizza</a>
+            <a href="sushi-menu.html" data-hover>Sushi</a>
             <a onclick="navTo('gallery')" data-hover>Atmosphere</a>
-            <a onclick="navTo('instagram-section')" data-hover>Social</a>
             <a onclick="navTo('faq-section')" data-hover>FAQ</a>
             <a href="order.html" data-hover style="color:var(--accent);font-weight:600;">Order Now 🛵</a>
         </div>
@@ -530,50 +532,37 @@
                     <h2 class="section-title">The Menus</h2>
                 </div>
 
-                <div class="menu-tabs glass-panel reveal">
-                    <button class="menu-tab-btn active" onclick="switchMenu(0)">BeanStalk Menu</button>
-                    <button class="menu-tab-btn" onclick="switchMenu(1)">BeanStalk Catering</button>
-                    <button class="menu-tab-btn" onclick="switchMenu(2)">Kaiyo Sushi</button>
-                    <button class="menu-tab-btn" onclick="switchMenu(3)">Sushi Catering</button>
+                <div class="menu-cards-grid reveal">
+                    <a href="menu.html" class="menu-page-card glass-panel" data-hover>
+                        <div class="mpc-emoji">🍽️</div>
+                        <h3 class="mpc-title">BeanStalk Menu</h3>
+                        <p class="mpc-desc">Breakfast · Starters · Soups · Salads · Sandwiches & Burgers · Pasta · Main Courses · Desserts · Beverages</p>
+                        <div class="mpc-footer">
+                            <span class="mpc-cta">Browse & Order</span>
+                            <i class="fas fa-arrow-right mpc-arrow"></i>
+                        </div>
+                    </a>
+                    <a href="pizza-menu.html" class="menu-page-card glass-panel" data-hover>
+                        <div class="mpc-emoji">🍕</div>
+                        <h3 class="mpc-title">Pizza Menu</h3>
+                        <p class="mpc-desc">Neapolitan & New York Style hand-crafted pizzas — Margherita, Bufalina, Five Cheese, Seafood and more</p>
+                        <div class="mpc-footer">
+                            <span class="mpc-cta">Browse & Order</span>
+                            <i class="fas fa-arrow-right mpc-arrow"></i>
+                        </div>
+                    </a>
+                    <a href="sushi-menu.html" class="menu-page-card glass-panel" data-hover>
+                        <div class="mpc-emoji">🍣</div>
+                        <h3 class="mpc-title">Sushi by Kaiyō</h3>
+                        <p class="mpc-desc">Nigiri · Sashimi · Special Rolls · Hot Rolls · Dynamite · Combos crafted by our master sushi chef</p>
+                        <div class="mpc-footer">
+                            <span class="mpc-cta">Browse & Order</span>
+                            <i class="fas fa-arrow-right mpc-arrow"></i>
+                        </div>
+                    </a>
                 </div>
 
-                <div class="menu-embed-panels">
-                    <div class="menu-embed-panel active">
-                        <div class="flipbook-frame-wrap glass-panel">
-                            <iframe src="https://heyzine.com/flip-book/3bde8f9baf.html" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
-                        </div>
-                        <a href="https://heyzine.com/flip-book/3bde8f9baf.html" target="_blank" class="flipbook-open-link">
-                            Open Full Screen <i class="fas fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
-
-                    <div class="menu-embed-panel">
-                        <div class="flipbook-frame-wrap glass-panel">
-                            <iframe src="https://heyzine.com/flip-book/4599dd9732.html" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
-                        </div>
-                        <a href="https://heyzine.com/flip-book/4599dd9732.html" target="_blank" class="flipbook-open-link">
-                            Open Full Screen <i class="fas fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
-
-                    <div class="menu-embed-panel">
-                        <div class="flipbook-frame-wrap glass-panel">
-                            <iframe src="https://heyzine.com/flip-book/890a376642.html" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
-                        </div>
-                        <a href="https://heyzine.com/flip-book/890a376642.html" target="_blank" class="flipbook-open-link">
-                            Open Full Screen <i class="fas fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
-
-                    <div class="menu-embed-panel">
-                        <div class="flipbook-frame-wrap glass-panel">
-                            <iframe src="https://heyzine.com/flip-book/52e6956595.html" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" loading="lazy"></iframe>
-                        </div>
-                        <a href="https://heyzine.com/flip-book/52e6956595.html" target="_blank" class="flipbook-open-link">
-                            Open Full Screen <i class="fas fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
-                </div>
+                <p class="reveal" style="text-align:center;color:var(--text-muted);font-size:0.82rem;margin-top:2rem;">All prices in Egyptian Pounds (LE) · Subject to 14% sales tax + 12% service charge</p>
             </div>
         </section>
 
@@ -731,9 +720,9 @@
                         <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Drop a pin anywhere on the map for precise delivery — no confusing directions needed.</p>
                     </div>
                     <div class="glass-panel" style="padding:2rem;border-radius:2rem;text-align:center;">
-                        <div style="font-size:2.2rem;margin-bottom:1rem;">🛵</div>
-                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Live Driver Tracking</h3>
-                        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Watch your driver in real-time on a live map from the moment your order is picked up.</p>
+                        <div style="font-size:2.2rem;margin-bottom:1rem;">⏱️</div>
+                        <h3 style="font-size:1rem;margin-bottom:0.5rem;">Smart Delivery ETA</h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);line-height:1.6;">Get an accurate delivery estimate based on your pinned location — calculated the moment you place your order.</p>
                     </div>
                     <div class="glass-panel" style="padding:2rem;border-radius:2rem;text-align:center;">
                         <div style="font-size:2.2rem;margin-bottom:1rem;">🧾</div>
@@ -801,15 +790,6 @@
             });
         }
 
-        // Menu tab switcher
-        function switchMenu(index) {
-            document.querySelectorAll('.menu-tab-btn').forEach((btn, i) => {
-                btn.classList.toggle('active', i === index);
-            });
-            document.querySelectorAll('.menu-embed-panel').forEach((panel, i) => {
-                panel.classList.toggle('active', i === index);
-            });
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const textWrapper = document.querySelector('.splash-text');
