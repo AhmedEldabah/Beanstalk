@@ -45,7 +45,7 @@ const GOOGLE_MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY";
 const RESTAURANT_LAT = 30.0251109;
 const RESTAURANT_LNG = 30.9881616;
 const RESTAURANT_NAME = "BeanStalk";
-const RESTAURANT_PHONE = "+201000000000"; // ← update with actual phone
+const RESTAURANT_PHONE = "+201229873306";
 const RESTAURANT_ADDRESS = "BeanStalk, Sheikh Zayed City, Giza Governorate, Egypt";
 
 // Delivery settings

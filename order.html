@@ -719,8 +719,16 @@ function useMyLocation() {
             placeDeliveryPin(pos.coords.latitude, pos.coords.longitude);
             if (mapInstance) mapInstance.setView([pos.coords.latitude, pos.coords.longitude], 15);
         },
-        function() {
-            showToast('Could not get your location. Please tap the map instead.', 'error');
+        function(err) {
+            if (err.code === err.PERMISSION_DENIED) {
+                showToast('Location access denied. Please allow location in your browser settings, then try again.', 'error');
+            } else if (err.code === err.POSITION_UNAVAILABLE) {
+                showToast('Location unavailable. Please tap the map to pin your delivery spot.', 'error');
+            } else if (err.code === err.TIMEOUT) {
+                showToast('Location request timed out. Please tap the map to pin your delivery spot.', 'error');
+            } else {
+                showToast('Could not get your location. Please tap the map instead.', 'error');
+            }
         },
         { enableHighAccuracy: true, timeout: 10000 }
     );
