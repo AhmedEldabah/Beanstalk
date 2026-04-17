@@ -427,6 +427,7 @@ async function loadEarnings(driverId) {
 
         document.getElementById('stat-deliveries').textContent = todayOrders.length;
         // Drivers earn 20% of delivery fee
+        // Driver pay = 20% of delivery fee + EGP 10 base per delivery
         const todayEarnings = todayOrders.reduce((s, o) => s + Math.round((o.deliveryFee || 0) * 0.2 + 10), 0);
         document.getElementById('stat-earnings').textContent = 'EGP ' + todayEarnings;
         document.getElementById('stat-week').textContent = weekOrders.length + ' orders';

@@ -233,6 +233,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
+// ─── XSS HELPER ──────────────────────────────────────────────────────────────
+function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = String(str ?? '');
+    return d.innerHTML;
+}
+
 const PAYMENT_LABELS = { cash: 'Cash on Delivery', card: 'Card on Delivery', instapay: 'InstaPay', vodafone: 'Vodafone Cash' };
 const STATUS_STEPS = [
     { key: 'pending',    label: 'Order Received',    sub: 'We\'ve got your order!',              icon: 'fas fa-inbox' },
@@ -322,15 +329,23 @@ function renderOrder(o) {
     if (o.customerLandmark) { document.getElementById('r-landmark').textContent = o.customerLandmark; document.getElementById('r-landmark-row').style.display = 'flex'; }
     if (o.orderNotes) { document.getElementById('r-notes').textContent = o.orderNotes; document.getElementById('r-notes-row').style.display = 'flex'; }
 
-    // Items
+    // Items — build rows via DOM to avoid XSS
     const tbody = document.getElementById('r-items');
-    tbody.innerHTML = (o.items || []).map(item => `
-        <tr>
-            <td>${item.name}</td>
-            <td><span class="item-qty-badge">${item.qty}</span></td>
-            <td>EGP ${item.subtotal}</td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = '';
+    (o.items || []).forEach(item => {
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td');
+        tdName.textContent = item.name;
+        const tdQty = document.createElement('td');
+        const badge = document.createElement('span');
+        badge.className = 'item-qty-badge';
+        badge.textContent = item.qty;
+        tdQty.appendChild(badge);
+        const tdPrice = document.createElement('td');
+        tdPrice.textContent = 'EGP ' + item.subtotal;
+        tr.appendChild(tdName); tr.appendChild(tdQty); tr.appendChild(tdPrice);
+        tbody.appendChild(tr);
+    });
 
     // Totals
     document.getElementById('r-subtotal').textContent = `EGP ${o.subtotal || 0}`;
@@ -360,28 +375,63 @@ function renderOrder(o) {
 function updateStatusTracker(currentStatus, o) {
     const currentIdx = STATUS_ORDER.indexOf(currentStatus);
     const container = document.getElementById('status-steps');
-    container.innerHTML = STATUS_STEPS.map((step, i) => {
+    container.innerHTML = '';
+
+    STATUS_STEPS.forEach((step, i) => {
         let iconClass = 'pending';
         if (i < currentIdx) iconClass = 'done';
         else if (i === currentIdx) iconClass = 'active';
 
         const isLast = i === STATUS_STEPS.length - 1;
-        const timeStr = (i === 0 && o.createdAt) ? new Date(o.createdAt).toLocaleTimeString('en-EG', { hour:'2-digit', minute:'2-digit' }) : '';
+        const timeStr = (i === 0 && o.createdAt)
+            ? new Date(o.createdAt).toLocaleTimeString('en-EG', { hour: '2-digit', minute: '2-digit' })
+            : '';
 
-        return `
-            <div class="status-step">
-                <div class="step-icon-wrap">
-                    <div class="step-icon ${iconClass}"><i class="${step.icon}"></i></div>
-                    ${!isLast ? `<div class="step-line ${i < currentIdx ? 'done' : ''}"></div>` : ''}
-                </div>
-                <div class="step-text">
-                    <div class="step-name">${step.label}</div>
-                    <div class="step-sub">${step.sub}</div>
-                    ${timeStr ? `<div class="step-time">${timeStr}</div>` : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
+        // Build DOM safely
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'status-step';
+
+        const iconWrap = document.createElement('div');
+        iconWrap.className = 'step-icon-wrap';
+
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'step-icon ' + iconClass;
+        const iTag = document.createElement('i');
+        iTag.className = step.icon;  // e.g. "fas fa-inbox" — static constant, not user data
+        iconDiv.appendChild(iTag);
+        iconWrap.appendChild(iconDiv);
+
+        if (!isLast) {
+            const line = document.createElement('div');
+            line.className = 'step-line' + (i < currentIdx ? ' done' : '');
+            iconWrap.appendChild(line);
+        }
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'step-text';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'step-name';
+        nameDiv.textContent = step.label;
+
+        const subDiv = document.createElement('div');
+        subDiv.className = 'step-sub';
+        subDiv.textContent = step.sub;
+
+        textDiv.appendChild(nameDiv);
+        textDiv.appendChild(subDiv);
+
+        if (timeStr) {
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'step-time';
+            timeDiv.textContent = timeStr;
+            textDiv.appendChild(timeDiv);
+        }
+
+        stepDiv.appendChild(iconWrap);
+        stepDiv.appendChild(textDiv);
+        container.appendChild(stepDiv);
+    });
 }
 
 // ─── SHARE ────────────────────────────────────────────────────────────────────

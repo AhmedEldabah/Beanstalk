@@ -282,7 +282,7 @@
                         <div class="ff"><label>Email</label><input id="drv-email" type="email" placeholder="driver@email.com"></div>
                         <div class="ff"><label>Vehicle</label><input id="drv-vehicle" type="text" placeholder="Motorcycle · Blue · ABC 123"></div>
                         <div class="ff"><label>National ID</label><input id="drv-nid" type="text" placeholder="29XXXXXXXXXX"></div>
-                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="text" placeholder="Give driver this to log in" value="BeanStalk2024!"></div>
+                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="password" placeholder="Give driver this to log in" value="BeanStalk2024!"></div>
                     </div>
                     <button class="submit-btn" onclick="addDriver()"><i class="fas fa-plus"></i> Create Driver Account</button>
                     <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.8rem;"><i class="fas fa-info-circle"></i> This creates a Firebase Auth account. The driver logs into driver.html with this email & password.</div>
@@ -709,6 +709,7 @@ function buildAnalytics() {
         const id = o.assignedDriver.id;
         if (!perf[id]) perf[id] = { name: o.assignedDriver.name, count: 0, earnings: 0 };
         perf[id].count++;
+        // Driver pay = 20% of delivery fee + EGP 10 base per delivery
         perf[id].earnings += Math.round((o.deliveryFee || 0) * 0.2 + 10);
     });
     const rows = Object.values(perf).sort((a,b) => b.count - a.count);

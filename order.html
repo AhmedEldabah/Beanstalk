@@ -551,8 +551,8 @@ async function placeOrder() {
             const ref = await db.collection('orders').add(order);
             orderId = ref.id;
         } else {
-            // Demo mode: generate a local ID
-            orderId = 'BS-' + Date.now().toString(36).toUpperCase();
+            // Demo mode: generate a collision-resistant local ID
+            orderId = 'BS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
         }
 
         // Always notify the restaurant via Formspree (fire-and-forget)
