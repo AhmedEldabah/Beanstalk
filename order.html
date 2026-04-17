@@ -507,7 +507,7 @@ function loadCartFromSession() {
         sessionItems.forEach(item => {
             // Add to MENU reference if not already there
             if (!MENU.find(m => m.id === item.id)) {
-                MENU.push({ id: item.id, name: item.name, desc: item.note || '', price: item.price });
+                MENU.push({ id: item.id, name: item.name, desc: item.note || '', price: item.price, cat: 'Other' });
             }
             cart[item.id] = (cart[item.id] || 0) + item.qty;
             if (item.note) cartNotes[item.id] = item.note;
@@ -516,20 +516,43 @@ function loadCartFromSession() {
     } catch(e) { console.warn('Could not load cart from session:', e.message); }
 }
 
+// ─── CATEGORY MAPPING ────────────────────────────────────────────────────────
+// Map each item's id prefix or desc to a display category
+const CAT_PREFIXES = {
+    Breakfast:  ['salmon_benedict','sausage_mush','turkey_spinach','cheese_scrambled','shakshuka','club_sandwich_b','american_breakfast','oriental_breakfast','pain_perdu','pancakes','additional_fruits'],
+    Starters:   ['homemade_fries','party_nachos','classic_nachos','crispy_chkn_tenders','chicken_pops','cheese_basterma','potato_crunchy','bbq_buzz_wings','cheesy_chkn_bites','loaded_potato_skins','glazed_crispy_beef','tempura_moriawase','dynamite_shrimp_app','edamame'],
+    Soups:      ['mushroom_soup','roasted_tomato_soup','seafood_soup'],
+    Salads:     ['mexican_salad','garden_delight','burrata_salad','greek_salad','caesar_salad','shrimp_crispy_rice_sal','crab_crispy_rice_sal','rucola_bresaola_sal','shrimp_crab_sal','salmon_salad_s','wakame_salad','seaweed_salad','octopus_salad'],
+    Burgers:    ['smoked_salmon_sw','roast_beef_cold','tuna_salad_sw','grilled_cheese','truffle_beef_sw','roast_beef_hot','balsamic_chicken_sw','crispy_chicken_sw','garlic_teriyaki_sw','bonanza_wrap','beef_shawerma','chicken_shawerma_wrap','chicken_taco','shrimp_taco','smashed_burger','buzz_burger','messy_burger','scarlet_smash_burger'],
+    Pasta:      ['chicken_alfredo','pesto_pomodoro_pasta','bolognese','fishermans_pasta','twilight_pink_sauce','bianca_bliss'],
+    Main:       ['beef_tenderloin','rustic_steak_fries','truffle_beef_fillet','escalope','mongolian_beef','crispy_herbed_beef','pesto_pom_chicken','mushroom_chicken','sicilian_chicken','sweet_chili_chicken','healthy_grilled_chkn','citrus_lemon_chicken','loaded_crunch_chicken','chicken_ala_rosa','grilled_salmon','sweet_chili_shrimp'],
+    Desserts:   ['sweet_potato_gratin','classic_tres_leches','crepe','nutella_fudge','coffee_jello','fruit_salad_dessert','dessert_display'],
+    Beverages:  ['espresso','latte','cappuccino','turkish_coffee','tea','hot_chocolate','soft_drink','fresh_juice','avocado_juice','shake','mojito','frappe','red_bull'],
+    Pizza:      ['margherita_','bufalina_','italiana_','five_cheese_','burrata_pizza_','diavola_','oriental_sausage_','bbq_chicken_pizza_','buffalo_chicken_','chicken_shwrma_pizza_','smoked_salmon_pizza_','seafood_pizza_'],
+    Sushi:      ['salmon_nigiri','tuna_nigiri','eel_nigiri','caviar_nigiri','sp_','salmon_sash','tuna_sash','mixed_sash','tataki_','chirashi_','poke_bowl','california_roll','philadelphia_roll','rainbow_roll','golden_roll','crispy_shrimp_roll','dragon_roll','tiger_roll','spider_roll','truffle_salmon_roll','spicy_lemon','hot_ura_saki','volcano_roll','hot_dynamite_roll','dynamite_salmon','dynamite_shrimp_r','dynamite_shrimp','gunkan_','mono_maki_','combo_','shrimp_crab_sal','salmon_salad_s','wakame_salad','seaweed_salad','octopus_salad','tempura_moriawase','edamame'],
+};
+
+function getItemCat(item) {
+    for (const [cat, prefixes] of Object.entries(CAT_PREFIXES)) {
+        if (prefixes.some(p => item.id === p || item.id.startsWith(p))) return cat;
+    }
+    return 'Other';
+}
+
 // ─── BUILD MENU GRID ─────────────────────────────────────────────────────────
 const MENU_CATEGORIES = [
-    { id: 'all',         label: '🍽️ All' },
-    { id: 'Breakfast',   label: '🌅 Breakfast' },
-    { id: 'Starters',    label: '🥗 Starters' },
-    { id: 'Soups',       label: '🍲 Soups' },
-    { id: 'Salads',      label: '🥙 Salads' },
-    { id: 'Burgers',     label: '🥪 Burgers' },
-    { id: 'Pasta',       label: '🍝 Pasta' },
-    { id: 'Main',        label: '🥩 Mains' },
-    { id: 'Desserts',    label: '🍰 Desserts' },
-    { id: 'Beverages',   label: '☕ Drinks' },
-    { id: 'Pizza',       label: '🍕 Pizza' },
-    { id: 'Sushi',       label: '🍣 Sushi' },
+    { id: 'all',        label: '🍽️ All' },
+    { id: 'Breakfast',  label: '🌅 Breakfast' },
+    { id: 'Starters',   label: '🥗 Starters' },
+    { id: 'Soups',      label: '🍲 Soups' },
+    { id: 'Salads',     label: '🥙 Salads' },
+    { id: 'Burgers',    label: '🥪 Sandwiches' },
+    { id: 'Pasta',      label: '🍝 Pasta' },
+    { id: 'Main',       label: '🥩 Mains' },
+    { id: 'Desserts',   label: '🍰 Desserts' },
+    { id: 'Beverages',  label: '☕ Drinks' },
+    { id: 'Pizza',      label: '🍕 Pizza' },
+    { id: 'Sushi',      label: '🍣 Sushi' },
 ];
 
 function buildMenu() {
@@ -540,7 +563,7 @@ function buildMenu() {
         ${MENU_CATEGORIES.map(c => `<button onclick="setMenuFilter('${c.id}')" id="mf-${c.id}" style="padding:0.35rem 0.8rem;border-radius:50px;border:1px solid var(--border);background:${menuFilter===c.id?'var(--accent)':'rgba(255,255,255,0.06)'};color:${menuFilter===c.id?'var(--bg-base)':'var(--text-muted)'};font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:${menuFilter===c.id?'600':'400'};cursor:pointer;white-space:nowrap;">${c.label}</button>`).join('')}
     </div>`;
 
-    const filtered = menuFilter === 'all' ? MENU : MENU.filter(i => i.desc && i.desc.includes(menuFilter));
+    const filtered = menuFilter === 'all' ? MENU : MENU.filter(i => getItemCat(i) === menuFilter);
 
     const itemsHtml = filtered.map(item => `
         <div class="menu-item ${(cart[item.id]||0)>0?'selected':''}" id="mi-${item.id}" onclick="toggleItem('${item.id}')">
