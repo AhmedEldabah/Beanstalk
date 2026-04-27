@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Saviro | Premium Sushi & Culinary</title>
-    <meta name="description" content="Saviro — masterfully crafted sushi and elevated culinary catering. Order delivery, browse the menu, or reserve a table." />
+    <title>Saviro | Premium Culinary</title>
+    <meta name="description" content="Saviro — elevated culinary catering. Order delivery, browse the menu, or reserve a table." />
     <meta name="theme-color" content="#0d0c0c" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="restaurant" />
     <meta property="og:site_name" content="Saviro" />
-    <meta property="og:title" content="Saviro | Premium Sushi & Culinary" />
-    <meta property="og:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta property="og:title" content="Saviro | Premium Culinary" />
+    <meta property="og:description" content="Elevated culinary catering. Order delivery or reserve a table." />
     <meta property="og:image" content="assets/og-cover.jpg" />
     <meta property="og:url" content="" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Saviro | Premium Sushi & Culinary" />
-    <meta name="twitter:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta name="twitter:title" content="Saviro | Premium Culinary" />
+    <meta name="twitter:description" content="Elevated culinary catering. Order delivery or reserve a table." />
     <meta name="twitter:image" content="assets/og-cover.jpg" />
 
     <!-- PWA -->
@@ -126,21 +126,18 @@
             border: 1px solid rgba(255, 183, 178, 0.35);
             opacity: 0;
         }
-        .splash-logo {
-            width: 104px; height: 104px; border-radius: 50%;
-            border: 2px solid rgba(255, 183, 178, 0.25);
-            object-fit: cover; opacity: 0;
-            box-shadow: 0 0 48px rgba(255, 183, 178, 0.18);
-            position: relative; z-index: 1;
-        }
         .splash-brand {
             font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
+            font-size: 2.8rem;
             color: var(--text-main);
-            letter-spacing: 0.12em;
-            font-weight: 600;
+            letter-spacing: 0.18em;
+            font-weight: 700;
+            display: flex;
+            gap: 0.04em;
+        }
+        .splash-brand .sl {
+            display: inline-block;
             opacity: 0;
-            margin-top: 1.6rem;
         }
         .splash-line {
             width: 0px; height: 1px;
@@ -317,6 +314,14 @@
         .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
         .gallery-item:hover .gallery-img { transform: scale(1.05); }
         .gallery-item:hover { border-color: rgba(255,255,255,0.2); box-shadow: var(--shadow-hover); }
+        .gallery-placeholder {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.03); border-radius: var(--radius-lg);
+            font-size: 0.85rem; font-weight: 500; color: var(--text-muted);
+            letter-spacing: 0.06em; text-transform: uppercase;
+            border: 2px dashed rgba(255,255,255,0.12);
+        }
 
         /* Testimonials (Diary Entries) */
         .review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; padding: 2rem 0; }
@@ -332,6 +337,13 @@
         
         .rev-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.5rem; }
         .rev-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+        .rev-avatar-placeholder {
+            width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.04); border: 2px dashed rgba(255,255,255,0.18);
+            font-size: 0.6rem; color: var(--text-muted); text-align: center;
+            text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.3;
+        }
         .rev-stars { color: var(--accent); font-size: 0.85rem; margin-top: 4px; }
         .review-card p { color: var(--text-main); font-size: 1.1rem; line-height: 1.7; font-weight: 400; margin-bottom: 2rem; }
         
@@ -509,16 +521,14 @@
 
     <div id="splash">
         <div class="splash-ring"></div>
-        <img src="assets/logo.png" class="splash-logo" alt="Saviro">
-        <div class="splash-brand">Saviro</div>
+        <div class="splash-brand"><span class="sl">S</span><span class="sl">a</span><span class="sl">v</span><span class="sl">i</span><span class="sl">r</span><span class="sl">o</span></div>
         <div class="splash-line"></div>
-        <div class="splash-tagline">Premium Sushi &amp; Culinary</div>
+        <div class="splash-tagline">Premium Culinary</div>
     </div>
 
     <div class="mobile-menu" id="mobile-menu">
         <a href="menu.html">Menu</a>
         <a href="pizza-menu.html">Pizza Menu</a>
-        <a href="sushi-menu.html">Sushi Menu</a>
         <a onclick="mobileNavTo('gallery')">Atmosphere</a>
         <a onclick="mobileNavTo('instagram-section')">Social</a>
         <a onclick="mobileNavTo('faq-section')">FAQ</a>
@@ -532,7 +542,6 @@
         <div class="nav-links">
             <a href="menu.html" data-hover>Menu</a>
             <a href="pizza-menu.html" data-hover>Pizza</a>
-            <a href="sushi-menu.html" data-hover>Sushi</a>
             <a onclick="navTo('gallery')" data-hover>Atmosphere</a>
             <a href="reservations.html" data-hover>Reserve</a>
             <a href="order.html" data-hover style="color:var(--accent);font-weight:600;">Order Now 🛵</a>
@@ -558,7 +567,7 @@
         
         <div class="hero-content">
             <h1 class="hero-text">Taste the <br><span class="cursive">Exceptional</span></h1>
-            <p class="hero-text">Masterfully crafted sushi and elevated culinary catering in the heart of the city. A serene dining experience designed to be savored.</p>
+            <p class="hero-text">Masterfully crafted culinary catering in the heart of the city. A serene dining experience designed to be savored.</p>
             <div class="hero-text" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
                 <div class="magnetic-wrapper">
                     <a onclick="navTo('menus')" class="magnetic-btn accent" data-hover>Explore The Menu</a>
@@ -603,15 +612,6 @@
                             <i class="fas fa-arrow-right mpc-arrow"></i>
                         </div>
                     </a>
-                    <a href="sushi-menu.html" class="menu-page-card glass-panel" data-hover>
-                        <div class="mpc-emoji">🍣</div>
-                        <h3 class="mpc-title">Sushi by Kaiyō</h3>
-                        <p class="mpc-desc">Nigiri · Sashimi · Special Rolls · Hot Rolls · Dynamite · Combos crafted by our master sushi chef</p>
-                        <div class="mpc-footer">
-                            <span class="mpc-cta">Browse & Order</span>
-                            <i class="fas fa-arrow-right mpc-arrow"></i>
-                        </div>
-                    </a>
                 </div>
 
                 <p class="reveal" style="text-align:center;color:var(--text-muted);font-size:0.82rem;margin-top:2rem;">Subject to applicable sales tax + service charge</p>
@@ -624,9 +624,9 @@
                 <h2 class="section-title">The Atmosphere</h2>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item reveal"><img src="https://lh3.googleusercontent.com/p/AF1QipP427nPcMhQjJLVFQ5RKDRJuuyqcvpEc0mFWxKd=s680-w680-h510-rw" class="gallery-img" data-hover></div>
-                <div class="gallery-item reveal"><img src="https://lh3.googleusercontent.com/p/AF1QipN8LAqGO3qRVIme63dQI4lBy6KvTuw2rUrRMazi=s680-w680-h510-rw" class="gallery-img" data-hover></div>
-                <div class="gallery-item reveal"><img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAGY_QvwL3vm_rKrm-pVoOgAe9Tq-bRKff8-xj9tCH0mnOgVaerXjfg4pctvpr7AlO-mO6exW40kvmg90Ydd_68wGT2dVnZwNa2RazDw_8cLwyZjwLnU1ieS65M2gFHHZvFImZc=s680-w680-h510-rw" class="gallery-img" data-hover></div>
+                <div class="gallery-item reveal"><div class="gallery-placeholder">Insert Image Here</div></div>
+                <div class="gallery-item reveal"><div class="gallery-placeholder">Insert Image Here</div></div>
+                <div class="gallery-item reveal"><div class="gallery-placeholder">Insert Image Here</div></div>
             </div>
         </section>
 
@@ -638,19 +638,19 @@
             <div class="review-grid">
                 <div class="review-card glass-panel reveal" data-hover>
                     <div class="rev-header">
-                        <img src="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEf3Buu8uq6rLYxBvztfA0cd7KXJXhoJdanSkT4DYxHFdi3PS2krs7lWm2UgdXXDR-ru1-wRlqVmWKmMXnrhTJV7F6wxAyqyFIHYxuzzQYfQSiPLKTmhX-afn2vQ1QDIS74CfM5qQ=s680-w680-h510-rw" class="rev-avatar">
+                        <div class="rev-avatar-placeholder">Insert Image Here</div>
                         <div>
                             <h3 style="font-size: 1.15rem;">Youssef A.</h3>
                             <div class="rev-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                         </div>
                     </div>
-                    <p>"An absolute gem in Zayed. I was completely blown away by the quality of the sushi rolls. The truffle salmon is incredible."</p>
+                    <p>"An absolute gem in Zayed. I was completely blown away by the quality of the rolls. The truffle salmon is incredible."</p>
                     <div class="diary-signature"><span>Youssef</span></div>
                 </div>
                 
                 <div class="review-card glass-panel reveal" data-hover>
                     <div class="rev-header">
-                        <img src="https://lh3.googleusercontent.com/p/AF1QipP427nPcMhQjJLVFQ5RKDRJuuyqcvpEc0mFWxKd=s680-w680-h510-rw" class="rev-avatar">
+                        <div class="rev-avatar-placeholder">Insert Image Here</div>
                         <div>
                             <h3 style="font-size: 1.15rem;">Nour H.</h3>
                             <div class="rev-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
@@ -677,13 +677,13 @@
                     </div>
                     <div class="ig-post-wrap glass-panel reveal" style="padding:2.5rem;flex-direction:column;gap:1.2rem;justify-content:center;height:100%;">
                         <div style="display:flex;align-items:center;gap:1rem;">
-                            <img src="assets/logo.png" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);">
+                            <div style="width:60px;height:60px;border-radius:50%;border:2px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;text-align:center;line-height:1.3;flex-shrink:0;">Insert Image Here</div>
                             <div>
                                 <div style="font-size:1.15rem; font-weight: 600;">Saviro</div>
                                 <div style="font-size:0.85rem;color:var(--text-muted);">@saviro</div>
                             </div>
                         </div>
-                        <p style="font-size:0.95rem;color:var(--text-muted);line-height:1.6;">Premium sushi, elevated catering and culinary experiences. Follow us for new dishes and events.</p>
+                        <p style="font-size:0.95rem;color:var(--text-muted);line-height:1.6;">Elevated catering and culinary experiences. Follow us for new dishes and events.</p>
                         <a href="https://www.instagram.com/" target="_blank" class="magnetic-btn light" style="padding: 0.6rem 1.5rem; font-size: 0.8rem;" data-hover>
                             View Profile
                         </a>
@@ -714,10 +714,6 @@
                     <div class="faq-item glass-panel">
                         <button class="faq-question" onclick="toggleFaq(this)">Do you cater for corporate events? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
                         <div class="faq-answer"><p>Absolutely. We specialise in corporate catering — from boardroom lunches to full event spreads. Our team handles setup, plating, and service.</p></div>
-                    </div>
-                    <div class="faq-item glass-panel">
-                        <button class="faq-question" onclick="toggleFaq(this)">Can I customise a sushi platter for an event? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
-                        <div class="faq-answer"><p>Yes — our Kaiyo sushi catering menu offers fully customisable platters and live sushi stations. You can choose the rolls and presentation style to match your event theme.</p></div>
                     </div>
                 </div>
             </div>
@@ -816,7 +812,7 @@
             <a href="https://www.facebook.com/" target="_blank" data-hover><i class="fab fa-facebook-f"></i></a>
             <a href="https://wa.me/" target="_blank" data-hover><i class="fab fa-whatsapp"></i></a>
         </div>
-        <p>© 2026 Saviro Culinary & Sushi.</p>
+        <p>© 2026 Saviro Culinary.</p>
     </footer>
 
     <div class="watermark-overlay">Mockup By TheWebMechanic</div>
@@ -872,9 +868,8 @@
 
                 // Premium splash timeline
                 anime.timeline({ easing: 'easeOutExpo' })
-                    .add({ targets: '.splash-logo', scale: [0.78, 1], opacity: [0, 1], duration: 900, delay: 180 })
-                    .add({ targets: '.splash-ring', scale: [0.72, 1.45], opacity: [0.85, 0], duration: 1000, easing: 'easeOutCubic' }, 180)
-                    .add({ targets: '.splash-brand', opacity: [0, 1], translateY: [14, 0], duration: 650 }, '-=420')
+                    .add({ targets: '.splash-ring', scale: [0.72, 1.45], opacity: [0.85, 0], duration: 1000, easing: 'easeOutCubic' }, 0)
+                    .add({ targets: '.splash-brand .sl', opacity: [0, 1], translateY: [20, 0], delay: anime.stagger(80, { start: 100 }), duration: 600 }, 0)
                     .add({ targets: '.splash-line', opacity: [0, 1], width: [0, 110], duration: 480, easing: 'easeOutCubic' }, '-=300')
                     .add({ targets: '.splash-tagline', opacity: [0, 1], duration: 480 }, '-=200')
                     .add({
