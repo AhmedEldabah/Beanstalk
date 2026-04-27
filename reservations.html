@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Reserve a Table — Saviro</title>
+    <meta name="description" content="Reserve a table at Saviro. Pick your date, time and party size — we'll confirm shortly." />
+    <meta name="theme-color" content="#0d0c0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Reserve a Table — Saviro" />
+    <meta property="og:description" content="Book a table at Saviro in seconds." />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="firebase-config.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #121010;
+            --bg-surface: rgba(35, 32, 32, 0.55);
+            --accent: #FFB7B2;
+            --accent-glow: rgba(255, 183, 178, 0.2);
+            --text-main: #FDFCF8;
+            --text-muted: #A8A29E;
+            --border: rgba(255, 255, 255, 0.08);
+            --green: #4ADE80;
+            --radius-lg: 2rem;
+            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg-base); color: var(--text-main); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+        .global-blobs { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; animation: float 8s ease-in-out infinite alternate; }
+        .blob-1 { width: 60vw; height: 60vw; max-width: 700px; max-height: 700px; background: #FF7EB3; top: -10%; left: -10%; }
+        .blob-2 { width: 50vw; height: 50vw; max-width: 550px; max-height: 550px; background: #8E84FA; bottom: -5%; right: -10%; animation-delay: -3s; }
+        @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+
+        .grain-overlay { position: fixed; inset: 0; z-index: 9999; pointer-events: none; background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.35"/%3E%3C/svg%3E'); mix-blend-mode: overlay; opacity: 0.4; }
+
+        nav { position: sticky; top: 0; background: rgba(20,18,18,0.85); backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); z-index: 100; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-main); }
+        .logo-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+
+        .page-wrap { max-width: 640px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+        .page-title { font-size: 2.4rem; margin-bottom: 0.4rem; }
+        .page-sub { color: var(--text-muted); margin-bottom: 2.5rem; font-size: 0.95rem; }
+        @media(max-width: 480px) { .page-title { font-size: 1.9rem; } }
+
+        .glass { background: var(--bg-surface); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border); box-shadow: var(--shadow-soft); border-radius: var(--radius-lg); padding: 2rem; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media(max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+        .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+        .field label { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .field input, .field textarea, .field select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 12px; padding: 0.85rem 1rem; color: var(--text-main);
+            font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none; width: 100%;
+        }
+        .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .field textarea { resize: vertical; min-height: 90px; }
+        .field select option { background: #1e1c1c; }
+
+        .submit-btn { width: 100%; padding: 1rem 2rem; background: var(--accent); color: var(--bg-base); border: none; border-radius: 50px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .success-card { padding: 2.5rem 2rem; text-align: center; }
+        .success-card .check { width: 72px; height: 72px; border-radius: 50%; background: rgba(74,222,128,0.12); border: 2px solid var(--green); color: var(--green); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem; font-size: 1.8rem; }
+        .success-card h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+        .success-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+        .success-detail { display: inline-block; margin-top: 1.2rem; padding: 0.7rem 1.4rem; border: 1px dashed var(--border); border-radius: 50px; color: var(--accent); font-size: 0.9rem; }
+
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(30,28,28,0.95); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 50px; padding: 0.8rem 1.5rem; font-size: 0.9rem; font-weight: 500; z-index: 10000; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); white-space: nowrap; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: rgba(255,100,100,0.4); color: #ff8080; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="global-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
+<div class="grain-overlay"></div>
+
+<nav>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> Saviro</a>
+    <span style="color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-calendar-check" style="color:var(--accent)"></i> Reservations</span>
+</nav>
+
+<div class="page-wrap">
+    <h1 class="page-title">Reserve a Table 🍽️</h1>
+    <p class="page-sub">Pick a date and time. We'll confirm your booking by phone or email shortly.</p>
+
+    <div class="glass" id="form-card">
+        <form id="resv-form" onsubmit="return submitReservation(event)">
+            <div class="form-row">
+                <div class="field"><label>Full Name *</label><input id="r-name" type="text" required placeholder="Jane Smith" autocomplete="name"></div>
+                <div class="field"><label>Phone *</label><input id="r-phone" type="tel" required placeholder="+1 555 0100" autocomplete="tel"></div>
+            </div>
+            <div class="field"><label>Email (optional)</label><input id="r-email" type="email" placeholder="you@example.com" autocomplete="email"></div>
+
+            <div class="form-row">
+                <div class="field"><label>Date *</label><input id="r-date" type="date" required></div>
+                <div class="field"><label>Time *</label><input id="r-time" type="time" required value="19:00"></div>
+            </div>
+            <div class="form-row">
+                <div class="field"><label>Party Size *</label>
+                    <select id="r-party" required>
+                        <option value="">Select…</option>
+                        <option>1</option><option>2</option><option>3</option><option>4</option>
+                        <option>5</option><option>6</option><option>7</option><option>8</option>
+                        <option>9</option><option>10</option>
+                        <option value="11+">11+ (we'll call you)</option>
+                    </select>
+                </div>
+                <div class="field"><label>Occasion</label>
+                    <select id="r-occasion">
+                        <option value="">— None —</option>
+                        <option>Birthday</option>
+                        <option>Anniversary</option>
+                        <option>Date Night</option>
+                        <option>Business</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field"><label>Special Requests</label><textarea id="r-notes" placeholder="Allergies, seating preferences, etc."></textarea></div>
+
+            <button type="submit" class="submit-btn" id="r-submit"><i class="fas fa-paper-plane"></i> Request Reservation</button>
+            <p style="text-align:center;color:var(--text-muted);font-size:0.78rem;margin-top:0.9rem;">By submitting you agree to be contacted to confirm your booking.</p>
+        </form>
+    </div>
+
+    <div class="glass success-card hidden" id="success-card">
+        <div class="check"><i class="fas fa-check"></i></div>
+        <h2>Reservation Requested</h2>
+        <p>Thanks — we've received your booking and will confirm shortly.</p>
+        <div class="success-detail" id="success-detail">—</div>
+        <div style="margin-top:2rem;display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;">
+            <a href="index.html" class="submit-btn" style="width:auto;margin:0;background:rgba(255,255,255,0.06);color:var(--text-main);">Back to Home</a>
+            <a href="menu.html" class="submit-btn" style="width:auto;margin:0;">Browse Menu</a>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+let db = null;
+try {
+    if (typeof FIREBASE_CONFIG !== 'undefined' && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY') {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        db = firebase.firestore();
+    }
+} catch (e) { console.warn('Firebase not configured:', e.message); }
+
+// Default the date input to tomorrow
+(function () {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('r-date').value = tomorrow.toISOString().slice(0, 10);
+    document.getElementById('r-date').min   = new Date().toISOString().slice(0, 10);
+})();
+
+function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (type || '') + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+async function submitReservation(ev) {
+    ev.preventDefault();
+    const btn = document.getElementById('r-submit');
+    const data = {
+        name:       document.getElementById('r-name').value.trim(),
+        phone:      document.getElementById('r-phone').value.trim(),
+        email:      document.getElementById('r-email').value.trim(),
+        date:       document.getElementById('r-date').value,
+        time:       document.getElementById('r-time').value,
+        partySize:  document.getElementById('r-party').value,
+        occasion:   document.getElementById('r-occasion').value,
+        notes:      document.getElementById('r-notes').value.trim(),
+        status:     'pending',
+        createdAt:  new Date().toISOString()
+    };
+
+    if (!data.name || !data.phone || !data.date || !data.time || !data.partySize) {
+        showToast('Please fill in the required fields', 'error');
+        return false;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+    try {
+        if (db) {
+            await db.collection('reservations').add({
+                ...data,
+                serverCreatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+        // Show success state
+        document.getElementById('form-card').classList.add('hidden');
+        const sc = document.getElementById('success-card');
+        sc.classList.remove('hidden');
+        document.getElementById('success-detail').textContent =
+            `${data.partySize} guest${data.partySize === '1' ? '' : 's'} · ${data.date} at ${data.time}`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+        console.error(err);
+        showToast('Could not submit. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Reservation';
+    }
+    return false;
+}
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+}
+</script>
+</body>
+</html>

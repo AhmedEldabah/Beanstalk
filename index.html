@@ -4,7 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Saviro | Premium Sushi & Culinary</title>
-    
+    <meta name="description" content="Saviro — masterfully crafted sushi and elevated culinary catering. Order delivery, browse the menu, or reserve a table." />
+    <meta name="theme-color" content="#0d0c0c" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Saviro" />
+    <meta property="og:title" content="Saviro | Premium Sushi & Culinary" />
+    <meta property="og:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <meta property="og:url" content="" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Saviro | Premium Sushi & Culinary" />
+    <meta name="twitter:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta name="twitter:image" content="assets/og-cover.jpg" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -503,6 +523,7 @@
         <a onclick="mobileNavTo('instagram-section')">Social</a>
         <a onclick="mobileNavTo('faq-section')">FAQ</a>
         <a onclick="mobileNavTo('location-map')">Find Us</a>
+        <a href="reservations.html">Reserve a Table</a>
         <a href="order.html" style="color:var(--accent);font-weight:600;">Order Delivery 🛵</a>
     </div>
 
@@ -513,12 +534,12 @@
             <a href="pizza-menu.html" data-hover>Pizza</a>
             <a href="sushi-menu.html" data-hover>Sushi</a>
             <a onclick="navTo('gallery')" data-hover>Atmosphere</a>
-            <a onclick="navTo('faq-section')" data-hover>FAQ</a>
+            <a href="reservations.html" data-hover>Reserve</a>
             <a href="order.html" data-hover style="color:var(--accent);font-weight:600;">Order Now 🛵</a>
         </div>
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="magnetic-wrapper nav-location-btn">
-                <a href="https://maps.app.goo.gl/2VmT2j9aFfd7pTnq6" target="_blank" class="magnetic-btn light" data-hover>Location</a>
+                <a href="https://maps.google.com/" target="_blank" class="magnetic-btn light" data-hover>Location</a>
             </div>
             <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
                 <span></span><span></span><span></span>
@@ -547,6 +568,9 @@
                 </div>
                 <div class="magnetic-wrapper">
                     <a href="order.html" class="magnetic-btn" style="background:rgba(255,183,178,0.15);color:var(--accent);border:1px solid rgba(255,183,178,0.3);" data-hover>🛵 Order Delivery</a>
+                </div>
+                <div class="magnetic-wrapper">
+                    <a href="reservations.html" class="magnetic-btn light" data-hover>📅 Reserve a Table</a>
                 </div>
             </div>
         </div>
@@ -771,7 +795,23 @@
     </main>
 
     <footer>
+        <div id="newsletter" style="max-width:520px;margin:0 auto 2.5rem;text-align:center;padding:0 1rem;">
+            <div style="font-size:1.05rem;font-weight:600;margin-bottom:0.4rem;">Stay in the loop</div>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">New menu drops, events and exclusive offers — straight to your inbox.</p>
+            <form id="newsletter-form" onsubmit="return subscribeNewsletter(event)" style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
+                <input type="email" id="nl-email" required placeholder="you@example.com"
+                       style="flex:1;min-width:220px;padding:0.85rem 1rem;border-radius:50px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit;font-size:0.9rem;outline:none;" />
+                <button type="submit" id="nl-btn" data-hover
+                        style="padding:0.85rem 1.6rem;border-radius:50px;border:none;background:var(--accent);color:#0d0c0c;font-family:inherit;font-weight:600;font-size:0.85rem;cursor:pointer;">
+                    Subscribe
+                </button>
+            </form>
+            <div id="nl-msg" style="margin-top:0.7rem;font-size:0.8rem;color:var(--text-muted);min-height:1.1rem;"></div>
+        </div>
+
         <div class="socials">
+            <a href="/" data-hover><i class="fas fa-home"></i></a>
+            <a href="reservations.html" data-hover><i class="fas fa-calendar-check"></i></a>
             <a href="https://www.instagram.com/" target="_blank" data-hover><i class="fab fa-instagram"></i></a>
             <a href="https://www.facebook.com/" target="_blank" data-hover><i class="fab fa-facebook-f"></i></a>
             <a href="https://wa.me/" target="_blank" data-hover><i class="fab fa-whatsapp"></i></a>
@@ -918,5 +958,59 @@
         }
     </script>
     <script async src="//www.instagram.com/embed.js"></script>
+
+    <!-- Newsletter (Firebase Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        let _nlDb = null;
+        try {
+            if (FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY') {
+                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+                _nlDb = firebase.firestore();
+            }
+        } catch (e) {}
+
+        async function subscribeNewsletter(ev) {
+            ev.preventDefault();
+            const emailEl = document.getElementById('nl-email');
+            const msg     = document.getElementById('nl-msg');
+            const btn     = document.getElementById('nl-btn');
+            const email   = emailEl.value.trim().toLowerCase();
+            if (!email) return false;
+
+            btn.disabled = true;
+            btn.textContent = '…';
+
+            try {
+                if (_nlDb) {
+                    await _nlDb.collection('newsletter').doc(email).set({
+                        email,
+                        subscribedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        source: 'homepage_footer'
+                    }, { merge: true });
+                }
+                msg.style.color = '#7be08a';
+                msg.textContent = '✓ Thanks — you\'re on the list.';
+                emailEl.value = '';
+            } catch (err) {
+                msg.style.color = '#ff8a8a';
+                msg.textContent = 'Could not subscribe right now. Please try again.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }
+            return false;
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js').catch(function() {});
+            });
+        }
+    </script>
 </body>
 </html>

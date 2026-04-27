@@ -245,7 +245,7 @@ async function searchOrder() {
 
 async function loadOrder(orderId) {
     // Try sessionStorage
-    const stored = sessionStorage.getItem('bs_order');
+    const stored = sessionStorage.getItem('sv_order');
     if (stored) {
         const o = JSON.parse(stored);
         if (o.id === orderId || orderId.includes(o.id)) {

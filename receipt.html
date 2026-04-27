@@ -224,7 +224,7 @@ async function loadOrder() {
     const orderId = params.get('orderId');
 
     // Try sessionStorage first (fresh order)
-    const stored = sessionStorage.getItem('bs_order');
+    const stored = sessionStorage.getItem('sv_order');
     if (stored) {
         orderData = JSON.parse(stored);
         if (orderId && orderData.id === orderId) {

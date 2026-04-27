@@ -4,6 +4,13 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Sushi Menu — Saviro</title>
+    <meta name="description" content="Saviro sushi menu — premium nigiri, sashimi, signature rolls and more." />
+    <meta name="theme-color" content="#0d0c0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sushi Menu — Saviro" />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -266,9 +273,9 @@ let activeCat = 'all';
 let cart = [];
 
 function loadCart() {
-    try { const s = sessionStorage.getItem('bs_cart'); if (s) cart = JSON.parse(s); } catch(e) { cart = []; }
+    try { const s = sessionStorage.getItem('sv_cart'); if (s) cart = JSON.parse(s); } catch(e) { cart = []; }
 }
-function saveCart() { sessionStorage.setItem('bs_cart', JSON.stringify(cart)); }
+function saveCart() { sessionStorage.setItem('sv_cart', JSON.stringify(cart)); }
 function getCartItem(id) { return cart.find(i => i.id === id); }
 function getCartQty(id) { const item = getCartItem(id); return item ? item.qty : 0; }
 function cartCount() { return cart.reduce((s, i) => s + i.qty, 0); }
@@ -437,6 +444,12 @@ function closeCartOnBackdrop(e) {
 loadCart();
 renderSushi();
 updateCartBar();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    });
+}
 </script>
 </body>
 </html>
