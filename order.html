@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Order Delivery — BeanStalk</title>
+    <title>Order Delivery — Saviro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -167,13 +167,13 @@
 </div>
 
 <nav>
-    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> Saviro</a>
     <span style="color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-motorcycle" style="color:var(--accent)"></i> Delivery Order</span>
 </nav>
 
 <div class="page-wrap">
     <h1 class="page-title">Order Delivery 🛵</h1>
-    <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
+    <p class="page-sub">Fresh from our kitchen to your door, citywide & surrounding areas.</p>
 
     <!-- CUSTOMER DETAILS -->
     <div class="glass form-section">
@@ -224,7 +224,7 @@
         <div class="loc-panel" id="panel-manual">
             <div class="field" style="margin-bottom:0;">
                 <label>Full Delivery Address *</label>
-                <textarea id="manual-address-input" placeholder="e.g. 12 El Gaish St, 3rd floor, Apt 5, Beverly Hills, Sheikh Zayed, Giza…"></textarea>
+                <textarea id="manual-address-input" placeholder="e.g. 12 Main St, 3rd floor, Apt 5, Downtown, Your City…"></textarea>
             </div>
             <p class="manual-addr-hint"><i class="fas fa-circle-info"></i> Include your street, building number, floor, and area for faster delivery.</p>
         </div>
@@ -686,7 +686,7 @@ function initMap() {
     }).addTo(mapInstance);
 
     // Restaurant marker
-    L.marker(restaurantPos, { icon: makeIcon('#ef4444'), title: 'BeanStalk' }).addTo(mapInstance);
+    L.marker(restaurantPos, { icon: makeIcon('#ef4444'), title: 'Saviro' }).addTo(mapInstance);
 
     mapInstance.on('click', function(e) {
         placeDeliveryPin(e.latlng.lat, e.latlng.lng);
@@ -876,8 +876,8 @@ async function submitToFormspree(order, orderId) {
     // We pass the customer phone as "_replyto" so you can reply to them easily.
     const payload = {
         // Formspree special fields
-        _subject: `🍣 New BeanStalk Delivery Order #${shortId} — ${order.customerName}`,
-        email: `noreply+${shortId.toLowerCase()}@beanstalk-delivery.eg`, // sender placeholder
+        _subject: `🍣 New Saviro Delivery Order #${shortId} — ${order.customerName}`,
+        email: `noreply+${shortId.toLowerCase()}@saviro-delivery.com`, // sender placeholder
 
         // ── Customer details ──────────────────────────────────────────────
         'Order ID':        `#${shortId}`,

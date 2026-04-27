@@ -1,12 +1,12 @@
 /**
  * ╔══════════════════════════════════════════════════════════╗
- * ║          BeanStalk Delivery System — Firebase Setup       ║
+ * ║            Saviro Delivery System — Firebase Setup        ║
  * ╚══════════════════════════════════════════════════════════╝
  *
  * HOW TO SET UP (takes ~5 minutes):
  *
  * 1. Go to https://console.firebase.google.com/
- * 2. Click "Add project" → name it "beanstalk-delivery"
+ * 2. Click "Add project" → name it "saviro-delivery"
  * 3. Once created, click the </> Web icon to add a web app
  * 4. Copy the firebaseConfig values below from your Firebase console
  * 5. In your Firebase console:
@@ -41,12 +41,12 @@ const FIREBASE_CONFIG = {
 
 const GOOGLE_MAPS_API_KEY = "YOUR_GOOGLE_MAPS_API_KEY";
 
-// Restaurant coordinates (Sheikh Zayed City, Giza)
-const RESTAURANT_LAT = 30.0251109;
-const RESTAURANT_LNG = 30.9881616;
-const RESTAURANT_NAME = "BeanStalk";
-const RESTAURANT_PHONE = "+201229873306";
-const RESTAURANT_ADDRESS = "BeanStalk, Sheikh Zayed City, Giza Governorate, Egypt";
+// Restaurant coordinates (replace with your own)
+const RESTAURANT_LAT = 40.7580;
+const RESTAURANT_LNG = -73.9855;
+const RESTAURANT_NAME = "Saviro";
+const RESTAURANT_PHONE = "+10000000000";
+const RESTAURANT_ADDRESS = "Saviro, 123 Main Street, Your City, Country";
 
 // Delivery settings
 const DELIVERY_BASE_FEE_EGP   = 25;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Track Order — BeanStalk</title>
+    <title>Track Order — Saviro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -102,7 +102,7 @@
 <div class="grain-overlay"></div>
 
 <nav>
-    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> Saviro</a>
     <span style="color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-location-arrow" style="color:var(--accent)"></i> Live Tracking</span>
 </nav>
 
@@ -348,7 +348,7 @@ function showDemo() {
     document.getElementById('order-info').style.display = 'block';
     document.getElementById('not-found').style.display = 'none';
     renderTracking({
-        id: 'DEMO', customerName: 'Demo User', customerAddress: 'Sheikh Zayed City',
+        id: 'DEMO', customerName: 'Demo User', customerAddress: '123 Main Street',
         status: 'confirmed', estimatedMinutes: 35,
         lat: RESTAURANT_LAT + 0.01, lng: RESTAURANT_LNG + 0.01
     });

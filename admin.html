@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin Dashboard — BeanStalk</title>
+    <title>Admin Dashboard — Saviro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -189,10 +189,10 @@
     <div class="login-card">
         <div class="login-logo">
             <div class="login-icon"><i class="fas fa-shield-halved"></i></div>
-            <h2>BeanStalk Admin</h2>
+            <h2>Saviro Admin</h2>
             <p>Operations Dashboard</p>
         </div>
-        <div class="f"><label>Email</label><input type="email" id="admin-email" placeholder="admin@beanstalk.eg" autocomplete="email"></div>
+        <div class="f"><label>Email</label><input type="email" id="admin-email" placeholder="admin@saviro.com" autocomplete="email"></div>
         <div class="f"><label>Password</label><input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password"></div>
         <button class="login-btn" onclick="doLogin()"><i class="fas fa-arrow-right"></i> Sign In</button>
         <div class="login-error" id="login-error"></div>
@@ -205,7 +205,7 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-logo"><div class="logo-dot"></div> BeanStalk</div>
+        <div class="sidebar-logo"><div class="logo-dot"></div> Saviro</div>
         <div class="nav-group">Operations</div>
         <button class="nav-item active" onclick="showPanel('overview')"><i class="fas fa-chart-line"></i> Overview <span class="nav-badge" id="nb-pending">0</span></button>
         <button class="nav-item" onclick="showPanel('orders')"><i class="fas fa-list-ul"></i> All Orders</button>
@@ -284,7 +284,7 @@
                         <div class="ff"><label>Email</label><input id="drv-email" type="email" placeholder="driver@email.com"></div>
                         <div class="ff"><label>Vehicle</label><input id="drv-vehicle" type="text" placeholder="Motorcycle · Blue · ABC 123"></div>
                         <div class="ff"><label>National ID</label><input id="drv-nid" type="text" placeholder="29XXXXXXXXXX"></div>
-                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="password" placeholder="Give driver this to log in" value="BeanStalk2024!"></div>
+                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="password" placeholder="Give driver this to log in" value="Saviro2024!"></div>
                     </div>
                     <button class="submit-btn" onclick="addDriver()"><i class="fas fa-plus"></i> Create Driver Account</button>
                     <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.8rem;"><i class="fas fa-info-circle"></i> This creates a Firebase Auth account. The driver logs into driver.html with this email & password.</div>
@@ -576,7 +576,7 @@ async function addDriver() {
             // Create Firebase Auth account for driver
             if (auth) {
                 try {
-                    await auth.createUserWithEmailAndPassword(email, pass || 'BeanStalk2024!');
+                    await auth.createUserWithEmailAndPassword(email, pass || 'Saviro2024!');
                     await auth.currentUser.updateProfile({ displayName: name });
                 } catch(authErr) {
                     if (authErr.code !== 'auth/email-already-in-use') throw authErr;
