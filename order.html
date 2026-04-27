@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>Order Delivery — BeanStalk</title>
+    <title>Order Delivery — Saviro</title>
+    <meta name="description" content="Order Saviro delivery — fresh sushi and culinary dishes to your door." />
+    <meta name="theme-color" content="#0d0c0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Order Delivery — Saviro" />
+    <meta property="og:description" content="Fresh sushi and culinary dishes delivered to your door." />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -167,13 +176,13 @@
 </div>
 
 <nav>
-    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> Saviro</a>
     <span style="color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:0.5rem;"><i class="fas fa-motorcycle" style="color:var(--accent)"></i> Delivery Order</span>
 </nav>
 
 <div class="page-wrap">
     <h1 class="page-title">Order Delivery 🛵</h1>
-    <p class="page-sub">Fresh from our kitchen to your door, across Sheikh Zayed & surrounding areas.</p>
+    <p class="page-sub">Fresh from our kitchen to your door, citywide & surrounding areas.</p>
 
     <!-- CUSTOMER DETAILS -->
     <div class="glass form-section">
@@ -224,7 +233,7 @@
         <div class="loc-panel" id="panel-manual">
             <div class="field" style="margin-bottom:0;">
                 <label>Full Delivery Address *</label>
-                <textarea id="manual-address-input" placeholder="e.g. 12 El Gaish St, 3rd floor, Apt 5, Beverly Hills, Sheikh Zayed, Giza…"></textarea>
+                <textarea id="manual-address-input" placeholder="e.g. 12 Main St, 3rd floor, Apt 5, Downtown, Your City…"></textarea>
             </div>
             <p class="manual-addr-hint"><i class="fas fa-circle-info"></i> Include your street, building number, floor, and area for faster delivery.</p>
         </div>
@@ -463,10 +472,12 @@ const MENU = [
     { id:'combo_100',               name:'Sushi Combo 100 pcs',         desc:'Combo',          price:2145 },
 ];
 
-const PROMO_CODES = {
-    "BEAN10": 10,
-    "WELCOME": 15,
-    "FREESHIP": "free_delivery",
+// Local fallback promo codes — used if Firestore isn't configured.
+// Codes set up in admin.html → Promo Codes will override / extend these.
+const FALLBACK_PROMO_CODES = {
+    "WELCOME10": { type: 'percent', value: 10 },
+    "SAVE50":    { type: 'flat',    value: 50 },
+    "FREESHIP":  { type: 'free_delivery' }
 };
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -476,7 +487,9 @@ let selectedLat = null;
 let selectedLng = null;
 let deliveryFee = null;
 let discountPct = 0;
+let discountAmount = 0;       // flat discount in currency units
 let freeDelivery = false;
+let appliedPromoCode = null;  // upper-cased code string when applied
 let paymentMethod = "cash";
 let mapInstance = null;
 let markerInstance = null;
@@ -494,7 +507,7 @@ try {
 // ─── LOAD SESSION CART ───────────────────────────────────────────────────────
 function loadCartFromSession() {
     try {
-        const stored = sessionStorage.getItem('bs_cart');
+        const stored = sessionStorage.getItem('sv_cart');
         if (!stored) return;
         const sessionItems = JSON.parse(stored);
         sessionItems.forEach(item => {
@@ -505,7 +518,7 @@ function loadCartFromSession() {
             cart[item.id] = (cart[item.id] || 0) + item.qty;
             if (item.note) cartNotes[item.id] = item.note;
         });
-        sessionStorage.removeItem('bs_cart');
+        sessionStorage.removeItem('sv_cart');
     } catch(e) { console.warn('Could not load cart from session:', e.message); }
 }
 
@@ -611,11 +624,16 @@ function calcDeliveryFee(distKm) {
     return DELIVERY_BASE_FEE_EGP + Math.round(distKm * DELIVERY_PER_KM_EGP);
 }
 
+function computeDiscount(sub) {
+    return Math.min(sub, Math.round(sub * discountPct / 100) + discountAmount);
+}
+
 function updateSummary() {
     const sub = getSubtotal();
-    const disc = Math.round(sub * discountPct / 100);
-    const fee = deliveryFee !== null ? deliveryFee : null;
-    const total = sub - disc + (fee || 0);
+    const disc = computeDiscount(sub);
+    const rawFee = deliveryFee !== null ? deliveryFee : null;
+    const fee = (rawFee !== null && freeDelivery) ? 0 : rawFee;
+    const total = (sub - disc) + (fee || 0);
 
     // cart lines
     const cartLines = document.getElementById('cart-lines');
@@ -631,9 +649,12 @@ function updateSummary() {
     const disEl  = document.getElementById('summary-dis');
     const totEl  = document.getElementById('summary-tot');
     if (subEl) subEl.textContent = 'EGP ' + sub;
-    if (delEl) delEl.textContent = fee !== null ? 'EGP ' + fee : 'EGP —';
+    if (delEl) {
+        if (rawFee === null) delEl.textContent = 'EGP —';
+        else delEl.textContent = freeDelivery ? 'FREE' : 'EGP ' + rawFee;
+    }
     if (disEl) disEl.textContent = disc > 0 ? '-EGP ' + disc : '—';
-    if (totEl) totEl.textContent = 'EGP ' + (fee !== null ? total : sub - disc);
+    if (totEl) totEl.textContent = 'EGP ' + (rawFee !== null ? total : sub - disc);
 }
 
 // ─── PAYMENT ─────────────────────────────────────────────────────────────────
@@ -644,25 +665,95 @@ function selectPayment(el) {
 }
 
 // ─── PROMO ───────────────────────────────────────────────────────────────────
-function applyPromo() {
+function resetPromo() {
+    discountPct = 0;
+    discountAmount = 0;
+    freeDelivery = false;
+    appliedPromoCode = null;
+}
+
+async function lookupPromo(code) {
+    // Try Firestore first
+    if (db) {
+        try {
+            const snap = await db.collection('promoCodes').doc(code).get();
+            if (snap.exists) return snap.data();
+        } catch (e) { /* fall through */ }
+    }
+    // Local fallback (works offline / before Firebase is configured)
+    if (FALLBACK_PROMO_CODES[code]) {
+        return Object.assign({ active: true }, FALLBACK_PROMO_CODES[code]);
+    }
+    return null;
+}
+
+async function applyPromo() {
     const code = document.getElementById('promo-input').value.trim().toUpperCase();
     const msg = document.getElementById('promo-msg');
-    if (!code) { msg.textContent = ''; return; }
-    if (PROMO_CODES[code] === undefined) {
-        msg.className = 'promo-msg err';
-        msg.textContent = '✗ Invalid promo code.';
+    if (!code) {
+        resetPromo();
+        msg.textContent = '';
+        updateSummary();
         return;
     }
-    const val = PROMO_CODES[code];
-    if (val === 'free_delivery') {
-        freeDelivery = true; discountPct = 0;
+
+    msg.className = 'promo-msg';
+    msg.textContent = 'Checking…';
+
+    const promo = await lookupPromo(code);
+    if (!promo) {
+        resetPromo();
+        msg.className = 'promo-msg err';
+        msg.textContent = '✗ Invalid promo code.';
+        updateSummary();
+        return;
+    }
+
+    if (promo.active === false) {
+        resetPromo();
+        msg.className = 'promo-msg err';
+        msg.textContent = '✗ This code is no longer active.';
+        updateSummary();
+        return;
+    }
+
+    if (promo.expiresAt) {
+        const exp = typeof promo.expiresAt === 'string' ? new Date(promo.expiresAt)
+                  : (promo.expiresAt.toDate ? promo.expiresAt.toDate() : new Date(promo.expiresAt));
+        if (!isNaN(exp.getTime()) && exp.getTime() < Date.now()) {
+            resetPromo();
+            msg.className = 'promo-msg err';
+            msg.textContent = '✗ This code has expired.';
+            updateSummary();
+            return;
+        }
+    }
+
+    if (promo.maxUses && typeof promo.usedCount === 'number' && promo.usedCount >= promo.maxUses) {
+        resetPromo();
+        msg.className = 'promo-msg err';
+        msg.textContent = '✗ This code has reached its usage limit.';
+        updateSummary();
+        return;
+    }
+
+    resetPromo();
+    appliedPromoCode = code;
+
+    if (promo.type === 'free_delivery') {
+        freeDelivery = true;
         msg.className = 'promo-msg ok';
         msg.textContent = '✓ Free delivery applied!';
-    } else {
-        discountPct = val; freeDelivery = false;
+    } else if (promo.type === 'flat') {
+        discountAmount = Number(promo.value) || 0;
         msg.className = 'promo-msg ok';
-        msg.textContent = `✓ ${val}% discount applied!`;
+        msg.textContent = `✓ EGP ${discountAmount} off!`;
+    } else { // 'percent' or legacy
+        discountPct = Number(promo.value) || 0;
+        msg.className = 'promo-msg ok';
+        msg.textContent = `✓ ${discountPct}% discount applied!`;
     }
+
     updateSummary();
 }
 
@@ -686,7 +777,7 @@ function initMap() {
     }).addTo(mapInstance);
 
     // Restaurant marker
-    L.marker(restaurantPos, { icon: makeIcon('#ef4444'), title: 'BeanStalk' }).addTo(mapInstance);
+    L.marker(restaurantPos, { icon: makeIcon('#ef4444'), title: 'Saviro' }).addTo(mapInstance);
 
     mapInstance.on('click', function(e) {
         placeDeliveryPin(e.latlng.lat, e.latlng.lng);
@@ -804,9 +895,10 @@ async function placeOrder() {
     if (!validate()) return;
 
     const sub  = getSubtotal();
-    const disc = Math.round(sub * discountPct / 100);
-    const fee  = deliveryFee !== null ? deliveryFee : DELIVERY_BASE_FEE_EGP;
-    const total = sub - disc + fee;
+    const disc = computeDiscount(sub);
+    const rawFee  = deliveryFee !== null ? deliveryFee : DELIVERY_BASE_FEE_EGP;
+    const fee  = freeDelivery ? 0 : rawFee;
+    const total = (sub - disc) + fee;
     const estimatedMins = ESTIMATED_PREP_MINUTES + (deliveryFee !== null ? Math.round((deliveryFee - DELIVERY_BASE_FEE_EGP) / DELIVERY_PER_KM_EGP * ESTIMATED_DRIVE_MINUTES_PER_KM) : 20);
 
     const orderItems = MENU.filter(i => (cart[i.id] || 0) > 0).map(i => ({
@@ -824,9 +916,10 @@ async function placeOrder() {
         items: orderItems,
         subtotal: sub,
         deliveryFee: fee,
+        freeDelivery: !!freeDelivery,
         discount: disc,
         total,
-        promoCode:    document.getElementById('promo-input').value.trim().toUpperCase() || null,
+        promoCode:    appliedPromoCode || null,
         lat:          selectedLat,
         lng:          selectedLng,
         status:       'pending',
@@ -843,16 +936,24 @@ async function placeOrder() {
         if (db) {
             const ref = await db.collection('orders').add(order);
             orderId = ref.id;
+
+            // Increment promo usage atomically (best-effort, non-blocking)
+            if (appliedPromoCode) {
+                db.collection('promoCodes').doc(appliedPromoCode).update({
+                    usedCount: firebase.firestore.FieldValue.increment(1),
+                    lastUsedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+            }
         } else {
             // Demo mode: generate a collision-resistant local ID
-            orderId = 'BS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+            orderId = 'SV-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
         }
 
         // Always notify the restaurant via Formspree (fire-and-forget)
         submitToFormspree(order, orderId).catch(e => console.warn('Formspree:', e.message));
 
         // Store in sessionStorage for receipt page
-        sessionStorage.setItem('bs_order', JSON.stringify({ ...order, id: orderId }));
+        sessionStorage.setItem('sv_order', JSON.stringify({ ...order, id: orderId }));
         window.location.href = 'receipt.html?orderId=' + orderId;
 
     } catch (err) {
@@ -876,8 +977,8 @@ async function submitToFormspree(order, orderId) {
     // We pass the customer phone as "_replyto" so you can reply to them easily.
     const payload = {
         // Formspree special fields
-        _subject: `🍣 New BeanStalk Delivery Order #${shortId} — ${order.customerName}`,
-        email: `noreply+${shortId.toLowerCase()}@beanstalk-delivery.eg`, // sender placeholder
+        _subject: `🍣 New Saviro Delivery Order #${shortId} — ${order.customerName}`,
+        email: `noreply+${shortId.toLowerCase()}@saviro-delivery.com`, // sender placeholder
 
         // ── Customer details ──────────────────────────────────────────────
         'Order ID':        `#${shortId}`,
@@ -951,6 +1052,12 @@ updateSummary();
 
 // Initialize Leaflet map
 initMap();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    });
+}
 </script>
 </body>
 </html>

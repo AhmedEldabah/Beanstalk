@@ -3,8 +3,28 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BeanStalk | Premium Sushi & Culinary</title>
-    
+    <title>Saviro | Premium Sushi & Culinary</title>
+    <meta name="description" content="Saviro — masterfully crafted sushi and elevated culinary catering. Order delivery, browse the menu, or reserve a table." />
+    <meta name="theme-color" content="#0d0c0c" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Saviro" />
+    <meta property="og:title" content="Saviro | Premium Sushi & Culinary" />
+    <meta property="og:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta property="og:image" content="assets/og-cover.jpg" />
+    <meta property="og:url" content="" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Saviro | Premium Sushi & Culinary" />
+    <meta name="twitter:description" content="Masterfully crafted sushi and elevated culinary catering. Order delivery or reserve a table." />
+    <meta name="twitter:image" content="assets/og-cover.jpg" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -489,8 +509,8 @@
 
     <div id="splash">
         <div class="splash-ring"></div>
-        <img src="https://scontent.fcai19-7.fna.fbcdn.net/v/t39.30808-6/409096361_695191336158955_7614411298661377925_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=V8Y-8sMTimQQ7kNvwHJNmPC&_nc_oc=AdpjCwOhJ5-SHK9AHkR5RVMOfuHOdMQ7RQ6w-zuTjziR8WmiBu7gMO6dQyiIhv-kvqM&_nc_zt=23&_nc_ht=scontent.fcai19-7.fna&_nc_gid=rdZ520MJFCtWhzOjVS_6Ug&_nc_ss=7a389&oh=00_Af33_qw5pUDmwixMi9JnSJSXClIlax6wP-gftQUo3GV4Ug&oe=69E59405" class="splash-logo" alt="BeanStalk">
-        <div class="splash-brand">BeanStalk</div>
+        <img src="assets/logo.png" class="splash-logo" alt="Saviro">
+        <div class="splash-brand">Saviro</div>
         <div class="splash-line"></div>
         <div class="splash-tagline">Premium Sushi &amp; Culinary</div>
     </div>
@@ -503,22 +523,23 @@
         <a onclick="mobileNavTo('instagram-section')">Social</a>
         <a onclick="mobileNavTo('faq-section')">FAQ</a>
         <a onclick="mobileNavTo('location-map')">Find Us</a>
+        <a href="reservations.html">Reserve a Table</a>
         <a href="order.html" style="color:var(--accent);font-weight:600;">Order Delivery 🛵</a>
     </div>
 
     <nav>
-        <div class="logo-text"><div class="logo-dot"></div> BeanStalk</div>
+        <div class="logo-text"><div class="logo-dot"></div> Saviro</div>
         <div class="nav-links">
             <a href="menu.html" data-hover>Menu</a>
             <a href="pizza-menu.html" data-hover>Pizza</a>
             <a href="sushi-menu.html" data-hover>Sushi</a>
             <a onclick="navTo('gallery')" data-hover>Atmosphere</a>
-            <a onclick="navTo('faq-section')" data-hover>FAQ</a>
+            <a href="reservations.html" data-hover>Reserve</a>
             <a href="order.html" data-hover style="color:var(--accent);font-weight:600;">Order Now 🛵</a>
         </div>
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="magnetic-wrapper nav-location-btn">
-                <a href="https://maps.app.goo.gl/2VmT2j9aFfd7pTnq6" target="_blank" class="magnetic-btn light" data-hover>Location</a>
+                <a href="https://maps.google.com/" target="_blank" class="magnetic-btn light" data-hover>Location</a>
             </div>
             <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
                 <span></span><span></span><span></span>
@@ -537,7 +558,7 @@
         
         <div class="hero-content">
             <h1 class="hero-text">Taste the <br><span class="cursive">Exceptional</span></h1>
-            <p class="hero-text">Masterfully crafted sushi and elevated culinary catering in the heart of Sheikh Zayed. A serene dining experience designed to be savored.</p>
+            <p class="hero-text">Masterfully crafted sushi and elevated culinary catering in the heart of the city. A serene dining experience designed to be savored.</p>
             <div class="hero-text" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
                 <div class="magnetic-wrapper">
                     <a onclick="navTo('menus')" class="magnetic-btn accent" data-hover>Explore The Menu</a>
@@ -547,6 +568,9 @@
                 </div>
                 <div class="magnetic-wrapper">
                     <a href="order.html" class="magnetic-btn" style="background:rgba(255,183,178,0.15);color:var(--accent);border:1px solid rgba(255,183,178,0.3);" data-hover>🛵 Order Delivery</a>
+                </div>
+                <div class="magnetic-wrapper">
+                    <a href="reservations.html" class="magnetic-btn light" data-hover>📅 Reserve a Table</a>
                 </div>
             </div>
         </div>
@@ -563,7 +587,7 @@
                 <div class="menu-cards-grid reveal">
                     <a href="menu.html" class="menu-page-card glass-panel" data-hover>
                         <div class="mpc-emoji">🍽️</div>
-                        <h3 class="mpc-title">BeanStalk Menu</h3>
+                        <h3 class="mpc-title">Saviro Menu</h3>
                         <p class="mpc-desc">Breakfast · Starters · Soups · Salads · Sandwiches & Burgers · Pasta · Main Courses · Desserts · Beverages</p>
                         <div class="mpc-footer">
                             <span class="mpc-cta">Browse & Order</span>
@@ -590,7 +614,7 @@
                     </a>
                 </div>
 
-                <p class="reveal" style="text-align:center;color:var(--text-muted);font-size:0.82rem;margin-top:2rem;">All prices in Egyptian Pounds (LE) · Subject to 14% sales tax + 12% service charge</p>
+                <p class="reveal" style="text-align:center;color:var(--text-muted);font-size:0.82rem;margin-top:2rem;">Subject to applicable sales tax + service charge</p>
             </div>
         </section>
 
@@ -632,7 +656,7 @@
                             <div class="rev-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                         </div>
                     </div>
-                    <p>"We hired BeanStalk for corporate catering. The culinary dishes were served hot, beautifully plated, and tasted incredible."</p>
+                    <p>"We hired Saviro for corporate catering. The culinary dishes were served hot, beautifully plated, and tasted incredible."</p>
                     <div class="diary-signature"><span>Nour</span></div>
                 </div>
             </div>
@@ -641,26 +665,26 @@
         <section id="instagram-section">
             <div class="inner">
                 <div class="section-header reveal">
-                    <p class="section-subtitle">@beanstalkzayed</p>
+                    <p class="section-subtitle">@saviro</p>
                     <h2 class="section-title">Follow Along</h2>
                 </div>
                 <div class="ig-grid">
                     <div class="ig-post-wrap glass-panel reveal">
-                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com//" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
                     </div>
                     <div class="ig-post-wrap glass-panel reveal">
-                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/beanstalkzayed/reels/" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com//reels/" data-instgrm-version="14" style="background:transparent;border:0;border-radius:12px;box-shadow:none;margin:0;max-width:100%;min-width:unset;padding:0;width:100%;"></blockquote>
                     </div>
                     <div class="ig-post-wrap glass-panel reveal" style="padding:2.5rem;flex-direction:column;gap:1.2rem;justify-content:center;height:100%;">
                         <div style="display:flex;align-items:center;gap:1rem;">
-                            <img src="https://scontent.fcai19-7.fna.fbcdn.net/v/t39.30808-6/409096361_695191336158955_7614411298661377925_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=1d70fc&_nc_ohc=V8Y-8sMTimQQ7kNvwHJNmPC&_nc_oc=AdpjCwOhJ5-SHK9AHkR5RVMOfuHOdMQ7RQ6w-zuTjziR8WmiBu7gMO6dQyiIhv-kvqM&_nc_zt=23&_nc_ht=scontent.fcai19-7.fna&_nc_gid=rdZ520MJFCtWhzOjVS_6Ug&_nc_ss=7a389&oh=00_Af33_qw5pUDmwixMi9JnSJSXClIlax6wP-gftQUo3GV4Ug&oe=69E59405" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);">
+                            <img src="assets/logo.png" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2);">
                             <div>
-                                <div style="font-size:1.15rem; font-weight: 600;">BeanStalk</div>
-                                <div style="font-size:0.85rem;color:var(--text-muted);">@beanstalkzayed</div>
+                                <div style="font-size:1.15rem; font-weight: 600;">Saviro</div>
+                                <div style="font-size:0.85rem;color:var(--text-muted);">@saviro</div>
                             </div>
                         </div>
-                        <p style="font-size:0.95rem;color:var(--text-muted);line-height:1.6;">Premium sushi, elevated catering and culinary experiences in Sheikh Zayed City. Follow us for new dishes and events.</p>
-                        <a href="https://www.instagram.com/beanstalkzayed" target="_blank" class="magnetic-btn light" style="padding: 0.6rem 1.5rem; font-size: 0.8rem;" data-hover>
+                        <p style="font-size:0.95rem;color:var(--text-muted);line-height:1.6;">Premium sushi, elevated catering and culinary experiences. Follow us for new dishes and events.</p>
+                        <a href="https://www.instagram.com/" target="_blank" class="magnetic-btn light" style="padding: 0.6rem 1.5rem; font-size: 0.8rem;" data-hover>
                             View Profile
                         </a>
                     </div>
@@ -677,7 +701,7 @@
                 <div class="faq-list reveal">
                     <div class="faq-item glass-panel">
                         <button class="faq-question" onclick="toggleFaq(this)">Do you offer delivery? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
-                        <div class="faq-answer"><p>Yes — we offer delivery within Sheikh Zayed and surrounding areas. Contact us via WhatsApp or phone to confirm availability for your area.</p></div>
+                        <div class="faq-answer"><p>Yes — we offer delivery within the city and surrounding areas. Contact us via WhatsApp or phone to confirm availability for your area.</p></div>
                     </div>
                     <div class="faq-item glass-panel">
                         <button class="faq-question" onclick="toggleFaq(this)">What is the minimum order for catering? <span class="faq-icon"><i class="fas fa-plus"></i></span></button>
@@ -702,7 +726,7 @@
         <section id="location-map">
             <div class="inner">
                 <div class="section-header reveal">
-                    <p class="section-subtitle">Sheikh Zayed City</p>
+                    <p class="section-subtitle">Visit the Restaurant</p>
                     <h2 class="section-title">Find Us</h2>
                 </div>
                 <div class="map-layout">
@@ -711,7 +735,7 @@
                             <div class="map-info-icon"><i class="fas fa-location-dot"></i></div>
                             <div>
                                 <div class="map-info-label">Address</div>
-                                <div class="map-info-value">BeanStalk, Sheikh Zayed City,<br>Giza Governorate, Egypt</div>
+                                <div class="map-info-value">123 Main Street,<br>Your City, Country</div>
                             </div>
                         </div>
                         <div class="map-info-card glass-panel">
@@ -722,11 +746,11 @@
                             </div>
                         </div>
                         <div class="magnetic-wrapper" style="padding-left: 0;">
-                            <a href="https://maps.app.goo.gl/2VmT2j9aFfd7pTnq6" target="_blank" class="magnetic-btn accent" data-hover>Get Directions</a>
+                            <a href="https://maps.google.com/" target="_blank" class="magnetic-btn accent" data-hover>Get Directions</a>
                         </div>
                     </div>
                     <div class="map-frame-wrap glass-panel reveal">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.9799!2d30.9881616!3d30.0251109!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14585b12b587e61f%3A0x9edb0f4006407abe!2sBeanstalk!5e0!3m2!1sen!2seg!4v1713000000000!5m2!1sen!2seg" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.234!2d-73.9855!3d40.7580!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sYour%20Restaurant!5e0!3m2!1sen!2sus!4v1713000000000!5m2!1sen!2sus" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
             </div>
@@ -764,19 +788,35 @@
                             🛵 &nbsp;Place a Delivery Order
                         </a>
                     </div>
-                    <p style="color:var(--text-muted);font-size:0.82rem;margin-top:1.2rem;">Sheikh Zayed City &amp; surrounding areas · EGP 25+ delivery fee</p>
+                    <p style="color:var(--text-muted);font-size:0.82rem;margin-top:1.2rem;">Citywide delivery &amp; surrounding areas · 25+ delivery fee</p>
                 </div>
             </div>
         </section>
     </main>
 
     <footer>
-        <div class="socials">
-            <a href="https://www.instagram.com/beanstalkzayed" target="_blank" data-hover><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com/people/Beanstalk/100070042847843/" target="_blank" data-hover><i class="fab fa-facebook-f"></i></a>
-            <a href="https://wa.me/201229873306" target="_blank" data-hover><i class="fab fa-whatsapp"></i></a>
+        <div id="newsletter" style="max-width:520px;margin:0 auto 2.5rem;text-align:center;padding:0 1rem;">
+            <div style="font-size:1.05rem;font-weight:600;margin-bottom:0.4rem;">Stay in the loop</div>
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1rem;">New menu drops, events and exclusive offers — straight to your inbox.</p>
+            <form id="newsletter-form" onsubmit="return subscribeNewsletter(event)" style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;">
+                <input type="email" id="nl-email" required placeholder="you@example.com"
+                       style="flex:1;min-width:220px;padding:0.85rem 1rem;border-radius:50px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit;font-size:0.9rem;outline:none;" />
+                <button type="submit" id="nl-btn" data-hover
+                        style="padding:0.85rem 1.6rem;border-radius:50px;border:none;background:var(--accent);color:#0d0c0c;font-family:inherit;font-weight:600;font-size:0.85rem;cursor:pointer;">
+                    Subscribe
+                </button>
+            </form>
+            <div id="nl-msg" style="margin-top:0.7rem;font-size:0.8rem;color:var(--text-muted);min-height:1.1rem;"></div>
         </div>
-        <p>© 2026 BeanStalk Culinary & Sushi.</p>
+
+        <div class="socials">
+            <a href="/" data-hover><i class="fas fa-home"></i></a>
+            <a href="reservations.html" data-hover><i class="fas fa-calendar-check"></i></a>
+            <a href="https://www.instagram.com/" target="_blank" data-hover><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/" target="_blank" data-hover><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/" target="_blank" data-hover><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p>© 2026 Saviro Culinary & Sushi.</p>
     </footer>
 
     <div class="watermark-overlay">Mockup By TheWebMechanic</div>
@@ -918,5 +958,59 @@
         }
     </script>
     <script async src="//www.instagram.com/embed.js"></script>
+
+    <!-- Newsletter (Firebase Firestore) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        let _nlDb = null;
+        try {
+            if (FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY') {
+                if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+                _nlDb = firebase.firestore();
+            }
+        } catch (e) {}
+
+        async function subscribeNewsletter(ev) {
+            ev.preventDefault();
+            const emailEl = document.getElementById('nl-email');
+            const msg     = document.getElementById('nl-msg');
+            const btn     = document.getElementById('nl-btn');
+            const email   = emailEl.value.trim().toLowerCase();
+            if (!email) return false;
+
+            btn.disabled = true;
+            btn.textContent = '…';
+
+            try {
+                if (_nlDb) {
+                    await _nlDb.collection('newsletter').doc(email).set({
+                        email,
+                        subscribedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        source: 'homepage_footer'
+                    }, { merge: true });
+                }
+                msg.style.color = '#7be08a';
+                msg.textContent = '✓ Thanks — you\'re on the list.';
+                emailEl.value = '';
+            } catch (err) {
+                msg.style.color = '#ff8a8a';
+                msg.textContent = 'Could not subscribe right now. Please try again.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Subscribe';
+            }
+            return false;
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js').catch(function() {});
+            });
+        }
+    </script>
 </body>
 </html>

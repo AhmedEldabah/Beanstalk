@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin Dashboard — BeanStalk</title>
+    <title>Admin Dashboard — Saviro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -189,10 +189,10 @@
     <div class="login-card">
         <div class="login-logo">
             <div class="login-icon"><i class="fas fa-shield-halved"></i></div>
-            <h2>BeanStalk Admin</h2>
+            <h2>Saviro Admin</h2>
             <p>Operations Dashboard</p>
         </div>
-        <div class="f"><label>Email</label><input type="email" id="admin-email" placeholder="admin@beanstalk.eg" autocomplete="email"></div>
+        <div class="f"><label>Email</label><input type="email" id="admin-email" placeholder="admin@saviro.com" autocomplete="email"></div>
         <div class="f"><label>Password</label><input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password"></div>
         <button class="login-btn" onclick="doLogin()"><i class="fas fa-arrow-right"></i> Sign In</button>
         <div class="login-error" id="login-error"></div>
@@ -205,13 +205,15 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-logo"><div class="logo-dot"></div> BeanStalk</div>
+        <div class="sidebar-logo"><div class="logo-dot"></div> Saviro</div>
         <div class="nav-group">Operations</div>
         <button class="nav-item active" onclick="showPanel('overview')"><i class="fas fa-chart-line"></i> Overview <span class="nav-badge" id="nb-pending">0</span></button>
         <button class="nav-item" onclick="showPanel('orders')"><i class="fas fa-list-ul"></i> All Orders</button>
         <button class="nav-item" onclick="showPanel('map')"><i class="fas fa-map"></i> Live Map</button>
         <div class="nav-group">Management</div>
         <button class="nav-item" onclick="showPanel('drivers')"><i class="fas fa-motorcycle"></i> Drivers</button>
+        <button class="nav-item" onclick="showPanel('reservations')"><i class="fas fa-calendar-check"></i> Reservations <span class="nav-badge" id="nb-resv">0</span></button>
+        <button class="nav-item" onclick="showPanel('promos')"><i class="fas fa-tag"></i> Promo Codes</button>
         <button class="nav-item" onclick="showPanel('analytics')"><i class="fas fa-chart-bar"></i> Analytics</button>
         <div class="sidebar-bottom">
             <button class="nav-item" onclick="doLogout()"><i class="fas fa-right-from-bracket"></i> Sign Out</button>
@@ -234,6 +236,8 @@
             <button class="nav-item" onclick="showPanel('orders')"><i class="fas fa-list-ul"></i> Orders</button>
             <button class="nav-item" onclick="showPanel('map')"><i class="fas fa-map"></i> Map</button>
             <button class="nav-item" onclick="showPanel('drivers')"><i class="fas fa-motorcycle"></i> Drivers</button>
+            <button class="nav-item" onclick="showPanel('reservations')"><i class="fas fa-calendar-check"></i> Reservations</button>
+            <button class="nav-item" onclick="showPanel('promos')"><i class="fas fa-tag"></i> Promos</button>
             <button class="nav-item" onclick="showPanel('analytics')"><i class="fas fa-chart-bar"></i> Analytics</button>
         </div>
 
@@ -284,7 +288,7 @@
                         <div class="ff"><label>Email</label><input id="drv-email" type="email" placeholder="driver@email.com"></div>
                         <div class="ff"><label>Vehicle</label><input id="drv-vehicle" type="text" placeholder="Motorcycle · Blue · ABC 123"></div>
                         <div class="ff"><label>National ID</label><input id="drv-nid" type="text" placeholder="29XXXXXXXXXX"></div>
-                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="password" placeholder="Give driver this to log in" value="BeanStalk2024!"></div>
+                        <div class="ff"><label>Temp Password</label><input id="drv-pass" type="password" placeholder="Give driver this to log in" value="Saviro2024!"></div>
                     </div>
                     <button class="submit-btn" onclick="addDriver()"><i class="fas fa-plus"></i> Create Driver Account</button>
                     <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.8rem;"><i class="fas fa-info-circle"></i> This creates a Firebase Auth account. The driver logs into driver.html with this email & password.</div>
@@ -315,6 +319,42 @@
                         <tbody id="perf-table-body"></tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- ═══════ RESERVATIONS ═══════ -->
+            <div class="panel" id="panel-reservations">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="filterResv('upcoming',this)">Upcoming</button>
+                    <button class="sub-tab" onclick="filterResv('all',this)">All</button>
+                    <button class="sub-tab" onclick="filterResv('confirmed',this)">Confirmed</button>
+                    <button class="sub-tab" onclick="filterResv('pending',this)">Pending</button>
+                    <button class="sub-tab" onclick="filterResv('cancelled',this)">Cancelled</button>
+                </div>
+                <div id="resv-list"></div>
+            </div>
+
+            <!-- ═══════ PROMO CODES ═══════ -->
+            <div class="panel" id="panel-promos">
+                <div class="add-form">
+                    <h4><i class="fas fa-plus" style="margin-right:0.4rem;"></i> Create Promo Code</h4>
+                    <div class="form-row">
+                        <div class="ff"><label>Code</label><input id="promo-code" type="text" placeholder="WELCOME10" style="text-transform:uppercase"></div>
+                        <div class="ff"><label>Type</label>
+                            <select id="promo-type" style="width:100%;padding:0.7rem 0.9rem;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);font-family:inherit;">
+                                <option value="percent">% off subtotal</option>
+                                <option value="flat">Flat amount off</option>
+                                <option value="free_delivery">Free delivery</option>
+                            </select>
+                        </div>
+                        <div class="ff"><label>Value</label><input id="promo-value" type="number" min="0" placeholder="10"></div>
+                        <div class="ff"><label>Max Uses (blank = unlimited)</label><input id="promo-max" type="number" min="1" placeholder=""></div>
+                        <div class="ff"><label>Expires (blank = never)</label><input id="promo-expires" type="date"></div>
+                    </div>
+                    <button class="submit-btn" onclick="savePromo()"><i class="fas fa-plus"></i> Save Code</button>
+                </div>
+
+                <div class="sec-title"><span>Active Promo Codes</span></div>
+                <div id="promos-list"></div>
             </div>
 
         </div><!-- /content -->
@@ -387,11 +427,13 @@ function startApp() {
     document.getElementById('app').style.display = 'block';
     subscribeToOrders();
     subscribeToDrivers();
+    subscribeToReservations();
+    subscribeToPromos();
     watchDriverLocations();
 }
 
 // ─── PANELS ──────────────────────────────────────────────────────────────────
-const PANEL_TITLES = { overview:'Overview', orders:'All Orders', map:'Live Map', drivers:'Drivers', analytics:'Analytics' };
+const PANEL_TITLES = { overview:'Overview', orders:'All Orders', map:'Live Map', drivers:'Drivers', reservations:'Reservations', promos:'Promo Codes', analytics:'Analytics' };
 function showPanel(name) {
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + name).classList.add('active');
@@ -576,7 +618,7 @@ async function addDriver() {
             // Create Firebase Auth account for driver
             if (auth) {
                 try {
-                    await auth.createUserWithEmailAndPassword(email, pass || 'BeanStalk2024!');
+                    await auth.createUserWithEmailAndPassword(email, pass || 'Saviro2024!');
                     await auth.currentUser.updateProfile({ displayName: name });
                 } catch(authErr) {
                     if (authErr.code !== 'auth/email-already-in-use') throw authErr;
@@ -724,6 +766,174 @@ function buildAnalytics() {
     document.getElementById('perf-table-body').innerHTML = rows.length
         ? rows.map(r => `<tr><td>${r.name}</td><td>${r.count}</td><td>—</td><td>EGP ${r.earnings}</td></tr>`).join('')
         : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1.5rem;">No data yet</td></tr>';
+}
+
+// ─── RESERVATIONS ────────────────────────────────────────────────────────────
+let allReservations = [];
+let resvFilter = 'upcoming';
+
+function subscribeToReservations() {
+    if (!db) return;
+    db.collection('reservations')
+      .orderBy('date', 'desc')
+      .limit(300)
+      .onSnapshot(snap => {
+          allReservations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          renderReservations();
+          const upcoming = allReservations.filter(r =>
+              r.status !== 'cancelled' && r.date && r.date >= new Date().toISOString().slice(0,10)
+          ).length;
+          const badge = document.getElementById('nb-resv');
+          if (badge) badge.textContent = upcoming;
+      }, e => console.warn('reservations:', e));
+}
+
+function filterResv(f, btn) {
+    resvFilter = f;
+    document.querySelectorAll('#panel-reservations .sub-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderReservations();
+}
+
+function renderReservations() {
+    const today = new Date().toISOString().slice(0,10);
+    let list = allReservations.slice();
+    if (resvFilter === 'upcoming') {
+        list = list.filter(r => r.status !== 'cancelled' && r.date && r.date >= today);
+    } else if (resvFilter !== 'all') {
+        list = list.filter(r => r.status === resvFilter);
+    }
+    const el = document.getElementById('resv-list');
+    if (!list.length) { el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">No reservations</div>'; return; }
+    el.innerHTML = list.map(r => {
+        const status = r.status || 'pending';
+        const badgeColor = status === 'confirmed' ? 'var(--green)' : status === 'cancelled' ? '#ff6b6b' : 'var(--accent)';
+        return `
+            <div class="stat-card" style="margin-bottom:0.8rem;display:flex;flex-direction:column;gap:0.6rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <div>
+                        <div style="font-weight:600;font-size:1rem;">${escapeHtml(r.name || '—')} · ${r.partySize || '?'} guests</div>
+                        <div style="color:var(--text-muted);font-size:0.85rem;">${escapeHtml(r.date || '')} at ${escapeHtml(r.time || '')}</div>
+                    </div>
+                    <span style="padding:0.25rem 0.7rem;border-radius:50px;font-size:0.72rem;background:${badgeColor}22;color:${badgeColor};text-transform:uppercase;letter-spacing:0.05em;">${status}</span>
+                </div>
+                <div style="font-size:0.82rem;color:var(--text-muted);">
+                    ${escapeHtml(r.phone || '')}${r.email ? ' · ' + escapeHtml(r.email) : ''}
+                    ${r.notes ? '<div style="margin-top:0.4rem;font-style:italic;">"' + escapeHtml(r.notes) + '"</div>' : ''}
+                </div>
+                <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+                    ${status !== 'confirmed' ? `<button class="submit-btn" style="padding:0.45rem 0.9rem;font-size:0.78rem;" onclick="updateResvStatus('${r.id}','confirmed')">Confirm</button>` : ''}
+                    ${status !== 'cancelled' ? `<button class="submit-btn" style="padding:0.45rem 0.9rem;font-size:0.78rem;background:rgba(255,107,107,0.15);color:#ff6b6b;border:1px solid rgba(255,107,107,0.3);" onclick="updateResvStatus('${r.id}','cancelled')">Cancel</button>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function updateResvStatus(id, status) {
+    if (!db) return;
+    try {
+        await db.collection('reservations').doc(id).update({
+            status,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Reservation updated');
+    } catch (e) {
+        showToast('Update failed', 'error');
+    }
+}
+
+function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ─── PROMO CODES ─────────────────────────────────────────────────────────────
+let allPromos = [];
+
+function subscribeToPromos() {
+    if (!db) return;
+    db.collection('promoCodes').onSnapshot(snap => {
+        allPromos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderPromos();
+    }, e => console.warn('promos:', e));
+}
+
+function renderPromos() {
+    const el = document.getElementById('promos-list');
+    if (!allPromos.length) {
+        el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">No promo codes yet — create one above.</div>';
+        return;
+    }
+    el.innerHTML = allPromos.map(p => {
+        const valLabel = p.type === 'free_delivery' ? 'Free delivery'
+                       : p.type === 'flat'          ? `EGP ${p.value} off`
+                       : `${p.value}% off`;
+        const used = p.usedCount || 0;
+        const limit = p.maxUses ? `${used} / ${p.maxUses}` : `${used} (no limit)`;
+        const expired = p.expiresAt && new Date(p.expiresAt).getTime() < Date.now();
+        const inactive = p.active === false || expired;
+        return `
+            <div class="stat-card" style="margin-bottom:0.7rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.8rem;${inactive ? 'opacity:0.55;' : ''}">
+                <div>
+                    <div style="font-weight:700;font-size:1.05rem;letter-spacing:0.05em;">${escapeHtml(p.id)}</div>
+                    <div style="color:var(--text-muted);font-size:0.82rem;">${valLabel} · used ${limit}${p.expiresAt ? ' · expires ' + escapeHtml(p.expiresAt) : ''}${expired ? ' · EXPIRED' : ''}</div>
+                </div>
+                <div style="display:flex;gap:0.4rem;">
+                    <button class="submit-btn" style="padding:0.45rem 0.9rem;font-size:0.78rem;" onclick="togglePromo('${p.id}', ${p.active === false})">${p.active === false ? 'Enable' : 'Disable'}</button>
+                    <button class="submit-btn" style="padding:0.45rem 0.9rem;font-size:0.78rem;background:rgba(255,107,107,0.15);color:#ff6b6b;border:1px solid rgba(255,107,107,0.3);" onclick="deletePromo('${p.id}')">Delete</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function savePromo() {
+    if (!db) { showToast('Firebase not configured', 'error'); return; }
+    const code  = document.getElementById('promo-code').value.trim().toUpperCase();
+    const type  = document.getElementById('promo-type').value;
+    const valIn = document.getElementById('promo-value').value;
+    const max   = document.getElementById('promo-max').value;
+    const exp   = document.getElementById('promo-expires').value;
+
+    if (!code) { showToast('Enter a code', 'error'); return; }
+    const value = type === 'free_delivery' ? 0 : parseFloat(valIn);
+    if (type !== 'free_delivery' && (!value || value <= 0)) { showToast('Enter a value > 0', 'error'); return; }
+
+    const doc = {
+        type, value,
+        active: true,
+        usedCount: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (max) doc.maxUses = parseInt(max, 10);
+    if (exp) doc.expiresAt = exp;
+
+    try {
+        await db.collection('promoCodes').doc(code).set(doc, { merge: true });
+        document.getElementById('promo-code').value = '';
+        document.getElementById('promo-value').value = '';
+        document.getElementById('promo-max').value = '';
+        document.getElementById('promo-expires').value = '';
+        showToast(`Code ${code} saved`);
+    } catch (e) {
+        showToast('Save failed: ' + e.message, 'error');
+    }
+}
+
+async function togglePromo(code, enable) {
+    if (!db) return;
+    try {
+        await db.collection('promoCodes').doc(code).update({ active: !!enable });
+    } catch (e) { showToast('Update failed', 'error'); }
+}
+
+async function deletePromo(code) {
+    if (!db) return;
+    if (!confirm(`Delete promo code "${code}"?`)) return;
+    try {
+        await db.collection('promoCodes').doc(code).delete();
+        showToast('Code deleted');
+    } catch (e) { showToast('Delete failed', 'error'); }
 }
 
 // ─── TOAST ───────────────────────────────────────────────────────────────────

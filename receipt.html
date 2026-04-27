@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Order Confirmed — BeanStalk</title>
+    <title>Order Confirmed — Saviro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
@@ -120,7 +120,7 @@
 <div class="grain-overlay"></div>
 
 <nav>
-    <a href="index.html" class="logo-text"><div class="logo-dot"></div> BeanStalk</a>
+    <a href="index.html" class="logo-text"><div class="logo-dot"></div> Saviro</a>
     <span style="color:var(--text-muted);font-size:0.85rem;" id="nav-order-id"></span>
 </nav>
 
@@ -180,7 +180,7 @@
             <div class="receipt-total"><span>Total</span><span class="t-val" id="r-total">—</span></div>
 
             <div style="margin-top:1.5rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:12px;font-size:0.78rem;color:var(--text-muted);text-align:center;line-height:1.6;">
-                BeanStalk · Sheikh Zayed City, Giza · <span id="r-restaurant-phone">Egypt</span><br>
+                Saviro · <span id="r-restaurant-address">123 Main Street</span> · <span id="r-restaurant-phone">—</span><br>
                 Thank you for your order! We hope you enjoy every bite. 🍣
             </div>
         </div>
@@ -224,7 +224,7 @@ async function loadOrder() {
     const orderId = params.get('orderId');
 
     // Try sessionStorage first (fresh order)
-    const stored = sessionStorage.getItem('bs_order');
+    const stored = sessionStorage.getItem('sv_order');
     if (stored) {
         orderData = JSON.parse(stored);
         if (orderId && orderData.id === orderId) {
@@ -260,7 +260,7 @@ function renderOrder(o) {
     const eta = o.estimatedMinutes || 45;
     document.getElementById('eta-display').textContent = `~${eta} min`;
     if (o.lat && o.lng) {
-        document.getElementById('eta-note').textContent = 'Based on your delivery distance from Sheikh Zayed';
+        document.getElementById('eta-note').textContent = 'Based on your delivery distance from the restaurant';
     }
     document.getElementById('payment-display').textContent = PAYMENT_LABELS[o.paymentMethod] || o.paymentMethod || '—';
 
@@ -307,7 +307,7 @@ function renderOrder(o) {
 
     // WhatsApp link
     if (typeof RESTAURANT_PHONE !== 'undefined') {
-        const msg = encodeURIComponent(`Hi BeanStalk! My order #${shortId} — ${o.customerName} — ${o.customerPhone}`);
+        const msg = encodeURIComponent(`Hi Saviro! My order #${shortId} — ${o.customerName} — ${o.customerPhone}`);
         document.getElementById('whatsapp-btn').href = `https://wa.me/${RESTAURANT_PHONE.replace(/\D/g,'')}?text=${msg}`;
     }
 }
@@ -317,7 +317,7 @@ async function shareReceipt() {
     const url = window.location.href;
     if (navigator.share) {
         try {
-            await navigator.share({ title: 'BeanStalk Order', text: 'My BeanStalk delivery order!', url });
+            await navigator.share({ title: 'Saviro Order', text: 'My Saviro delivery order!', url });
         } catch(e) {}
     } else {
         await navigator.clipboard.writeText(url);
